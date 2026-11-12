@@ -8,6 +8,7 @@
 
 import type { ChartTransform } from "scenerystack/bamboo";
 import { Bounds2 } from "scenerystack/dot";
+import { Shape } from "scenerystack/kite";
 import { CanvasNode } from "scenerystack/scenery";
 
 /** Group index that is never drawn. */
@@ -62,6 +63,19 @@ export const traceMarker = (
     context.moveTo(x + r, y);
     context.arc(x, y, r, 0, 2 * Math.PI);
   }
+};
+
+/** The same marker as a kite Shape centred on the origin, for legends. */
+export const markerShape = (shape: MarkerShape, r: number): Shape => {
+  if (shape === "diamond") {
+    const d = r * 1.3;
+    return new Shape().moveTo(0, -d).lineTo(d, 0).lineTo(0, d).lineTo(-d, 0).close();
+  }
+  if (shape === "square") {
+    const d = r * 0.95;
+    return Shape.rect(-d, -d, 2 * d, 2 * d);
+  }
+  return Shape.circle(0, 0, r);
 };
 
 export class PointCloudNode extends CanvasNode {

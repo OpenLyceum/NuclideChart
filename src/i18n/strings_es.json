@@ -45,7 +45,8 @@
       },
       "currentDetails": "La simulación está en su estado inicial.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "chart": "Separation-energy plot",
+        "chartHelp": "Arrow keys move between points: left and right along a line, up and down to the neighbouring lines."
       }
     },
     "isobars": {
@@ -56,7 +57,8 @@
       },
       "currentDetails": "La simulación está en su estado inicial.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "chart": "Isobar mass parabola",
+        "chartHelp": "Left and right arrows move to the neighbouring isobar."
       }
     },
     "halfLives": {
@@ -67,7 +69,8 @@
       },
       "currentDetails": "La simulación está en su estado inicial.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "chart": "Half-life plot",
+        "chartHelp": "Arrow keys move to the nearest nuclide in that direction."
       }
     },
     "decayChains": {
@@ -260,5 +263,88 @@
     },
     "noA5A8": "No stable nucleus with A = 5 or A = 8",
     "viewTitle": "Plot"
+  },
+  "shells": {
+    "kindTitle": "Plot",
+    "kinds": {
+      "twoNeutron": "Two-neutron separation S<sub>2n</sub>",
+      "oneNeutron": "One-neutron separation S<sub>n</sub>",
+      "twoProton": "Two-proton separation S<sub>2p</sub>",
+      "oneProton": "One-proton separation S<sub>p</sub>"
+    },
+    "axes": {
+      "twoNeutron": "S<sub>2n</sub> (MeV)",
+      "oneNeutron": "S<sub>n</sub> (MeV)",
+      "twoProton": "S<sub>2p</sub> (MeV)",
+      "oneProton": "S<sub>p</sub> (MeV)"
+    },
+    "showEstimated": "Include estimated masses",
+    "linePatternIsotopes": "Highlighted: {{name}} isotopes (Z = {{z}})",
+    "linePatternIsotones": "Highlighted: isotones with N = {{n}}",
+    "valuePattern": "{{label}}: {{value}} MeV",
+    "dropPattern": "Next one ({{next}}): {{change}} MeV",
+    "unbound": "Below zero: unbound (beyond the drip line)",
+    "hint": "Look for the sudden drops just after N or Z = 8, 20, 28, 50, 82 and 126."
+  },
+  "isobars": {
+    "massNumber": "Mass number A",
+    "quickPicks": "Try:",
+    "yAxis": "Mass excess above the lowest isobar (MeV)",
+    "showParabolas": "Mass parabolas",
+    "showArrows": "Allowed β decays",
+    "legend": {
+      "evenEven": "even Z, even N",
+      "oddOdd": "odd Z, odd N",
+      "oddA": "odd A",
+      "stable": "stable",
+      "betaMinus": "β⁻",
+      "electronCapture": "β⁺ / EC",
+      "doubleBeta": "double β"
+    },
+    "stablePattern": "β-stable: {{list}}",
+    "doubleBetaPattern": "Double β only: {{list}}",
+    "mattauch": "Mattauch's rule: two neighbouring isobars are never both stable.",
+    "oddAHint": "Odd A: one parabola, so usually one stable isobar.",
+    "evenAHint": "Even A: pairing splits the isobars onto two parabolas, so there can be two or three stable isobars, never side by side.",
+    "none": "none"
+  },
+  "halfLives": {
+    "viewTitle": "View",
+    "views": {
+      "explorer": "All half-lives",
+      "geigerNuttall": "Geiger–Nuttall (α decay)",
+      "sargent": "Sargent (β⁻ decay)"
+    },
+    "xAxisTitle": "Plot against",
+    "xAxes": {
+      "massNumber": "Mass number A",
+      "valleyDistance": "Distance from the valley"
+    },
+    "logScale": "Logarithmic scale",
+    "earthAge": "Age of the Earth",
+    "notable": "Notable nuclides",
+    "fits": "Line for each element",
+    "comparison": "Compare Po-212 and Th-232",
+    "axes": {
+      "halfLifeLog": "Half-life (s)",
+      "halfLifeLinear": "Half-life (billions of years)",
+      "valleyDistance": "Z − Z<sub>valley</sub>(A)   (← neutron-rich · proton-rich →)",
+      "qAlphaInverseRoot": "Q<sub>α</sub><sup>−1/2</sup> (MeV<sup>−1/2</sup>)",
+      "alphaHalfLife": "Partial α half-life (s)",
+      "qBeta": "Q<sub>β⁻</sub> (MeV)",
+      "betaHalfLife": "Partial β⁻ half-life (s)"
+    },
+    "guides": {
+      "second": "1 second",
+      "year": "1 year",
+      "earth": "Age of the Earth (4.5 billion years)",
+      "universe": "Age of the Universe"
+    },
+    "linearNote": "On a linear scale, every half-life shorter than about 100 million years sits on the axis.",
+    "survivorsPattern": "{{count}} radioactive nuclides outlive the Earth's age.",
+    "fitPattern": "{{element}} line: slope {{slope}}, R² = {{r2}} ({{count}} nuclides)",
+    "noFit": "Select an even–even α emitter to see its element's line.",
+    "comparisonPattern": "Q<sub>α</sub> rises by ×{{qRatio}}, from {{qLow}} to {{qHigh}} MeV; t½ falls by {{orders}} orders of magnitude.",
+    "sargentPattern": "Fitted slope {{slope}} (Sargent's rule: about −5) over {{count}} β⁻ emitters. Points far above the line are \"forbidden\" decays, slowed by a large change in spin."
   }
 }

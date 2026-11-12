@@ -109,6 +109,21 @@ export class StringManager {
     return stringProperties.bindingEnergy;
   }
 
+  /** Strings of the Shells screen. */
+  public getShellsStrings() {
+    return stringProperties.shells;
+  }
+
+  /** Strings of the Isobars screen. */
+  public getIsobarsStrings() {
+    return stringProperties.isobars;
+  }
+
+  /** Strings of the Half-Lives screen. */
+  public getHalfLivesStrings() {
+    return stringProperties.halfLives;
+  }
+
   /** Accessibility strings for the Chart screen. */
   public getChartA11yStrings() {
     return stringProperties.a11y.chart;
