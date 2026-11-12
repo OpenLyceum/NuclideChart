@@ -1,0 +1,12 @@
+{
+"retrieved":"2026-11-12",
+"source":"IAEA Nuclear Data Section, Live Chart of Nuclides (ENSDF levels)",
+"url":"https://nds.iaea.org/relnsd/v1/data?fields=levels&nuclides=<id>",
+"units":{"energy":"keV","halfLife":"s"},
+"isomers":[
+{"label":"Pa-234m","z":91,"n":143,"energy":76.5,"jp":"(0-)","hl":69.54,"hlOp":"","hlText":"1.159 min","modes":"B-:99.84;IT:0.16"},
+{"label":"Tc-99m","z":43,"n":56,"energy":142.6836,"jp":"1/2-","hl":21625.9,"hlOp":"","hlText":"6.0072 h","modes":"IT:99.9963;B-:0.0037"},
+{"label":"Ta-180m","z":73,"n":107,"energy":77.2,"jp":"9-","hl":2.24054e+23,"hlOp":"GT","hlText":"> 7.1E15 y","modes":""},
+{"label":"Am-242m","z":95,"n":147,"energy":48.603,"jp":"5-","hl":4449530000,"hlOp":"","hlText":"141 y","modes":"IT:99.55;A:0.45;SF:0.0000000047"}
+]
+}

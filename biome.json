@@ -8,7 +8,16 @@
     }
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.js", "**/*.json", "**/*.html", "!dist", "!node_modules", "!.claude"]
+    "includes": [
+      "**/*.ts",
+      "**/*.js",
+      "**/*.json",
+      "**/*.html",
+      "!dist",
+      "!node_modules",
+      "!.claude",
+      "!src/common/model/data"
+    ]
   },
   "formatter": {
     "enabled": true,
