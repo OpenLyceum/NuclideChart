@@ -50,7 +50,7 @@ const stringProperties = LocalizedString.getNestedStringProperties({
  * Keep this in sync with the `a11y` key in `strings_en.json` — a locale key
  * rename that is not mirrored here fails at the getter return (not silently).
  */
-export type SimA11yStrings = {
+export type NuclideChartA11yStrings = {
   readonly screenSummary: {
     readonly playAreaStringProperty: ReadOnlyProperty<string>;
     readonly controlAreaStringProperty: ReadOnlyProperty<string>;
@@ -64,9 +64,9 @@ export type SimA11yStrings = {
 
 /**
  * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Same sync rule as {@link SimA11yStrings}.
+ * Same sync rule as {@link NuclideChartA11yStrings}.
  */
-export type SimPreferenceStrings = {
+export type NuclideChartPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
   readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
 };
@@ -103,34 +103,57 @@ export class StringManager {
    * Each property updates automatically when the locale changes.
    */
   public getScreenNames(): {
-    readonly simStringProperty: ReadOnlyProperty<string>;
+    readonly chartStringProperty: ReadOnlyProperty<string>;
+    readonly bindingEnergyStringProperty: ReadOnlyProperty<string>;
+    readonly shellsStringProperty: ReadOnlyProperty<string>;
+    readonly isobarsStringProperty: ReadOnlyProperty<string>;
+    readonly halfLivesStringProperty: ReadOnlyProperty<string>;
+    readonly decayChainsStringProperty: ReadOnlyProperty<string>;
   } {
     return {
-      simStringProperty: stringProperties.screens.simStringProperty,
+      chartStringProperty: stringProperties.screens.chartStringProperty,
+      bindingEnergyStringProperty: stringProperties.screens.bindingEnergyStringProperty,
+      shellsStringProperty: stringProperties.screens.shellsStringProperty,
+      isobarsStringProperty: stringProperties.screens.isobarsStringProperty,
+      halfLivesStringProperty: stringProperties.screens.halfLivesStringProperty,
+      decayChainsStringProperty: stringProperties.screens.decayChainsStringProperty,
     };
   }
 
-  /**
-   * Accessibility (Interactive Description) StringProperties.
-   *
-   * Returns the reactive `a11y` string tree used by the parallel DOM:
-   *   - `screenSummary.*` — play-area / control-area overview and an interaction
-   *     hint, read by `SimScreenSummaryContent`.
-   *   - `currentDetails` — a paragraph describing the simulation's current state.
-   *     In a real sim, derive a live version from model Properties (see
-   *     LunarLander's ScreenSummaryContent for the canonical pattern).
-   *
-   * Add `accessibleName` / `accessibleHelpText` strings for individual controls
-   * to the `a11y` group too, then read them through this same nested tree.
-   */
-  public getA11yStrings(): SimA11yStrings {
-    return stringProperties.a11y;
+  /** Accessibility strings for the Chart screen. */
+  public getChartA11yStrings() {
+    return stringProperties.a11y.chart;
+  }
+
+  /** Accessibility strings for the Binding Energy screen. */
+  public getBindingEnergyA11yStrings() {
+    return stringProperties.a11y.bindingEnergy;
+  }
+
+  /** Accessibility strings for the Shells screen. */
+  public getShellsA11yStrings() {
+    return stringProperties.a11y.shells;
+  }
+
+  /** Accessibility strings for the Isobars screen. */
+  public getIsobarsA11yStrings() {
+    return stringProperties.a11y.isobars;
+  }
+
+  /** Accessibility strings for the Half-Lives screen. */
+  public getHalfLivesA11yStrings() {
+    return stringProperties.a11y.halfLives;
+  }
+
+  /** Accessibility strings for the Decay Chains screen. */
+  public getDecayChainsA11yStrings() {
+    return stringProperties.a11y.decayChains;
   }
 
   /**
    * Simulation-specific preference labels shown in Preferences → Simulation.
    */
-  public getPreferences(): SimPreferenceStrings {
+  public getPreferences() {
     return stringProperties.preferences;
   }
 }

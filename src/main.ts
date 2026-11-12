@@ -21,24 +21,53 @@ import "./brand.js";
 
 import { onReadyToLaunch, PreferencesModel, Sim } from "scenerystack/sim";
 import { Tandem } from "scenerystack/tandem";
+import { BindingEnergyScreen } from "./binding-energy/BindingEnergyScreen.js";
+import { ChartScreen } from "./chart/ChartScreen.js";
+import { DecayChainsScreen } from "./decay-chains/DecayChainsScreen.js";
+import { HalfLivesScreen } from "./half-lives/HalfLivesScreen.js";
 import { StringManager } from "./i18n/StringManager.js";
-import { SimPreferencesModel } from "./preferences/SimPreferencesModel.js";
-import { SimPreferencesNode } from "./preferences/SimPreferencesNode.js";
-import SimColors from "./SimColors.js";
-import { SimScreen } from "./sim-screen/SimScreen.js";
+import { IsobarsScreen } from "./isobars/IsobarsScreen.js";
+import NuclideChartColors from "./NuclideChartColors.js";
+import { NuclideChartPreferencesModel } from "./preferences/NuclideChartPreferencesModel.js";
+import { NuclideChartPreferencesNode } from "./preferences/NuclideChartPreferencesNode.js";
+import { ShellsScreen } from "./shells/ShellsScreen.js";
 
 onReadyToLaunch(() => {
   const stringManager = StringManager.getInstance();
 
-  // Simulation-specific preferences; initial values come from simQueryParameters.
-  const simPreferences = new SimPreferencesModel(Tandem.ROOT.createTandem("preferences"));
+  // Simulation-specific preferences; initial values come from nuclideChartQueryParameters.
+  const simPreferences = new NuclideChartPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
   const screens = [
-    new SimScreen({
-      // The screen name Property updates automatically when the locale changes
-      name: stringManager.getScreenNames().simStringProperty,
-      tandem: Tandem.ROOT.createTandem("simScreen"),
-      backgroundColorProperty: SimColors.backgroundColorProperty,
+    new ChartScreen({
+      name: stringManager.getScreenNames().chartStringProperty,
+      tandem: Tandem.ROOT.createTandem("chartScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
+    }),
+    new BindingEnergyScreen({
+      name: stringManager.getScreenNames().bindingEnergyStringProperty,
+      tandem: Tandem.ROOT.createTandem("bindingEnergyScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
+    }),
+    new ShellsScreen({
+      name: stringManager.getScreenNames().shellsStringProperty,
+      tandem: Tandem.ROOT.createTandem("shellsScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
+    }),
+    new IsobarsScreen({
+      name: stringManager.getScreenNames().isobarsStringProperty,
+      tandem: Tandem.ROOT.createTandem("isobarsScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
+    }),
+    new HalfLivesScreen({
+      name: stringManager.getScreenNames().halfLivesStringProperty,
+      tandem: Tandem.ROOT.createTandem("halfLivesScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
+    }),
+    new DecayChainsScreen({
+      name: stringManager.getScreenNames().decayChainsStringProperty,
+      tandem: Tandem.ROOT.createTandem("decayChainsScreen"),
+      backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
   ];
 
@@ -53,7 +82,7 @@ onReadyToLaunch(() => {
       simulationOptions: {
         customPreferences: [
           {
-            createContent: (tandem: Tandem) => new SimPreferencesNode(simPreferences, tandem),
+            createContent: (tandem: Tandem) => new NuclideChartPreferencesNode(simPreferences, tandem),
           },
         ],
       },

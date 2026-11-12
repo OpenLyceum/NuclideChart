@@ -1,11 +1,11 @@
-# Improvement Recommendations — SceneryStack Template
+# Improvement Recommendations — Nuclide Chart
 
 Remaining non-test recommendations for `SceneryStackTemplate/`. Numbering is
 preserved for earlier references. Items 1, 4–8, 10–15 are implemented and removed:
 `scripts/rename-sim.ts` now documents its token-order invariant and uses word-boundary
 identifier replacements; `StringManager` exposes explicit accessibility/preferences
-return types; `SimScreenView` includes a listener/disposal example; and
-`SimKeyboardHelpContent` includes commented slider/time-control sections. The release
+return types; `ChartScreenView` includes a listener/disposal example; and
+`ChartKeyboardHelpContent` includes commented slider/time-control sections. The release
 script also runs the existing unit suite before bumping the version.
 
 Former item 3 proposed pinning reusable workflows independently of Baton. The fleet

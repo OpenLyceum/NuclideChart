@@ -1,17 +1,79 @@
 {
-  "title": "Modèle de Simulation",
+  "title": "Nuclide Chart",
   "screens": {
-    "sim": "Simulation"
+    "chart": "Chart",
+    "bindingEnergy": "Binding Energy",
+    "shells": "Shells",
+    "isobars": "Isobars",
+    "halfLives": "Half-Lives",
+    "decayChains": "Decay Chains"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-      "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-      "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+    "chart": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
     },
-    "currentDetails": "La simulation est dans son état initial.",
-    "controls": {
-      "exampleControl": "Contrôle d'exemple"
+    "bindingEnergy": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
+    },
+    "shells": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
+    },
+    "isobars": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
+    },
+    "halfLives": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
+    },
+    "decayChains": {
+      "screenSummary": {
+        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
+        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
+        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+      },
+      "currentDetails": "La simulation est dans son état initial.",
+      "controls": {
+        "exampleControl": "Contrôle d'exemple"
+      }
     }
   },
   "preferences": {

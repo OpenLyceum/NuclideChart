@@ -1,17 +1,79 @@
 {
-  "title": "Plantilla de Simulación",
+  "title": "Nuclide Chart",
   "screens": {
-    "sim": "Simulación"
+    "chart": "Chart",
+    "bindingEnergy": "Binding Energy",
+    "shells": "Shells",
+    "isobars": "Isobars",
+    "halfLives": "Half-Lives",
+    "decayChains": "Decay Chains"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "El área de juego muestra el contenido principal de la simulación.",
-      "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-      "interactionHint": "Explora la simulación interactuando con sus controles."
+    "chart": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
     },
-    "currentDetails": "La simulación está en su estado inicial.",
-    "controls": {
-      "exampleControl": "Control de ejemplo"
+    "bindingEnergy": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
+    },
+    "shells": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
+    },
+    "isobars": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
+    },
+    "halfLives": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
+    },
+    "decayChains": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
     }
   },
   "preferences": {
