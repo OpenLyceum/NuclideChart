@@ -1,280 +1,278 @@
 {
-  "title": "Nuclide Chart",
+  "title": "Carta de nucleidos",
   "screens": {
-    "chart": "Chart",
-    "bindingEnergy": "Binding Energy",
-    "shells": "Shells",
-    "isobars": "Isobars",
-    "halfLives": "Half-Lives",
-    "decayChains": "Decay Chains"
+    "chart": "Carta",
+    "bindingEnergy": "Energía de enlace",
+    "shells": "Capas",
+    "isobars": "Isóbaros",
+    "halfLives": "Vidas medias",
+    "decayChains": "Cadenas de desintegración"
   },
   "a11y": {
     "chart": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego es una carta de los 3386 nucleidos conocidos: el número de neutrones N crece de izquierda a derecha y el número de protones Z de abajo arriba. Cada casilla es un nucleido, coloreado según la propiedad elegida.",
+        "controlArea": "El área de control elige el coloreado, muestra los datos del nucleido seleccionado, abre un predictor de valores Q y un censo de nucleidos estables, y filtra por vida media.",
+        "interactionHint": "Enfoque la carta y use las flechas para avanzar un neutrón o un protón cada vez; más y menos hacen zoom."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Coloreado por {{coloring}}. Seleccionado {{label}}: {{z}} protones, {{n}} neutrones, {{decay}}.",
       "controls": {
-        "map": "Chart of nuclides",
-        "mapHelp": "Arrow keys move the selection one neutron or proton at a time. Plus and minus zoom.",
-        "selectionPattern": "Selected {{label}}: {{z}} protons, {{n}} neutrons, {{decay}}.",
-        "coloring": "Color by",
+        "map": "Carta de nucleidos",
+        "mapHelp": "Las flechas mueven la selección un neutrón o un protón cada vez. Más y menos hacen zoom.",
+        "selectionPattern": "Seleccionado {{label}}: {{z}} protones, {{n}} neutrones, {{decay}}.",
+        "coloring": "Colorear por",
         "zoom": "Zoom",
-        "halfLifeThreshold": "Half-life threshold"
+        "halfLifeThreshold": "Umbral de vida media"
       }
     },
     "bindingEnergy": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego representa la energía de enlace por nucleón frente al número másico para cada nucleido de masa conocida, o el residuo medida menos fórmula de masas frente a N o Z.",
+        "controlArea": "El área de control elige la gráfica, ajusta los cinco coeficientes de la fórmula de masas y calcula la energía liberada por fisión o fusión.",
+        "interactionHint": "Enfoque la gráfica y recorra los nucleidos con las flechas; busque los picos en los números mágicos en las gráficas de residuos."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Seleccionado {{label}}: energía de enlace por nucleón {{value}} MeV. La fórmula de masas se aparta de las masas medidas {{rms}} MeV en promedio.",
       "controls": {
-        "cursor": "Nuclide cursor",
-        "cursorHelp": "Left and right arrows step through mass numbers; up and down step through the isobars of one mass number."
+        "cursor": "Cursor de nucleido",
+        "cursorHelp": "Las flechas izquierda y derecha cambian de número másico; arriba y abajo recorren los isóbaros de un mismo número másico."
       }
     },
     "shells": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego representa las energías de separación de nucleones, una línea por elemento o por número de neutrones. La línea del nucleido seleccionado aparece resaltada.",
+        "controlArea": "El área de control elige la separación de uno o dos nucleones, neutrones o protones, y muestra el valor del nucleido seleccionado y la caída hasta el siguiente.",
+        "interactionHint": "Con las flechas, siga una línea y busque las caídas bruscas después de 8, 20, 28, 50, 82 y 126."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Seleccionado {{label}}: energía de separación {{value}} MeV.",
       "controls": {
-        "chart": "Separation-energy plot",
-        "chartHelp": "Arrow keys move between points: left and right along a line, up and down to the neighbouring lines."
+        "chart": "Gráfica de energías de separación",
+        "chartHelp": "Las flechas mueven entre puntos: izquierda y derecha a lo largo de una línea, arriba y abajo a las líneas vecinas."
       }
     },
     "isobars": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra los isóbaros de un número másico como exceso de masa frente al número de protones, con las parábolas de masa y una flecha para cada desintegración beta permitida.",
+        "controlArea": "El área de control elige el número másico y enumera los isóbaros beta-estables y las posibles desintegraciones doble beta.",
+        "interactionHint": "Cambie el número másico con el deslizador o los botones rápidos; compare números másicos pares e impares."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Número másico {{a}}. Beta-estables: {{stable}}.",
       "controls": {
-        "chart": "Isobar mass parabola",
-        "chartHelp": "Left and right arrows move to the neighbouring isobar."
+        "chart": "Parábola de masa de los isóbaros",
+        "chartHelp": "Las flechas izquierda y derecha pasan al isóbaro vecino."
       }
     },
     "halfLives": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego representa vidas medias: todas, frente al número másico o a la distancia al valle, las rectas de Geiger–Nuttall de los emisores alfa, o la regla de Sargent para los emisores beta.",
+        "controlArea": "El área de control elige la vista y la escala, y muestra los datos del nucleido seleccionado.",
+        "interactionHint": "Cambie a la escala lineal y vuelva para ver lo que revela una escala logarítmica."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Seleccionado {{label}}, vida media {{halfLife}}.",
       "controls": {
-        "chart": "Half-life plot",
-        "chartHelp": "Arrow keys move to the nearest nuclide in that direction."
+        "chart": "Gráfica de vidas medias",
+        "chartHelp": "Las flechas van al nucleido más cercano en esa dirección."
       }
     },
     "decayChains": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra una serie radiactiva natural sobre la carta de nucleidos y la actividad de cada miembro en el tiempo, o los rendimientos de fisión y la cadena beta de un número másico.",
+        "controlArea": "El área de control elige la serie, el tiempo transcurrido, o el núcleo que se fisiona y el número másico.",
+        "interactionHint": "Arrastre el deslizador de tiempo para ver cómo cada actividad de la cadena alcanza la del padre: el equilibrio secular."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Tiempo {{time}} desde la formación de la muestra, serie de {{parent}}.",
       "controls": {
-        "chainChart": "Decay chain",
-        "chainChartHelp": "Arrow keys move along the chain.",
-        "timeSlider": "Time",
-        "activityChart": "Activities over time",
-        "massNumberSlider": "Fission-product mass number"
+        "chainChart": "Cadena de desintegración",
+        "chainChartHelp": "Las flechas se mueven a lo largo de la cadena.",
+        "timeSlider": "Tiempo",
+        "massNumberSlider": "Número másico de los productos de fisión"
       }
     }
   },
   "preferences": {
     "title": "Simulación",
-    "exampleToggle": "Ejemplo de alternancia"
+    "showEquations": "Mostrar ecuaciones"
   },
   "common": {
     "quantities": {
       "z": "Z",
       "n": "N",
       "a": "A",
-      "halfLife": "Half-life",
-      "decay": "Decay",
+      "halfLife": "Vida media",
+      "decay": "Desintegración",
       "bindingPerNucleon": "B/A",
       "spinParity": "J<sup>π</sup>",
-      "abundance": "Abundance",
-      "massExcess": "Mass excess",
+      "abundance": "Abundancia",
+      "massExcess": "Exceso de masa",
       "separationNeutron": "S<sub>n</sub>",
       "separationProton": "S<sub>p</sub>",
-      "radius": "Charge radius",
-      "quadrupole": "Quadrupole moment"
+      "radius": "Radio de carga",
+      "quadrupole": "Momento cuadrupolar"
     },
     "units": {
       "mevPattern": "{{value}} MeV",
-      "kevPattern": "{{value}} keV",
-      "mevPerNucleonPattern": "{{value}} MeV per nucleon",
-      "percentPattern": "{{value}} %",
-      "fmPattern": "{{value}} fm",
-      "barnPattern": "{{value}} b"
+      "percentPattern": "{{value}} %"
     },
     "decayModes": {
-      "stable": "Stable",
+      "stable": "Estable",
       "betaMinus": "β⁻",
-      "betaPlus": "β⁺ / electron capture",
+      "betaPlus": "β⁺ / captura electrónica",
       "alpha": "α",
-      "fission": "Spontaneous fission",
-      "proton": "Proton emission",
-      "neutron": "Neutron emission",
-      "isomeric": "Isomeric transition",
-      "unknown": "Unknown"
+      "fission": "Fisión espontánea",
+      "proton": "Emisión de protón",
+      "neutron": "Emisión de neutrón",
+      "isomeric": "Transición isomérica",
+      "unknown": "Desconocido"
     },
     "card": {
       "znaPattern": "Z = {{z}}   N = {{n}}   A = {{a}}",
-      "stable": "stable",
+      "stable": "estable",
       "noData": "—",
-      "estimated": "Mass estimated from systematics",
-      "noDecayData": "no decay observed",
-      "branchPattern": "{{mode}} {{percent}} %"
+      "estimated": "Masa estimada por sistemática",
+      "noDecayData": "no se ha observado desintegración"
     },
     "axes": {
-      "neutronNumber": "Neutron number <i>N</i>",
-      "protonNumber": "Proton number <i>Z</i>",
-      "massNumber": "Mass number <i>A</i>",
-      "bindingPerNucleon": "Binding energy per nucleon <i>B</i>/<i>A</i> (MeV)",
-      "residual": "<i>B</i><sub>measured</sub> − <i>B</i><sub>formula</sub> (MeV)"
+      "neutronNumber": "Número de neutrones <i>N</i>",
+      "protonNumber": "Número de protones <i>Z</i>",
+      "massNumber": "Número másico <i>A</i>",
+      "bindingPerNucleon": "Energía de enlace por nucleón <i>B</i>/<i>A</i> (MeV)",
+      "residual": "<i>B</i><sub>medida</sub> − <i>B</i><sub>fórmula</sub> (MeV)"
     },
-    "magicNumbers": "Magic numbers",
-    "dataCreditPattern": "Data: IAEA Live Chart of Nuclides (ENSDF, NUBASE2020, AME2020), retrieved {{date}}"
+    "magicNumbers": "Números mágicos",
+    "dataCreditPattern": "Datos: OIEA, Live Chart of Nuclides (ENSDF, NUBASE2020, AME2020), obtenidos el {{date}}",
+    "keyboardHelp": {
+      "selectTitle": "Elegir un nucleido",
+      "moveSelection": "Mover la selección",
+      "mapTitle": "Carta de nucleidos",
+      "moveOnMap": "Avanzar un neutrón (izquierda, derecha) o un protón (arriba, abajo)",
+      "zoom": "Acercar o alejar"
+    }
   },
   "chart": {
-    "colorBy": "Color by",
+    "colorBy": "Colorear por",
     "colorings": {
-      "decayMode": "Decay mode",
-      "halfLife": "Half-life",
-      "bindingPerNucleon": "Binding energy per nucleon",
-      "residual": "Mass-formula residual",
-      "abundance": "Natural abundance",
-      "measurement": "Measured or estimated mass",
-      "quadrupole": "Quadrupole moment",
-      "spin": "Ground-state spin J"
+      "decayMode": "Modo de desintegración",
+      "halfLife": "Vida media",
+      "bindingPerNucleon": "Energía de enlace por nucleón",
+      "residual": "Residuo de la fórmula de masas",
+      "abundance": "Abundancia natural",
+      "measurement": "Masa medida o estimada",
+      "quadrupole": "Momento cuadrupolar",
+      "spin": "Espín J del estado fundamental"
     },
     "legend": {
-      "measured": "Measured",
-      "estimated": "Estimated (systematics)",
-      "noData": "No data",
-      "halfLifeMin": "10⁻²⁰ s",
-      "halfLifeMax": "10²⁵ s",
-      "moreBound": "more bound than the formula",
-      "lessBound": "less bound",
-      "prolate": "prolate (+)",
-      "oblate": "oblate (−)"
+      "measured": "Medida",
+      "estimated": "Estimada (sistemática)",
+      "noData": "Sin datos",
+      "moreBound": "más ligado que la fórmula",
+      "lessBound": "menos ligado",
+      "prolate": "alargado (+)",
+      "oblate": "achatado (−)"
     },
     "overlays": {
-      "nEqualsZ": "N = Z line",
-      "valley": "Valley of stability",
-      "dripLines": "Drip lines",
-      "markEstimated": "Mark estimated masses"
+      "nEqualsZ": "Recta N = Z",
+      "valley": "Valle de estabilidad",
+      "dripLines": "Líneas de goteo",
+      "markEstimated": "Marcar masas estimadas"
     },
     "filter": {
-      "enabled": "Only half-lives longer than",
-      "thresholdPattern": "{{value}}",
-      "ageOfEarth": "Age of the Earth"
+      "enabled": "Solo vidas medias mayores que",
+      "ageOfEarth": "Edad de la Tierra"
     },
     "zoom": {
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "showAll": "Show whole chart"
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "showAll": "Toda la carta"
     },
     "buttons": {
-      "qValues": "Q values…",
-      "census": "Stable census…"
+      "qValues": "Valores Q…",
+      "census": "Censo…"
     },
     "qValues": {
-      "titlePattern": "Which decays can {{label}} undergo?",
-      "intro": "A decay can happen only if its Q value is positive. Q comes from the atomic mass excesses Δ:<br>Q<sub>α</sub> = Δ(parent) − Δ(daughter) − Δ(<sup>4</sup>He)<br>Q<sub>β⁻</sub> = Q<sub>EC</sub> = Δ(parent) − Δ(daughter)<br>Q<sub>β⁺</sub> = Q<sub>EC</sub> − 2m<sub>e</sub>c<sup>2</sup> = Q<sub>EC</sub> − 1.022 MeV<br>Q<sub>p</sub> = −S<sub>p</sub> and Q<sub>n</sub> = −S<sub>n</sub>",
-      "channel": "Decay",
-      "daughter": "Daughter",
+      "titlePattern": "¿Qué desintegraciones puede sufrir {{label}}?",
+      "intro": "Una desintegración solo es posible si su valor Q es positivo. Q se obtiene de los excesos de masa atómicos Δ:<br>Q<sub>α</sub> = Δ(padre) − Δ(hijo) − Δ(<sup>4</sup>He)<br>Q<sub>β⁻</sub> = Q<sub>EC</sub> = Δ(padre) − Δ(hijo)<br>Q<sub>β⁺</sub> = Q<sub>EC</sub> − 2m<sub>e</sub>c<sup>2</sup> = Q<sub>EC</sub> − 1,022 MeV<br>Q<sub>p</sub> = −S<sub>p</sub> y Q<sub>n</sub> = −S<sub>n</sub>",
+      "channel": "Desintegración",
+      "daughter": "Núcleo hijo",
       "massExcess": "Δ (MeV)",
       "q": "Q (MeV)",
-      "verdict": "Verdict",
-      "reveal": "Show Q values",
-      "hide": "Hide Q values",
+      "verdict": "Veredicto",
+      "reveal": "Mostrar valores Q",
+      "hide": "Ocultar valores Q",
       "channels": {
         "alpha": "α",
         "betaMinus": "β⁻",
-        "electronCapture": "Electron capture",
+        "electronCapture": "Captura electrónica",
         "betaPlus": "β⁺",
-        "doubleBetaMinus": "Double β⁻",
-        "proton": "Proton emission",
-        "neutron": "Neutron emission"
+        "doubleBetaMinus": "Doble β⁻",
+        "proton": "Emisión de protón",
+        "neutron": "Emisión de neutrón"
       },
       "verdicts": {
-        "allowedSeen": "Allowed, observed",
-        "allowedUnseen": "Allowed, not observed",
-        "forbidden": "Forbidden (Q ≤ 0)",
-        "unknown": "Mass unknown"
+        "allowedSeen": "Permitida, observada",
+        "allowedUnseen": "Permitida, no observada",
+        "forbidden": "Prohibida (Q ≤ 0)",
+        "unknown": "Masa desconocida"
       },
-      "unseenNote": "\"Allowed, not observed\" means the decay is energetically possible but too slow to see: the α particle must tunnel, a β decay may be forbidden by spin, or a faster mode wins."
+      "unseenNote": "«Permitida, no observada» significa que la desintegración es energéticamente posible pero demasiado lenta para verse: la partícula α debe atravesar la barrera por efecto túnel, una desintegración β puede estar prohibida por el espín, o gana un modo más rápido."
     },
     "census": {
-      "title": "Stable nuclides by parity of Z and N",
-      "definition": "Count as stable:",
-      "ensdf": "Never seen to decay",
-      "effective": "Half-life over 10¹⁵ years too",
-      "evenZ": "Z even",
-      "oddZ": "Z odd",
-      "evenN": "N even",
-      "oddN": "N odd",
+      "title": "Nucleidos estables según la paridad de Z y N",
+      "definition": "Contar como estable:",
+      "ensdf": "Nunca se ha visto desintegrarse",
+      "effective": "También vida media de más de 10¹⁵ años",
+      "evenZ": "Z par",
+      "oddZ": "Z impar",
+      "evenN": "N par",
+      "oddN": "N impar",
       "totalPattern": "Total: {{total}}",
-      "oddOddPattern": "Stable odd–odd: {{list}}",
-      "isomerNote": "Ta-180m, an excited state that has never been seen to decay, is the one odd–odd isomer found in nature."
+      "oddOddPattern": "Impar–impar estables: {{list}}",
+      "isomerNote": "El Ta-180m, un estado excitado que nunca se ha visto desintegrarse, es el único isómero impar–impar presente en la naturaleza."
     }
   },
   "bindingEnergy": {
     "view": {
-      "curve": "B/A against A",
-      "residualN": "Residual against N",
-      "residualZ": "Residual against Z"
+      "curve": "B/A frente a A",
+      "residualN": "Residuo frente a N",
+      "residualZ": "Residuo frente a Z"
     },
-    "zoomPeak": "Zoom on the peak",
-    "showFormula": "Show formula curve",
+    "zoomPeak": "Zoom en el máximo",
+    "showFormula": "Curva de la fórmula",
     "formula": {
-      "title": "Mass formula (MeV)",
-      "volume": "Volume a<sub>V</sub>",
-      "surface": "Surface a<sub>S</sub>",
+      "title": "Fórmula de masas (MeV)",
+      "volume": "Volumen a<sub>V</sub>",
+      "surface": "Superficie a<sub>S</sub>",
       "coulomb": "Coulomb a<sub>C</sub>",
-      "asymmetry": "Asymmetry a<sub>A</sub>",
-      "pairing": "Pairing a<sub>P</sub>",
-      "fit": "Fit to measured masses",
-      "textbook": "Textbook values",
-      "rmsPattern": "RMS residual {{value}} MeV over {{count}} nuclides",
+      "asymmetry": "Asimetría a<sub>A</sub>",
+      "pairing": "Apareamiento a<sub>P</sub>",
+      "fit": "Ajustar a las masas medidas",
+      "textbook": "Valores del libro",
+      "rmsPattern": "Residuo cuadrático medio {{value}} MeV en {{count}} nucleidos",
       "equation": "<i>B</i> = a<sub>V</sub><i>A</i> − a<sub>S</sub><i>A</i><sup>2/3</sup> − a<sub>C</sub><i>Z</i>(<i>Z</i>−1)/<i>A</i><sup>1/3</sup> − a<sub>A</sub>(<i>A</i>−2<i>Z</i>)<sup>2</sup>/<i>A</i> ± a<sub>P</sub><i>A</i><sup>−3/4</sup>"
     },
     "energy": {
-      "title": "Energy release",
-      "fission": "Fission",
-      "fusion": "Fusion",
-      "fragmentA": "Light fragment A",
+      "title": "Energía liberada",
+      "fission": "Fisión",
+      "fusion": "Fusión",
+      "fragmentA": "A del fragmento ligero",
       "fissionPattern": "<sup>235</sup>U + n → {{light}} + {{heavy}} + 2n",
-      "estimatePattern": "From the curve: Δ(B/A) ≈ {{gain}} MeV × {{count}} nucleons ≈ {{energy}} MeV",
-      "qPattern": "From the masses: Q = {{value}} MeV",
-      "bindingGainPattern": "Gain in binding energy: {{value}} MeV",
-      "reaction": "Reaction"
+      "estimatePattern": "Según la curva: Δ(B/A) ≈ {{gain}} MeV × {{count}} nucleones ≈ {{energy}} MeV",
+      "qPattern": "Según las masas: Q = {{value}} MeV",
+      "bindingGainPattern": "Ganancia de energía de enlace: {{value}} MeV",
+      "reaction": "Reacción"
     },
     "cursor": {
       "readoutPattern": "{{label}}: B/A = {{value}} MeV",
-      "residualPattern": "{{label}}: measured − formula = {{value}} MeV"
+      "residualPattern": "{{label}}: medida − fórmula = {{value}} MeV"
     },
-    "noA5A8": "No stable nucleus with A = 5 or A = 8",
-    "viewTitle": "Plot"
+    "noA5A8": "Ningún núcleo estable con A = 5 ni A = 8",
+    "viewTitle": "Gráfica"
   },
   "shells": {
-    "kindTitle": "Plot",
+    "kindTitle": "Gráfica",
     "kinds": {
-      "twoNeutron": "Two-neutron separation S<sub>2n</sub>",
-      "oneNeutron": "One-neutron separation S<sub>n</sub>",
-      "twoProton": "Two-proton separation S<sub>2p</sub>",
-      "oneProton": "One-proton separation S<sub>p</sub>"
+      "twoNeutron": "Separación de dos neutrones S<sub>2n</sub>",
+      "oneNeutron": "Separación de un neutrón S<sub>n</sub>",
+      "twoProton": "Separación de dos protones S<sub>2p</sub>",
+      "oneProton": "Separación de un protón S<sub>p</sub>"
     },
     "axes": {
       "twoNeutron": "S<sub>2n</sub> (MeV)",
@@ -282,117 +280,117 @@
       "twoProton": "S<sub>2p</sub> (MeV)",
       "oneProton": "S<sub>p</sub> (MeV)"
     },
-    "showEstimated": "Include estimated masses",
-    "linePatternIsotopes": "Highlighted: {{name}} isotopes (Z = {{z}})",
-    "linePatternIsotones": "Highlighted: isotones with N = {{n}}",
+    "showEstimated": "Incluir masas estimadas",
+    "linePatternIsotopes": "Resaltado: isótopos de {{name}} (Z = {{z}})",
+    "linePatternIsotones": "Resaltado: isótonos con N = {{n}}",
     "valuePattern": "{{label}}: {{value}} MeV",
-    "dropPattern": "Next one ({{next}}): {{change}} MeV",
-    "unbound": "Below zero: unbound (beyond the drip line)",
-    "hint": "Look for the sudden drops just after N or Z = 8, 20, 28, 50, 82 and 126."
+    "dropPattern": "Siguiente ({{next}}): {{change}} MeV",
+    "unbound": "Bajo cero: no ligado (más allá de la línea de goteo)",
+    "hint": "Busque las caídas bruscas justo después de N o Z = 8, 20, 28, 50, 82 y 126."
   },
   "isobars": {
-    "massNumber": "Mass number A",
-    "quickPicks": "Try:",
-    "yAxis": "Mass excess above the lowest isobar (MeV)",
-    "showParabolas": "Mass parabolas",
-    "showArrows": "Allowed β decays",
+    "massNumber": "Número másico A",
+    "quickPicks": "Pruebe:",
+    "yAxis": "Exceso de masa sobre el isóbaro más bajo (MeV)",
+    "showParabolas": "Parábolas de masa",
+    "showArrows": "Desintegraciones β permitidas",
     "legend": {
-      "evenEven": "even Z, even N",
-      "oddOdd": "odd Z, odd N",
-      "oddA": "odd A",
-      "stable": "stable",
+      "evenEven": "Z par, N par",
+      "oddOdd": "Z impar, N impar",
+      "oddA": "A impar",
+      "stable": "estable",
       "betaMinus": "β⁻",
-      "electronCapture": "β⁺ / EC",
-      "doubleBeta": "double β"
+      "electronCapture": "β⁺ / CE",
+      "doubleBeta": "doble β"
     },
-    "stablePattern": "β-stable: {{list}}",
-    "doubleBetaPattern": "Double β only: {{list}}",
-    "mattauch": "Mattauch's rule: two neighbouring isobars are never both stable.",
-    "oddAHint": "Odd A: one parabola, so usually one stable isobar.",
-    "evenAHint": "Even A: pairing splits the isobars onto two parabolas, so there can be two or three stable isobars, never side by side.",
-    "none": "none"
+    "stablePattern": "Beta-estables: {{list}}",
+    "doubleBetaPattern": "Solo doble β: {{list}}",
+    "mattauch": "Regla de Mattauch: dos isóbaros vecinos nunca son ambos estables.",
+    "oddAHint": "A impar: una sola parábola, así que normalmente un solo isóbaro estable.",
+    "evenAHint": "A par: el apareamiento reparte los isóbaros en dos parábolas; puede haber dos o tres isóbaros estables, nunca vecinos.",
+    "none": "ninguno"
   },
   "halfLives": {
-    "viewTitle": "View",
+    "viewTitle": "Vista",
     "views": {
-      "explorer": "All half-lives",
-      "geigerNuttall": "Geiger–Nuttall (α decay)",
-      "sargent": "Sargent (β⁻ decay)"
+      "explorer": "Todas las vidas medias",
+      "geigerNuttall": "Geiger–Nuttall (desintegración α)",
+      "sargent": "Sargent (desintegración β⁻)"
     },
-    "xAxisTitle": "Plot against",
+    "xAxisTitle": "Frente a",
     "xAxes": {
-      "massNumber": "Mass number A",
-      "valleyDistance": "Distance from the valley"
+      "massNumber": "Número másico A",
+      "valleyDistance": "Distancia al valle"
     },
-    "logScale": "Logarithmic scale",
-    "earthAge": "Age of the Earth",
-    "notable": "Notable nuclides",
-    "fits": "Line for each element",
-    "comparison": "Compare Po-212 and Th-232",
+    "logScale": "Escala logarítmica",
+    "earthAge": "Edad de la Tierra",
+    "notable": "Nucleidos notables",
+    "fits": "Una recta por elemento",
+    "comparison": "Comparar Po-212 y Th-232",
     "axes": {
-      "halfLifeLog": "Half-life (s)",
-      "halfLifeLinear": "Half-life (billions of years)",
-      "valleyDistance": "Z − Z<sub>valley</sub>(A)   (← neutron-rich · proton-rich →)",
+      "halfLifeLog": "Vida media (s)",
+      "halfLifeLinear": "Vida media (miles de millones de años)",
+      "valleyDistance": "Z − Z<sub>valle</sub>(A)   (← rico en neutrones · rico en protones →)",
       "qAlphaInverseRoot": "Q<sub>α</sub><sup>−1/2</sup> (MeV<sup>−1/2</sup>)",
-      "alphaHalfLife": "Partial α half-life (s)",
+      "alphaHalfLife": "Vida media α parcial (s)",
       "qBeta": "Q<sub>β⁻</sub> (MeV)",
-      "betaHalfLife": "Partial β⁻ half-life (s)"
+      "betaHalfLife": "Vida media β⁻ parcial (s)"
     },
     "guides": {
-      "second": "1 second",
-      "year": "1 year",
-      "earth": "Age of the Earth (4.5 billion years)",
-      "universe": "Age of the Universe"
+      "second": "1 segundo",
+      "year": "1 año",
+      "earth": "Edad de la Tierra (4500 millones de años)",
+      "universe": "Edad del Universo"
     },
-    "linearNote": "On a linear scale, every half-life shorter than about 100 million years sits on the axis.",
-    "survivorsPattern": "{{count}} radioactive nuclides outlive the Earth's age.",
-    "fitPattern": "{{element}} line: slope {{slope}}, R² = {{r2}} ({{count}} nuclides)",
-    "noFit": "Select an even–even α emitter to see its element's line.",
-    "comparisonPattern": "Q<sub>α</sub> rises by ×{{qRatio}}, from {{qLow}} to {{qHigh}} MeV; t½ falls by {{orders}} orders of magnitude.",
-    "sargentPattern": "Fitted slope {{slope}} (Sargent's rule: about −5) over {{count}} β⁻ emitters. Points far above the line are \"forbidden\" decays, slowed by a large change in spin."
+    "linearNote": "En escala lineal, toda vida media menor de unos 100 millones de años queda sobre el eje.",
+    "survivorsPattern": "{{count}} nucleidos radiactivos tienen una vida media mayor que la edad de la Tierra.",
+    "fitPattern": "Recta de {{element}}: pendiente {{slope}}, R² = {{r2}} ({{count}} nucleidos)",
+    "noFit": "Seleccione un emisor α par–par para ver la recta de su elemento.",
+    "comparisonPattern": "Q<sub>α</sub> se multiplica por {{qRatio}}, de {{qLow}} a {{qHigh}} MeV; t½ disminuye {{orders}} órdenes de magnitud.",
+    "sargentPattern": "Pendiente ajustada {{slope}} (regla de Sargent: unos −5) en {{count}} emisores β⁻. Los puntos muy por encima de la recta son desintegraciones «prohibidas», frenadas por un gran cambio de espín."
   },
   "decayChains": {
-    "modeTitle": "Show",
+    "modeTitle": "Mostrar",
     "modes": {
-      "series": "Natural decay series",
-      "fission": "Fission products"
+      "series": "Series radiactivas naturales",
+      "fission": "Productos de fisión"
     },
-    "seriesTitle": "Series",
+    "seriesTitle": "Serie",
     "families": {
-      "family0": "4n (thorium series)",
-      "family1": "4n + 1 (neptunium series, extinct)",
-      "family2": "4n + 2 (uranium series)",
-      "family3": "4n + 3 (actinium series)"
+      "family0": "4n (serie del torio)",
+      "family1": "4n + 1 (serie del neptunio, extinta)",
+      "family2": "4n + 2 (serie del uranio)",
+      "family3": "4n + 3 (serie del actinio)"
     },
-    "familyPattern": "A mod 4 = {{remainder}}: every member has A = {{family}}",
-    "time": "Time since the sample formed",
+    "familyPattern": "A mod 4 = {{remainder}}: cada miembro tiene A = {{family}}",
+    "time": "Tiempo desde la formación de la muestra",
     "timePattern": "t = {{time}}",
-    "clockPattern": "{{end}} / {{parent}} = {{ratio}}  →  age = ln(1 + ratio)/λ = {{age}}",
-    "equilibrium": "After many half-lives of the longest-lived daughter, every member decays at the parent's rate: secular equilibrium.",
-    "activityAxis": "Activity / parent's starting activity",
-    "timeAxis": "Time (s)",
-    "chartTitle": "The chain on the chart of nuclides: α steps go down-left, β⁻ steps up-left",
-    "fissionSystemTitle": "Fissioning nucleus",
+    "clockPattern": "{{end}} / {{parent}} = {{ratio}}  →  edad = ln(1 + cociente)/λ = {{age}}",
+    "equilibrium": "Tras muchas vidas medias del hijo más longevo, cada miembro se desintegra al ritmo del padre: el equilibrio secular.",
+    "activityAxis": "Actividad / actividad inicial del padre",
+    "timeAxis": "Tiempo (s)",
+    "chartTitle": "La cadena en la carta de nucleidos: los pasos α van abajo a la izquierda, los pasos β⁻ arriba a la izquierda",
+    "fissionSystemTitle": "Núcleo que se fisiona",
     "systems": {
-      "u235": "<sup>235</sup>U + thermal n",
-      "pu239": "<sup>239</sup>Pu + thermal n",
-      "u238": "<sup>238</sup>U + fast n"
+      "u235": "<sup>235</sup>U + n térmico",
+      "pu239": "<sup>239</sup>Pu + n térmico",
+      "u238": "<sup>238</sup>U + n rápido"
     },
-    "yieldAxis": "Yield per fission (%)",
-    "massNumber": "Mass number A",
-    "quickPicks": "Try:",
-    "chainTitlePattern": "β⁻ chain at A = {{a}}: chain yield {{yield}} %",
-    "delayedNeutron": "emits delayed neutrons",
+    "yieldAxis": "Rendimiento por fisión (%)",
+    "massNumber": "Número másico A",
+    "quickPicks": "Pruebe:",
+    "chainTitlePattern": "Cadena β⁻ en A = {{a}}: rendimiento de la cadena {{yield}} %",
+    "delayedNeutron": "emite neutrones retardados",
     "notes": {
-      "sr90": "Sr-90 (29 y) settles in bone.",
-      "i131": "I-131 (8 d) collects in the thyroid.",
-      "xe135": "Xe-135 absorbs neutrons strongly: a reactor poison.",
-      "cs137": "Cs-137 (30 y) dominates long-term contamination.",
-      "br87": "Br-87 is a delayed-neutron precursor; delayed neutrons make reactors controllable."
+      "sr90": "El Sr-90 (29 a) se fija en los huesos.",
+      "i131": "El I-131 (8 d) se acumula en la tiroides.",
+      "xe135": "El Xe-135 absorbe neutrones con fuerza: un veneno de reactores.",
+      "cs137": "El Cs-137 (30 a) domina la contaminación a largo plazo.",
+      "br87": "El Br-87 es un precursor de neutrones retardados; estos neutrones hacen controlables los reactores."
     },
     "table": {
-      "nuclide": "Nuclide",
-      "independent": "Made directly (%)"
+      "nuclide": "Nucleido",
+      "independent": "Producido directamente (%)"
     }
   }
 }

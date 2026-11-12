@@ -15,18 +15,18 @@ import NuclideChartNamespace from "../NuclideChartNamespace.js";
 import nuclideChartQueryParameters from "./nuclideChartQueryParameters.js";
 
 export class NuclideChartPreferencesModel {
-  /** Example preference; initial value comes from the `exampleToggle` query parameter. */
-  public readonly exampleToggleProperty: BooleanProperty;
+  /** Whether equations are shown; initial value comes from the `showEquations` query parameter. */
+  public readonly showEquationsProperty: BooleanProperty;
 
   public constructor(tandem?: Tandem) {
-    this.exampleToggleProperty = new BooleanProperty(
-      nuclideChartQueryParameters.exampleToggle,
-      tandem ? { tandem: tandem.createTandem("exampleToggleProperty") } : undefined,
+    this.showEquationsProperty = new BooleanProperty(
+      nuclideChartQueryParameters.showEquations,
+      tandem ? { tandem: tandem.createTandem("showEquationsProperty") } : undefined,
     );
   }
 
   public reset(): void {
-    this.exampleToggleProperty.reset();
+    this.showEquationsProperty.reset();
   }
 }
 

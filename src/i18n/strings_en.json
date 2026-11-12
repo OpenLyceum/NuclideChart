@@ -11,11 +11,11 @@
   "a11y": {
     "chart": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area is a chart of all 3,386 known nuclides: neutron number N runs left to right and proton number Z bottom to top. Each square is one nuclide, colored by the chosen property.",
+        "controlArea": "The control area chooses the coloring, shows the selected nuclide's data, opens a Q-value predictor and a census of stable nuclides, and filters by half-life.",
+        "interactionHint": "Focus the chart and use the arrow keys to move one neutron or one proton at a time; plus and minus zoom."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Colored by {{coloring}}. Selected {{label}}: {{z}} protons, {{n}} neutrons, {{decay}}.",
       "controls": {
         "map": "Chart of nuclides",
         "mapHelp": "Arrow keys move the selection one neutron or proton at a time. Plus and minus zoom.",
@@ -27,11 +27,11 @@
     },
     "bindingEnergy": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area plots binding energy per nucleon against mass number for every nuclide with a known mass, or the residual measured minus mass formula against N or Z.",
+        "controlArea": "The control area chooses the plot, adjusts or fits the five mass-formula coefficients, and computes the energy released by fission or fusion.",
+        "interactionHint": "Focus the plot and use the arrow keys to step through nuclides; look for the bumps at the magic numbers in the residual plots."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Selected {{label}}: binding energy per nucleon {{value}} MeV. The mass formula misses the measured masses by {{rms}} MeV on average.",
       "controls": {
         "cursor": "Nuclide cursor",
         "cursorHelp": "Left and right arrows step through mass numbers; up and down step through the isobars of one mass number."
@@ -39,11 +39,11 @@
     },
     "shells": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area plots nucleon separation energies, one line per element or per neutron number. The line through the selected nuclide is highlighted.",
+        "controlArea": "The control area chooses one- or two-nucleon, neutron or proton separation, and shows the selected nuclide's value and the drop to the next one.",
+        "interactionHint": "Use the arrow keys on the plot to move along a line and look for sudden drops after 8, 20, 28, 50, 82 and 126."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Selected {{label}}: separation energy {{value}} MeV.",
       "controls": {
         "chart": "Separation-energy plot",
         "chartHelp": "Arrow keys move between points: left and right along a line, up and down to the neighbouring lines."
@@ -51,11 +51,11 @@
     },
     "isobars": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows the isobars of one mass number as mass excess against proton number, with the mass parabolas and arrows for every allowed beta decay.",
+        "controlArea": "The control area chooses the mass number and lists the beta-stable isobars and any double-beta decays.",
+        "interactionHint": "Change the mass number with the slider or the quick-pick buttons; compare odd and even mass numbers."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Mass number {{a}}. Beta-stable: {{stable}}.",
       "controls": {
         "chart": "Isobar mass parabola",
         "chartHelp": "Left and right arrows move to the neighbouring isobar."
@@ -63,11 +63,11 @@
     },
     "halfLives": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area plots half-lives: all of them against mass number or distance from the valley, the Geiger–Nuttall lines of alpha emitters, or Sargent's rule for beta emitters.",
+        "controlArea": "The control area chooses the view and the scale, and shows the selected nuclide's data.",
+        "interactionHint": "Switch to the linear scale and back to see what a logarithmic scale reveals."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Selected {{label}}, half-life {{halfLife}}.",
       "controls": {
         "chart": "Half-life plot",
         "chartHelp": "Arrow keys move to the nearest nuclide in that direction."
@@ -75,23 +75,22 @@
     },
     "decayChains": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a natural decay series on the chart of nuclides and the activity of each member over time, or the fission-product yields and the beta chain along one mass number.",
+        "controlArea": "The control area chooses the series, the elapsed time, or the fissioning nucleus and mass number.",
+        "interactionHint": "Drag the time slider to watch every activity in the chain rise to the parent's: secular equilibrium."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Time {{time}} after the sample formed, in the {{parent}} series.",
       "controls": {
         "chainChart": "Decay chain",
         "chainChartHelp": "Arrow keys move along the chain.",
         "timeSlider": "Time",
-        "activityChart": "Activities over time",
         "massNumberSlider": "Fission-product mass number"
       }
     }
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Example Toggle"
+    "showEquations": "Show equations"
   },
   "common": {
     "quantities": {
@@ -111,11 +110,7 @@
     },
     "units": {
       "mevPattern": "{{value}} MeV",
-      "kevPattern": "{{value}} keV",
-      "mevPerNucleonPattern": "{{value}} MeV per nucleon",
-      "percentPattern": "{{value}} %",
-      "fmPattern": "{{value}} fm",
-      "barnPattern": "{{value}} b"
+      "percentPattern": "{{value}} %"
     },
     "decayModes": {
       "stable": "Stable",
@@ -133,8 +128,7 @@
       "stable": "stable",
       "noData": "—",
       "estimated": "Mass estimated from systematics",
-      "noDecayData": "no decay observed",
-      "branchPattern": "{{mode}} {{percent}} %"
+      "noDecayData": "no decay observed"
     },
     "axes": {
       "neutronNumber": "Neutron number <i>N</i>",
@@ -144,7 +138,14 @@
       "residual": "<i>B</i><sub>measured</sub> − <i>B</i><sub>formula</sub> (MeV)"
     },
     "magicNumbers": "Magic numbers",
-    "dataCreditPattern": "Data: IAEA Live Chart of Nuclides (ENSDF, NUBASE2020, AME2020), retrieved {{date}}"
+    "dataCreditPattern": "Data: IAEA Live Chart of Nuclides (ENSDF, NUBASE2020, AME2020), retrieved {{date}}",
+    "keyboardHelp": {
+      "selectTitle": "Choose a nuclide",
+      "moveSelection": "Move the selection",
+      "mapTitle": "Chart of nuclides",
+      "moveOnMap": "Move one neutron (left, right) or one proton (up, down)",
+      "zoom": "Zoom in or out"
+    }
   },
   "chart": {
     "colorBy": "Color by",
@@ -162,8 +163,6 @@
       "measured": "Measured",
       "estimated": "Estimated (systematics)",
       "noData": "No data",
-      "halfLifeMin": "10⁻²⁰ s",
-      "halfLifeMax": "10²⁵ s",
       "moreBound": "more bound than the formula",
       "lessBound": "less bound",
       "prolate": "prolate (+)",
@@ -177,7 +176,6 @@
     },
     "filter": {
       "enabled": "Only half-lives longer than",
-      "thresholdPattern": "{{value}}",
       "ageOfEarth": "Age of the Earth"
     },
     "zoom": {

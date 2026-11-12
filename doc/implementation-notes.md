@@ -1,135 +1,107 @@
-# Implementation Notes - Nuclide Chart
+# Implementation Notes — Nuclide Chart
 
-Developer-facing notes on the **SceneryStackTemplate** scaffold. **Replace and expand this file when
-forking** to describe your sim's real architecture (see Stern Gerlach or Light Propagation for
-target quality). Until then, this documents what the template provides out of the box.
+Nuclide Chart is an original six-screen SceneryStack simulation. The nuclear model and data sources
+are documented in [model.md](model.md); acknowledgements are in [CREDITS.md](../CREDITS.md).
 
-## Architecture Overview
+## Bootstrap and screen ownership
 
-SceneryStackTemplate is the fleet-canonical starting point for new SceneryStack sims (one or N screens).
-It demonstrates Model–View separation, color profiles, localization, reset behavior, accessibility
-reference wiring, and reusable common components — **without** domain physics.
+The first import in `src/main.ts` is `./brand.js`. Its dependency chain initializes the framework,
+assertions, splash screen and brand before constructing the simulation. Keep this order.
 
-```
-main.ts
-  └─ ChartScreen             (Screen<ChartModel, ChartScreenView>)
-       ├─ ChartModel          state + logic  (src/chart/model/)  ← stub: add physics here
-       └─ ChartScreenView     visuals        (src/chart/view/)
-            ├─ ChartScreenSummaryContent     (PDOM overview — reference a11y pattern)
-            └─ ChartKeyboardHelpContent      (keyboard help dialog)
+`main.ts` constructs one `SharedModel` and passes it to Chart, Binding Energy, Shells, Isobars,
+Half-Lives and Decay Chains, in that order. Each screen owns a model, view, screen summary and
+keyboard-help class in its corresponding `src/<screen>/` folder. Screen icons are Scenery nodes
+created by `src/common/NuclideChartScreenIcons.ts` for both the home screen and navigation bar.
 
-src/common/
-  ├─ NuclideChartPanel.ts           pre-themed panel (uses NuclideChartColors)
-  ├─ NuclideChartButtonOptions.ts   flat button / combo-box option bundles
-  └─ TimeModel.ts          composable play/pause + elapsed time
+`SharedModel` holds the selected nuclide (initially Fe-56), magic-number visibility, and the stability
+definition. Selecting a nuclide persists across screens. Every screen's Reset All also resets this
+shared state. Screen models implement `TModel`; their `step()` methods do not advance physical time.
+The Decay Chains time slider evaluates the Bateman solution at the requested time directly.
 
-src/preferences/
-  ├─ NuclideChartPreferencesModel   sim-specific pref state
-  ├─ NuclideChartPreferencesNode    pref UI in Preferences → Simulation
-  └─ nuclideChartQueryParameters    QueryStringMachine declarations
-```
+## Frozen nuclear data
 
-Data flows Model → View through AXON `Property` objects (`.link()` / `.lazyLink()`). The view never
-integrates physics; the model never imports scenery.
+`NuclideTable.ts` decodes the bundled `nuclides.json` and `isomers.json` once. Its exported
+`NUCLIDE_TABLE` supports lookup by Z and N, nuclide name, isobar and isotope. Ground states are the
+basis of the chart; isomers are used when tracing branches such as Th-234 through Pa-234m.
+`FissionYields.ts` decodes the separate independent and cumulative fission-yield tables.
 
-## Forking checklist
+The simulation makes no IAEA requests at runtime. Refresh the snapshot explicitly with
+`npm run fetch-data`; `FETCH_CACHE_DIR` can preserve downloaded responses between attempts.
+The fetcher uses a browser-like User-Agent and decodes the API's ISO-8859-1 CSV. Commit refreshed
+JSON together with any required documentation and expectation changes.
 
-### Automated rename + scaffold (recommended)
+Snapshot energies are keV, half-lives are seconds and abundances are percentages. The mass formula
+uses MeV, so callers convert at that boundary. Half-lives come from `half_life_sec`, never `unit_hl`,
+which can describe a resonance width. Estimated masses retain their `isSystematic` flag and are
+excluded from fits by default. Unknown values remain missing rather than becoming zero.
 
-```sh
-npm run rename -- --id my-sim --name "My Simulation"
-npm run scaffold-screens -- --screens Intro,Lab   # or omit --screens for one screen
-npm run check
-```
+## Scientific calculations
 
-Or from the workspace: `Baton/scripts/create-sim.sh --repo MySim --name "My Simulation"`.
+Pure calculation modules live in `src/common/model/` and are shared by the screen models:
 
-`scripts/rename-sim.ts` updates sim-level identifiers (package id, Colors, Preferences).
-`scripts/scaffold-screens.ts` emits fleet-named screen folders and wires main/strings/icons.
-
-### Manual steps (after rename/scaffold or if skipping the scripts)
-
-1. **`doc/model.md`** — educator physics (equations, ranges, simplifications).
-2. **`doc/implementation-notes.md`** — this file, rewritten for your architecture.
-3. **Screen model(s)** — real Properties, `step(dt)`, `reset()`; compose `TimeModel` if animated.
-4. **Screen view(s)** — play area + controls; wire `ResetAllButton` to `model.reset()`.
-5. **`*Colors.ts`** — sim palette (default + projector profiles).
-6. **Locale JSON** — title, strings, `a11y` keys; register locales in `init.ts`.
-7. **`public/icons/icon.svg`** → `npm run icons`; align theme color in `index.html` / vite config.
-8. **`tests/setup.ts`** — `init({ name: … })` must match `package.json` name after rename.
-9. **`AGENTS.md`** — sim-specific file map and pitfalls for AI assistants.
-
-## Common components (keep when forking)
-
-### NuclideChartPanel
-
-Every control panel should use `NuclideChartPanel` so projector-mode switching is automatic:
-
-```typescript
-import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
-const panel = new NuclideChartPanel(content);
-const panelWide = new NuclideChartPanel(content, { xMargin: 20 });
-```
-
-### TimeModel
-
-Compose into your screen model for animation (do not subclass `TimeModel`):
-
-```typescript
-export class MyModel implements TModel {
-  public readonly timer = new TimeModel();  // pass true to auto-play on startup
-
-  public step(dt: number): void {
-    this.timer.step(dt);
-    // physics uses this.timer.timeProperty.value
-  }
-  public reset(): void { this.timer.reset(); /* restore initial state */ }
-}
-```
-
-Wire `TimeControlNode` to `model.timer.isPlayingProperty` in the view.
-
-### NuclideChartButtonOptions
-
-Spread flat button options into every push/round button and `TimeControlNode` (see `AGENTS.md`).
-Use `NUCLIDE_CHART_COMBO_BOX_OPTIONS` + `LIGHT_SURFACE_TEXT_FILL` for light control surfaces on dark panels.
-
-## Accessibility (reference implementation)
-
-The template is the **canonical OpenLyceum a11y reference**:
-
-- PDOM `accessibleName` on interactive nodes (prefer live `StringProperty`s).
-- `ChartScreenSummaryContent` with a live `currentDetailsContent` `DerivedProperty` over model state.
-- Explicit `pdomOrder` + `ChartKeyboardHelpContent`.
-- Strings under `a11y` in locale JSON → `StringManager.getChartA11yStrings()`.
-
-Full checklist: [Baton/ACCESSIBILITY.md](https://github.com/OpenLyceum/Baton/blob/main/ACCESSIBILITY.md).
-
-## Testing (fleet layout — keep when forking)
-
-| Path | Purpose |
+| Module | Responsibility |
 |---|---|
-| `vitest.config.ts` | `happy-dom`; `setupFiles: ["./tests/setup.ts"]`; `execArgv: ["--expose-gc"]` |
-| `tests/setup.ts` | Canvas/AudioContext mocks + `init()` before SceneryStack imports |
-| `tests/TimeModel.test.ts` | **Replace** with real model/physics tests mirroring `src/` |
-| `tests/memory-leak.test.ts` | WeakRef + `forceGC` dispose regression |
-| `tests/fuzz/fuzz.spec.ts` | Optional Playwright smoke via `?fuzz` |
+| `massFormula.ts` | Individual SEMF terms, valley of stability and least-squares coefficients |
+| `qValues.ts` | Q values from atomic mass excesses and allowed/observed decay verdicts |
+| `separationEnergies.ts` | One- and two-nucleon separation energies and particle-bound checks |
+| `isobars.ts` | Mass-parabola fitting, beta and double-beta transitions, Mattauch checks |
+| `halfLifeTrends.ts` | Geiger–Nuttall and Sargent points and fits |
+| `energyRelease.ts` | Fission and fusion Q values and binding-curve estimates |
+| `decayChains.ts` | Branch-aware graph tracing, including delayed particles and isomers |
+| `bateman.ts` | Exact branching activities as sums of exponentials |
 
-Run `npm test`. Expand `memory-leak.test.ts` when adding runtime-created nodes or Property links.
+The stability definition is shared by the map colours, census and isobar markers. `ensdf` means
+no observed decay; `effective` additionally counts half-lives above 10¹⁵ years. Branch tracing
+includes branches of at least 0.01 percent and subtracts delayed-particle sub-branches from their
+inclusive beta branches. These choices affect scientific answers, so preserve them when changing
+presentation code.
 
-## Multi-screen simulations
+## Rendering and reactive state
 
-Default is single-screen. To add screens, see **`doc/multi-screen.md`**: per-screen folders mirroring
-`src/chart/`, `StringManager` screen-name getters, optional shared root model, a shared
-`src/common/NuclideChartScreenIcons.ts` module (`create{Screen}Icon()` factories wired as
-`homeScreenIcon` / `navigationBarIcon`), and register all screens in `main.ts`.
+Views follow model AXON Properties using links and DerivedProperties. Scientific calculations
+remain in model modules. `NuclideMapNode` paints the full N–Z map with a CanvasNode; it handles pan,
+zoom, selection, minimap, overlays and labels. `NuclideScatterNode` supplies shared scatter axes,
+selection and directional keyboard navigation. Specialized chain and activity nodes render the
+natural series without embedding an independent list of chain members.
 
-## PWA
+Chart frames are `pickable: false`: a stroke-only Rectangle otherwise intercepts clicks throughout
+its interior. Transparent filled hit rectangles provide intentional pointer targets. Dependencies
+passed to `Multilink.multilinkAny` must be unique, including shared colour Properties.
 
-After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
+`NuclideChartColors.ts` defines default and projector colours. Canvas views read these Properties
+when repainting. Data palettes and black/white contrast choices are documented exceptions in
+`AGENTS.md`. Use `NuclideChartPanel` and `NuclideChartButtonOptions` for consistent control surfaces.
 
-## Known template stubs (remove when forking)
+## Localization, preferences and accessibility
 
-- `ChartModel.step()` / `reset()` — empty placeholders until you add physics.
-- Placeholder play-area content in `ChartScreenView` — replace with real UI.
-- `tests/TimeModel.test.ts` — sample only; add tests for your model under `tests/`.
+`StringManager.ts` exposes English, French and Spanish string Properties with key-parity checks.
+Screen labels, controls, help and live descriptions follow locale changes. Layout uses bounded
+content regions and text width limits so longer translations fit.
+
+`NuclideChartPreferencesModel` owns the equation-visibility preference, initialized by the public
+`showEquations` query parameter. Its control lives in Preferences → Simulation. The framework
+provides locale selection, projector mode and interactive highlights.
+
+Each chart has a focusable accessible name and help text. Map arrow keys change N or Z and +/−
+zoom; scatter arrows select nearby points; chain arrows move through members. Each screen summary
+contains a live `currentDetails` paragraph derived from model state. Per-screen keyboard-help
+classes compose the shared `NuclideChartKeyboardHelpContent`. Isobar parity classes use different
+marker shapes as well as colours.
+
+## Validation and distribution
+
+Run `npm run lint && npm run check && npm run build && npm test` before delivery. Unit tests cover
+snapshot decoding, mass formulas, Q values, separation energies, isobars, half-life trends, energy
+release, decay tracing, Bateman solutions and disposal of runtime-created objects.
+
+`npx playwright test tests/browser` checks all six screens in all three locales, projector mode,
+and the six home-screen icons. Set `FUZZ_PORT` to a free port when other simulations are running;
+`SCREENSHOT_DIR` saves visual review images. `npm run test:fuzz:quick` exercises pointer and keyboard
+input with runtime assertions enabled.
+
+Vite builds a relative-path PWA in `dist/`. Workbox caches the simulation and bundled data for
+offline use. `npm run build:single` produces the alternative self-contained HTML build.
+`public/screenshots/` supplies the PWA installation previews; `assets/screenshot.png` is the
+fleet-standard chart capture consumed by Baton's catalog thumbnail generator. CI and Pages deploy
+call the reusable workflows in OpenLyceum/Baton. The catalog, org profile and workspace README are
+maintained in their own repositories, following Baton's `doc/add-simulation.md`.

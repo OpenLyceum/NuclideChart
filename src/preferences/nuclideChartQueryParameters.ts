@@ -11,7 +11,7 @@
  * 2. If it should also be user-editable at runtime, surface it as a preference
  *    in NuclideChartPreferencesModel (initialize that Property from this query parameter).
  *
- * Usage: append e.g. `?exampleToggle=true` to the sim URL.
+ * Usage: append e.g. `?showEquations=true` to the sim URL.
  */
 
 import { logGlobal } from "scenerystack/phet-core";
@@ -20,12 +20,12 @@ import NuclideChartNamespace from "../NuclideChartNamespace.js";
 
 const nuclideChartQueryParameters = QueryStringMachine.getAll({
   /**
-   * Example public boolean parameter. Replace with real sim-specific parameters,
-   * or remove if the sim has none.
+   * Shows the semi-empirical mass formula written out under the Binding Energy screen's coefficients.
+   * On by default (the sim is pitched at intro college); `?showEquations=false` hides it.
    */
-  exampleToggle: {
+  showEquations: {
     type: "boolean",
-    defaultValue: false,
+    defaultValue: true,
     public: true,
   },
 });

@@ -210,6 +210,7 @@ export class DecayChainsScreenView extends ScreenView {
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(180),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
+      shiftKeyboardStep: 1,
       pageKeyboardStep: 5,
       accessibleName: a11y.controls.massNumberSliderStringProperty,
     });

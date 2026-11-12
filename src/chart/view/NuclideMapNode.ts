@@ -140,14 +140,14 @@ class MapCanvas extends CanvasNode {
   public estimatedMarked = false;
   /** Theme colours read at paint time. */
   public theme = {
-    background: "#000",
-    text: "#fff",
-    magic: "#f0f",
-    reference: "#fff",
-    valley: "#0f0",
-    drip: "#fa0",
-    selection: "#fff",
-    axis: "#999",
+    background: NuclideChartColors.chartBackgroundColorProperty.value.toCSS(),
+    text: NuclideChartColors.textColorProperty.value.toCSS(),
+    magic: NuclideChartColors.magicLineColorProperty.value.toCSS(),
+    reference: NuclideChartColors.referenceLineColorProperty.value.toCSS(),
+    valley: NuclideChartColors.valleyLineColorProperty.value.toCSS(),
+    drip: NuclideChartColors.dripLineColorProperty.value.toCSS(),
+    selection: NuclideChartColors.selectionColorProperty.value.toCSS(),
+    axis: NuclideChartColors.axisColorProperty.value.toCSS(),
   };
 
   public constructor(geometry: MapGeometry, selected: Nuclide) {
@@ -180,7 +180,7 @@ class MapCanvas extends CanvasNode {
       if (!visible.containsCoordinates(nuclide.n, nuclide.z)) {
         continue;
       }
-      const color = this.colors[nuclide.index] ?? "#888";
+      const color = this.colors[nuclide.index] ?? NuclideChartColors.noDataColorProperty.value.toCSS();
       const x = g.x(nuclide.n) - s / 2;
       const y = g.y(nuclide.z) - s / 2;
       context.fillStyle = color;
@@ -295,7 +295,7 @@ class MapCanvas extends CanvasNode {
     context.strokeRect(box.minX, box.minY, box.width, box.height);
     const cell = Math.max(1, k);
     for (const nuclide of NUCLIDE_TABLE.nuclides) {
-      context.fillStyle = this.colors[nuclide.index] ?? "#888";
+      context.fillStyle = this.colors[nuclide.index] ?? NuclideChartColors.noDataColorProperty.value.toCSS();
       context.fillRect(box.minX + (nuclide.n + 1) * k, box.maxY - (nuclide.z + 2) * k, cell, cell);
     }
     const v = g.visible();

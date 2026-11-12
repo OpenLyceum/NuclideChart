@@ -7,7 +7,7 @@
  *
  * Registered in the screens array in src/main.ts. Its home-screen and navigation-bar
  * icons come from createChartIcon() in src/common/NuclideChartScreenIcons.ts
- * (see doc/multi-screen.md).
+ * (see src/common/NuclideChartScreenIcons.ts).
  */
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";

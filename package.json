@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "A SceneryStack simulation: Nuclide Chart.",
+  "description": "Trends across the whole chart of nuclides from IAEA data: binding energies and the mass formula, magic numbers in separation energies, isobar mass parabolas, half-lives from Geiger\u2013Nuttall to the age of the Earth, and decay chains in secular equilibrium.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
@@ -11,9 +11,13 @@
   },
   "keywords": [
     "simulation",
-    "SceneryStack",
     "interactive",
+    "SceneryStack",
     "physics",
+    "nuclear-physics",
+    "chart-of-nuclides",
+    "binding-energy",
+    "radioactive-decay",
     "education",
     "pwa"
   ],
@@ -35,9 +39,9 @@
     "test:fuzz:quick": "node scripts/test-fuzz.ts 10",
     "test:fuzz:long": "node scripts/test-fuzz.ts 300",
     "icons": "node scripts/generate-icons.ts",
-    "fetch-data": "node scripts/data/fetch-nuclides.ts",
     "clean": "rm -rf dist",
-    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
+    "fetch-data": "node scripts/data/fetch-nuclides.ts"
   },
   "dependencies": {
     "scenerystack": "^3.0.0"

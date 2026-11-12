@@ -63,7 +63,7 @@ export class MapLegendNode extends Node {
       xAlign: "left",
       children: LEGEND_CATEGORIES.map((category) =>
         entry(
-          DECAY_CATEGORY_COLORS.get(category) ?? "#888",
+          DECAY_CATEGORY_COLORS.get(category) ?? NuclideChartColors.noDataColorProperty,
           modes[`${category.key}StringProperty`] as TReadOnlyProperty<string>,
           width / 2 - 24,
         ),
@@ -73,8 +73,16 @@ export class MapLegendNode extends Node {
       spacing: 3,
       align: "left",
       children: [
-        entry(MEASUREMENT_COLORS[0] ?? "#888", chart.legend.measuredStringProperty, width - 20),
-        entry(MEASUREMENT_COLORS[1] ?? "#888", chart.legend.estimatedStringProperty, width - 20),
+        entry(
+          MEASUREMENT_COLORS[0] ?? NuclideChartColors.noDataColorProperty,
+          chart.legend.measuredStringProperty,
+          width - 20,
+        ),
+        entry(
+          MEASUREMENT_COLORS[1] ?? NuclideChartColors.noDataColorProperty,
+          chart.legend.estimatedStringProperty,
+          width - 20,
+        ),
         entry(NuclideChartColors.noDataColorProperty, chart.legend.noDataStringProperty, width - 20),
       ],
     });

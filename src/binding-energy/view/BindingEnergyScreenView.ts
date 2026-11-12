@@ -33,6 +33,7 @@ import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLay
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
 import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import type { NuclideChartPreferencesModel } from "../../preferences/NuclideChartPreferencesModel.js";
 import { type BindingEnergyModel, BindingView } from "../model/BindingEnergyModel.js";
 import { BindingChartNode } from "./BindingChartNode.js";
 import { BindingEnergyScreenSummaryContent } from "./BindingEnergyScreenSummaryContent.js";
@@ -45,7 +46,11 @@ const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
 const COEFFICIENT_SLIDER_WIDTH = 80;
 
 export class BindingEnergyScreenView extends ScreenView {
-  public constructor(model: BindingEnergyModel, providedOptions?: BindingEnergyScreenViewOptions) {
+  public constructor(
+    model: BindingEnergyModel,
+    preferences: NuclideChartPreferencesModel,
+    providedOptions?: BindingEnergyScreenViewOptions,
+  ) {
     const options = optionize<BindingEnergyScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       { screenSummaryContent: new BindingEnergyScreenSummaryContent(model) },
       providedOptions,
@@ -149,6 +154,12 @@ export class BindingEnergyScreenView extends ScreenView {
         align: "left",
         children: [
           label(strings.formula.titleStringProperty, PANEL_CONTENT_WIDTH, FONTS.TITLE),
+          new RichText(strings.formula.equationStringProperty, {
+            font: FONTS.SMALL,
+            fill: NuclideChartColors.textColorProperty,
+            maxWidth: PANEL_CONTENT_WIDTH,
+            visibleProperty: preferences.showEquationsProperty,
+          }),
           formulaGrid,
           new HBox({ spacing: 8, children: [fitButton, textbookButton] }),
           rmsText,
@@ -178,6 +189,7 @@ export class BindingEnergyScreenView extends ScreenView {
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(130),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
+      shiftKeyboardStep: 1,
       pageKeyboardStep: 5,
       accessibleName: strings.energy.fragmentAStringProperty,
     });

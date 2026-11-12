@@ -114,6 +114,56 @@ export class ShellsScreenView extends ScreenView {
       return shape;
     };
 
+    /** Every line of the current kind: the faint ones as one shape, the highlighted one apart, and the points. */
+    const buildLines = (
+      kind: SeparationKind,
+      showEstimated: boolean,
+      highlightKey: number,
+    ): { allLines: Shape; points: ScatterPoint[]; highlighted: SeparationPoint[] } => {
+      const keys = isNeutronKind(kind)
+        ? Array.from({ length: NUCLIDE_TABLE.maxZ + 1 }, (_, z) => z)
+        : Array.from({ length: NUCLIDE_TABLE.maxN + 1 }, (_, n) => n);
+      const allLines = new Shape();
+      const points: ScatterPoint[] = [];
+      let highlighted: SeparationPoint[] = [];
+      for (const key of keys) {
+        const line = separationLine(kind, key).filter((p) => showEstimated || !p.systematic);
+        if (key === highlightKey) {
+          highlighted = line;
+        } else if (line.length > 0) {
+          allLines.subpaths.push(...lineShape(line).subpaths);
+        }
+        for (const p of line) {
+          const group = key === highlightKey ? 2 : p.systematic ? 1 : 0;
+          points.push({ nuclide: p.nuclide, x: p.x, y: p.energy / 1000, group });
+        }
+      }
+      return { allLines, points, highlighted };
+    };
+
+    const updateMagic = (visible: boolean): void => {
+      const transform = chart.frame.chartTransform;
+      const magicShape = new Shape();
+      for (const child of magicLabels.children) {
+        child.dispose();
+      }
+      const labels: Node[] = [];
+      const xs = visible ? MAGIC_NUMBERS.map((m) => [m, transform.modelToViewX(m)] as const) : [];
+      for (const [m, x] of xs.filter(([, at]) => at > 0 && at < CHART_WIDTH)) {
+        magicShape.moveTo(x, 0).lineTo(x, CHART_HEIGHT);
+        labels.push(
+          new RichText(String(m), {
+            font: FONTS.CHART_LABEL,
+            fill: NuclideChartColors.magicLineColorProperty,
+            centerX: x,
+            top: 3,
+          }),
+        );
+      }
+      magicPath.shape = magicShape;
+      magicLabels.children = labels;
+    };
+
     const update = (): void => {
       const kind = model.kind;
       const neutron = isNeutronKind(kind);
@@ -130,31 +180,7 @@ export class ShellsScreenView extends ScreenView {
 
       const showEstimated = model.estimatedVisibleProperty.value;
       const highlightKey = lineKey(kind, selected.value);
-      const keys = neutron
-        ? Array.from({ length: NUCLIDE_TABLE.maxZ + 1 }, (_, z) => z)
-        : Array.from({ length: NUCLIDE_TABLE.maxN + 1 }, (_, n) => n);
-      const allLines = new Shape();
-      const points: ScatterPoint[] = [];
-      let highlighted: SeparationPoint[] = [];
-      for (const key of keys) {
-        const line = separationLine(kind, key).filter((p) => showEstimated || !p.systematic);
-        if (line.length === 0) {
-          continue;
-        }
-        if (key === highlightKey) {
-          highlighted = line;
-        } else {
-          allLines.subpaths.push(...lineShape(line).subpaths);
-        }
-        for (const p of line) {
-          points.push({
-            nuclide: p.nuclide,
-            x: p.x,
-            y: p.energy / 1000,
-            group: key === highlightKey ? 2 : p.systematic ? 1 : 0,
-          });
-        }
-      }
+      const { allLines, points, highlighted } = buildLines(kind, showEstimated, highlightKey);
       // Highlighted points go last so they draw on top.
       points.sort((p, q) => (p.group === 2 ? 1 : 0) - (q.group === 2 ? 1 : 0));
       linesPath.shape = new Shape(allLines.subpaths);
@@ -163,29 +189,7 @@ export class ShellsScreenView extends ScreenView {
 
       // Magic numbers and the unbound region.
       const transform = chart.frame.chartTransform;
-      const magicShape = new Shape();
-      for (const child of magicLabels.children) {
-        child.dispose();
-      }
-      const labels: Node[] = [];
-      if (model.shared.magicNumbersVisibleProperty.value) {
-        for (const m of MAGIC_NUMBERS) {
-          const x = transform.modelToViewX(m);
-          if (x > 0 && x < CHART_WIDTH) {
-            magicShape.moveTo(x, 0).lineTo(x, CHART_HEIGHT);
-            labels.push(
-              new RichText(String(m), {
-                font: FONTS.CHART_LABEL,
-                fill: NuclideChartColors.magicLineColorProperty,
-                centerX: x,
-                top: 3,
-              }),
-            );
-          }
-        }
-      }
-      magicPath.shape = magicShape;
-      magicLabels.children = labels;
+      updateMagic(model.shared.magicNumbersVisibleProperty.value);
       const zeroY = transform.modelToViewY(0);
       unboundBand.setRect(0, zeroY, CHART_WIDTH, CHART_HEIGHT - zeroY);
       unboundLabel.left = 6;

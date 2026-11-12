@@ -140,25 +140,9 @@ export class IsobarsScreenView extends ScreenView {
       chart.setPoints(points, STYLES);
 
       // Parabolas, relative to the same floor.
-      const shape = new Shape();
-      if (model.parabolasVisibleProperty.value) {
-        for (const parabola of analysis.parabolas) {
-          let started = false;
-          for (let z = zRange.min; z <= zRange.max; z += 0.1) {
-            const y = (parabola.minimum + parabola.curvature * (z - parabola.zMin) ** 2 - floor) / 1000;
-            const view = chart.viewPosition(z, y);
-            if (view) {
-              if (started) {
-                shape.lineToPoint(view);
-              } else {
-                shape.moveToPoint(view);
-                started = true;
-              }
-            }
-          }
-        }
-      }
-      parabolaPath.shape = shape;
+      parabolaPath.shape = model.parabolasVisibleProperty.value
+        ? this.parabolaShape(chart, analysis, zRange, floor)
+        : null;
 
       // Allowed decays as arrows between isobars.
       for (const child of arrows.children) {
@@ -199,6 +183,7 @@ export class IsobarsScreenView extends ScreenView {
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(230),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
+      shiftKeyboardStep: 1,
       pageKeyboardStep: 10,
       accessibleName: strings.massNumberStringProperty,
     });
@@ -299,7 +284,7 @@ export class IsobarsScreenView extends ScreenView {
         const text = double.map(
           (t) => `${nuclideMarkup(t.from)} → ${nuclideMarkup(t.to)} (${formatFixed(t.q / 1000, 3)} MeV)`,
         );
-        return StringUtils.fillIn(pattern, { list: text.length ? text.join(", ") : none });
+        return StringUtils.fillIn(pattern, { list: text.length > 0 ? text.join(", ") : none });
       },
     );
     const hintText = new DerivedProperty(
@@ -362,6 +347,27 @@ export class IsobarsScreenView extends ScreenView {
     ];
     this.pdomPlayAreaNode.pdomOrder = [chart, aSlider, ...quickButtons];
     this.pdomControlAreaNode.pdomOrder = [parabolaCheckbox, arrowCheckbox, resetAllButton];
+  }
+
+  /** The fitted mass parabolas over a range of Z, measured from the same floor as the points. */
+  private parabolaShape(chart: NuclideScatterNode, analysis: IsobarAnalysis, zRange: Range, floor: number): Shape {
+    const shape = new Shape();
+    for (const parabola of analysis.parabolas) {
+      let started = false;
+      for (let z = zRange.min; z <= zRange.max; z += 0.1) {
+        const view = chart.viewPosition(
+          z,
+          (parabola.minimum + parabola.curvature * (z - parabola.zMin) ** 2 - floor) / 1000,
+        );
+        if (view && started) {
+          shape.lineToPoint(view);
+        } else if (view) {
+          shape.moveToPoint(view);
+          started = true;
+        }
+      }
+    }
+    return shape;
   }
 
   /** An arrow from one isobar to another, shortened so it does not cover the markers. */

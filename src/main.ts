@@ -48,7 +48,7 @@ onReadyToLaunch(() => {
       tandem: Tandem.ROOT.createTandem("chartScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new BindingEnergyScreen(shared, {
+    new BindingEnergyScreen(shared, simPreferences, {
       name: stringManager.getScreenNames().bindingEnergyStringProperty,
       tandem: Tandem.ROOT.createTandem("bindingEnergyScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,

@@ -1,30 +1,14 @@
 /**
  * ChartKeyboardHelpContent.ts
  *
- * Content for the keyboard-help dialog (the "?" button in the navigation bar).
- * The template's only interactions are buttons and Reset All, so a single
- * basic-actions section covers the available keyboard controls. When the sim
- * grows, fill the right column (pattern stubbed below).
+ * The keyboard-help dialog of this screen: the shared sections (see NuclideChartKeyboardHelpContent),
+ * wired through the Screen's createKeyboardHelpNode.
  */
 
-import {
-  BasicActionsKeyboardHelpSection,
-  // SliderControlsKeyboardHelpSection,
-  // TimeControlsKeyboardHelpSection,
-  TwoColumnKeyboardHelpContent,
-} from "scenerystack/scenery-phet";
+import { NuclideChartKeyboardHelpContent } from "../../common/view/NuclideChartKeyboardHelpContent.js";
 
-export class ChartKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
+export class ChartKeyboardHelpContent extends NuclideChartKeyboardHelpContent {
   public constructor() {
-    const leftColumn = [new BasicActionsKeyboardHelpSection()];
-
-    // Right column — uncomment when the sim adds sliders and/or TimeControlNode:
-    // const rightColumn = [
-    //   new SliderControlsKeyboardHelpSection(),
-    //   // new TimeControlsKeyboardHelpSection(),
-    // ];
-    const rightColumn: never[] = [];
-
-    super(leftColumn, rightColumn);
+    super({ map: true, comboBox: true });
   }
 }

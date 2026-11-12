@@ -172,6 +172,75 @@ export class HalfLivesScreenView extends ScreenView {
     const explorerX = (x: Nuclide): number =>
       model.explorerAxisProperty.value === "massNumber" ? x.a : distanceFromValley(x, FITTED_MASS_FORMULA.coefficients);
 
+    /** Puts a label at (left, bottom), then stacks it below any already-placed label it would overlap. */
+    const placeClear = (text: Node, left: number, bottom: number, placed: readonly Node[]): void => {
+      text.left = left;
+      text.bottom = bottom;
+      for (let pass = 0; pass <= placed.length; pass++) {
+        const clash = placed.find((other) => other.bounds.intersectsBounds(text.bounds));
+        if (!clash) {
+          return;
+        }
+        text.top = clash.bottom + 1;
+        text.left = Math.max(text.left, clash.left);
+      }
+    };
+
+    /** Tc-99m is an isomer, not among the ground states, so it is marked by hand. */
+    const isomerCallout = (logScale: boolean): Node[] => {
+      const tc = requireIsomer("Tc-99m");
+      const tcGround = NUCLIDE_TABLE.get(tc.z, tc.n);
+      if (!tcGround || tc.halfLife === null) {
+        return [];
+      }
+      const view = chart.viewPosition(
+        explorerX(tcGround),
+        logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / 1e9,
+      );
+      if (!view || view.y <= 8 || view.y >= CHART_HEIGHT - 4) {
+        return [];
+      }
+      return [
+        new Rectangle(view.x - 3, view.y - 3, 6, 6, { stroke: NuclideChartColors.highlightColorProperty }),
+        Object.assign(smallLabel("<sup>99m</sup>Tc", NuclideChartColors.highlightColorProperty), {
+          left: view.x + 5,
+          top: view.y + 1,
+        }),
+      ];
+    };
+
+    /** Labels for the notable nuclides (stacked so they never overlap) and the Tc-99m isomer. */
+    const notableCallouts = (logScale: boolean): Node[] => {
+      const calloutNodes: Node[] = [];
+      const placed: Node[] = [];
+      const candidates = NOTABLE.map((labelText) => {
+        const x = NUCLIDE_TABLE.require(labelText);
+        const p = chart.pointOf(x);
+        return { x, view: p ? chart.viewPosition(p.x, p.y) : null };
+      })
+        .filter((c) => c.view !== null && c.view.y > 8 && c.view.y < CHART_HEIGHT - 4)
+        .sort((p, q) => (p.view?.y ?? 0) - (q.view?.y ?? 0));
+      for (const { x, view } of candidates) {
+        if (!view) {
+          continue;
+        }
+        const text = smallLabel(nuclideMarkup(x), NuclideChartColors.highlightColorProperty);
+        placeClear(text, view.x + 4, view.y - 1, placed);
+        placed.push(text);
+        if (text.bottom > view.y + 2 || text.left > view.x + 6) {
+          calloutNodes.push(
+            new Line(view.x, view.y, text.left - 1, text.centerY, {
+              stroke: NuclideChartColors.highlightColorProperty,
+              lineWidth: 0.5,
+            }),
+          );
+        }
+        calloutNodes.push(text);
+      }
+      calloutNodes.push(...isomerCallout(logScale));
+      return calloutNodes;
+    };
+
     const updateExplorer = (): void => {
       const logScale = model.logScaleProperty.value;
       const byA = model.explorerAxisProperty.value === "massNumber";
@@ -222,63 +291,7 @@ export class HalfLivesScreenView extends ScreenView {
       guideLabels.children = labels;
 
       disposeChildren(callouts);
-      const calloutNodes: Node[] = [];
-      if (model.notableVisibleProperty.value) {
-        const placed: Node[] = [];
-        const candidates = NOTABLE.map((labelText) => {
-          const x = NUCLIDE_TABLE.require(labelText);
-          const p = chart.pointOf(x);
-          return { x, view: p ? chart.viewPosition(p.x, p.y) : null };
-        })
-          .filter((c) => c.view !== null && c.view.y > 8 && c.view.y < CHART_HEIGHT - 4)
-          .sort((p, q) => (p.view?.y ?? 0) - (q.view?.y ?? 0));
-        for (const { x, view } of candidates) {
-          if (!view) {
-            continue;
-          }
-          const text = smallLabel(nuclideMarkup(x), NuclideChartColors.highlightColorProperty);
-          text.left = view.x + 4;
-          text.bottom = view.y - 1;
-          // Stack a label below any label it would overlap, then join it to its point with a leader.
-          for (let pass = 0; pass <= placed.length; pass++) {
-            const clash = placed.find((other) => other.bounds.intersectsBounds(text.bounds));
-            if (!clash) {
-              break;
-            }
-            text.top = clash.bottom + 1;
-            text.left = Math.max(text.left, clash.left);
-          }
-          placed.push(text);
-          if (text.bottom > view.y + 2 || text.left > view.x + 6) {
-            calloutNodes.push(
-              new Line(view.x, view.y, text.left - 1, text.centerY, {
-                stroke: NuclideChartColors.highlightColorProperty,
-                lineWidth: 0.5,
-              }),
-            );
-          }
-          calloutNodes.push(text);
-        }
-        // Tc-99m is an isomer: it is not among the ground states, so it is marked by hand.
-        const tc = requireIsomer("Tc-99m");
-        const tcGround = NUCLIDE_TABLE.get(tc.z, tc.n);
-        if (tcGround && tc.halfLife !== null) {
-          const view = chart.viewPosition(
-            explorerX(tcGround),
-            logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / 1e9,
-          );
-          if (view && view.y > 8 && view.y < CHART_HEIGHT - 4) {
-            calloutNodes.push(
-              new Rectangle(view.x - 3, view.y - 3, 6, 6, { stroke: NuclideChartColors.highlightColorProperty }),
-              Object.assign(smallLabel("<sup>99m</sup>Tc", NuclideChartColors.highlightColorProperty), {
-                left: view.x + 5,
-                top: view.y + 1,
-              }),
-            );
-          }
-        }
-      }
-      callouts.children = calloutNodes;
+      callouts.children = model.notableVisibleProperty.value ? notableCallouts(logScale) : [];
     };
 
     const fitLineShape = (slope: number, intercept: number, xRange: Range, log: boolean): Shape => {

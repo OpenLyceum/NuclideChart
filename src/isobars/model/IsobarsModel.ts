@@ -20,7 +20,10 @@ import type { SharedModel } from "../../common/model/SharedModel.js";
 /** Quick picks: the classic double-β pairs, an odd A, and A = 40 (K-40 decays both ways). */
 export const QUICK_MASS_NUMBERS: readonly number[] = [40, 76, 125, 130, 136];
 
-export const MASS_NUMBER_RANGE = new Range(1, 260);
+export const MASS_NUMBER_RANGE = new Range(
+  Math.min(...NUCLIDE_TABLE.nuclides.map((nuclide) => nuclide.a)),
+  Math.max(...NUCLIDE_TABLE.nuclides.map((nuclide) => nuclide.a)),
+);
 
 export class IsobarsModel implements TModel {
   public readonly shared: SharedModel;

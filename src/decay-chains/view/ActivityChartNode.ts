@@ -113,6 +113,22 @@ export class ActivityChartNode extends Node {
       otherPath.shape = byMode(null);
     };
 
+    /** A label where the curve first reaches its plateau (or at its first point), or null. */
+    const labelFor = (curve: { node: ChainNode; points: (Vector2 | null)[] }, isSelected: boolean): Node | null => {
+      const visible = curve.points.filter((p): p is Vector2 => p !== null);
+      const anchor = visible[Math.floor(visible.length * 0.15)] ?? visible[0];
+      if (!anchor) {
+        return null;
+      }
+      const [symbol, a] = curve.node.label.split("-");
+      return new RichText(`<sup>${a}${curve.node.isomer ? "m" : ""}</sup>${symbol}`, {
+        font: FONTS.CHART_LABEL,
+        fill: isSelected ? NuclideChartColors.highlightColorProperty : NuclideChartColors.textColorProperty,
+        left: anchor.x + 3,
+        bottom: anchor.y - 2,
+      });
+    };
+
     const updateHighlight = (): void => {
       const selected = selectedProperty.value;
       for (const child of labels.children) {
@@ -130,19 +146,9 @@ export class ActivityChartNode extends Node {
           if (isSelected) {
             highlighted.push(curveShape(curve.points));
           }
-          // Label the curve where it first reaches its plateau (or at its last point).
-          const visible = curve.points.filter((p): p is Vector2 => p !== null);
-          const anchor = visible[Math.floor(visible.length * 0.15)] ?? visible[0];
-          if (anchor) {
-            const [symbol, a] = curve.node.label.split("-");
-            labelNodes.push(
-              new RichText(`<sup>${a}${curve.node.isomer ? "m" : ""}</sup>${symbol}`, {
-                font: FONTS.CHART_LABEL,
-                fill: isSelected ? NuclideChartColors.highlightColorProperty : NuclideChartColors.textColorProperty,
-                left: anchor.x + 3,
-                bottom: anchor.y - 2,
-              }),
-            );
+          const curveLabel = labelFor(curve, isSelected);
+          if (curveLabel) {
+            labelNodes.push(curveLabel);
           }
         }
       }
