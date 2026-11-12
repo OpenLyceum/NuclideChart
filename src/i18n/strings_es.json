@@ -81,7 +81,11 @@
       },
       "currentDetails": "La simulación está en su estado inicial.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "chainChart": "Decay chain",
+        "chainChartHelp": "Arrow keys move along the chain.",
+        "timeSlider": "Time",
+        "activityChart": "Activities over time",
+        "massNumberSlider": "Fission-product mass number"
       }
     }
   },
@@ -346,5 +350,49 @@
     "noFit": "Select an even–even α emitter to see its element's line.",
     "comparisonPattern": "Q<sub>α</sub> rises by ×{{qRatio}}, from {{qLow}} to {{qHigh}} MeV; t½ falls by {{orders}} orders of magnitude.",
     "sargentPattern": "Fitted slope {{slope}} (Sargent's rule: about −5) over {{count}} β⁻ emitters. Points far above the line are \"forbidden\" decays, slowed by a large change in spin."
+  },
+  "decayChains": {
+    "modeTitle": "Show",
+    "modes": {
+      "series": "Natural decay series",
+      "fission": "Fission products"
+    },
+    "seriesTitle": "Series",
+    "families": {
+      "family0": "4n (thorium series)",
+      "family1": "4n + 1 (neptunium series, extinct)",
+      "family2": "4n + 2 (uranium series)",
+      "family3": "4n + 3 (actinium series)"
+    },
+    "familyPattern": "A mod 4 = {{remainder}}: every member has A = {{family}}",
+    "time": "Time since the sample formed",
+    "timePattern": "t = {{time}}",
+    "clockPattern": "{{end}} / {{parent}} = {{ratio}}  →  age = ln(1 + ratio)/λ = {{age}}",
+    "equilibrium": "After many half-lives of the longest-lived daughter, every member decays at the parent's rate: secular equilibrium.",
+    "activityAxis": "Activity / parent's starting activity",
+    "timeAxis": "Time (s)",
+    "chartTitle": "The chain on the chart of nuclides: α steps go down-left, β⁻ steps up-left",
+    "fissionSystemTitle": "Fissioning nucleus",
+    "systems": {
+      "u235": "<sup>235</sup>U + thermal n",
+      "pu239": "<sup>239</sup>Pu + thermal n",
+      "u238": "<sup>238</sup>U + fast n"
+    },
+    "yieldAxis": "Yield per fission (%)",
+    "massNumber": "Mass number A",
+    "quickPicks": "Try:",
+    "chainTitlePattern": "β⁻ chain at A = {{a}}: chain yield {{yield}} %",
+    "delayedNeutron": "emits delayed neutrons",
+    "notes": {
+      "sr90": "Sr-90 (29 y) settles in bone.",
+      "i131": "I-131 (8 d) collects in the thyroid.",
+      "xe135": "Xe-135 absorbs neutrons strongly: a reactor poison.",
+      "cs137": "Cs-137 (30 y) dominates long-term contamination.",
+      "br87": "Br-87 is a delayed-neutron precursor; delayed neutrons make reactors controllable."
+    },
+    "table": {
+      "nuclide": "Nuclide",
+      "independent": "Made directly (%)"
+    }
   }
 }

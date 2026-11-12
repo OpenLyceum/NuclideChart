@@ -48,7 +48,9 @@ export const formatValue = (value: number, digits = 3): string => {
   }
   const magnitude = Math.abs(value);
   if (magnitude < 1e-3 || magnitude >= 1e6) {
-    const exponent = Math.floor(Math.log10(magnitude));
+    // Round first, so 9.99… × 10⁸ becomes 1.0 × 10⁹ rather than 10 × 10⁸.
+    const rounded = Math.abs(Number(value.toPrecision(Math.max(1, digits - 1))));
+    const exponent = Math.floor(Math.log10(rounded));
     const mantissa = Number((value / 10 ** exponent).toPrecision(Math.max(1, digits - 1)));
     return `${String(mantissa).replace("-", "−")} × 10${superscript(exponent)}`;
   }

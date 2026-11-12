@@ -124,6 +124,11 @@ export class StringManager {
     return stringProperties.halfLives;
   }
 
+  /** Strings of the Decay Chains screen. */
+  public getDecayChainsStrings() {
+    return stringProperties.decayChains;
+  }
+
   /** Accessibility strings for the Chart screen. */
   public getChartA11yStrings() {
     return stringProperties.a11y.chart;

@@ -1,160 +1,303 @@
 /**
  * DecayChainsScreenView.ts
  *
- * The top-level view for the simulation screen.
- *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. NuclideChartControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ * The Decay Chains screen. Natural series: the chain on its patch of the chart (the α/β⁻ zig-zag, branch
+ * percentages, the A mod 4 family), every member's activity against time (secular equilibrium), and the
+ * end-to-parent ratio as a dating clock. Fission products: the two-humped mass-yield curve and the β⁻ chain
+ * along a chosen A.
  */
 
+import { DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
+import { StringUtils } from "scenerystack/phetcommon";
+import { HBox, Node, RichText, Text, VBox } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/NuclideChartButtonOptions.js";
+import { AquaRadioButtonGroup, HSlider, RectangularPushButton } from "scenerystack/sun";
+import { SERIES_PARENTS } from "../../common/model/decayChains.js";
+import { NUCLIDE_TABLE } from "../../common/model/NuclideTable.js";
+import {
+  FLAT_RECTANGULAR_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  LIGHT_SURFACE_TEXT_FILL,
+} from "../../common/NuclideChartButtonOptions.js";
+import { NUCLIDE_CHART_SLIDER_OPTIONS } from "../../common/NuclideChartControlOptions.js";
+import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
+import { DataCreditNode } from "../../common/view/DataCreditNode.js";
+import { formatDuration, formatValue } from "../../common/view/format.js";
+import { NuclideCardNode } from "../../common/view/NuclideCardNode.js";
+import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../NuclideChartConstants.js";
-import type { DecayChainsModel } from "../model/DecayChainsModel.js";
+import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import { type DecayChainsModel, datingClock, QUICK_FISSION_A } from "../model/DecayChainsModel.js";
+import { ActivityChartNode } from "./ActivityChartNode.js";
+import { ChainDiagramNode } from "./ChainDiagramNode.js";
 import { DecayChainsScreenSummaryContent } from "./DecayChainsScreenSummaryContent.js";
+import { FissionProductsNode } from "./FissionProductsNode.js";
 
 export type DecayChainsScreenViewOptions = ScreenViewOptions;
 
+const LEFT_WIDTH = 600;
+const DIAGRAM_HEIGHT = 262;
+const ACTIVITY_HEIGHT = 214;
+const YIELD_HEIGHT = 300;
+const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
+
 export class DecayChainsScreenView extends ScreenView {
   public constructor(model: DecayChainsModel, providedOptions?: DecayChainsScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See DecayChainsScreenSummaryContent for the four content regions.
     const options = optionize<DecayChainsScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new DecayChainsScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new DecayChainsScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: NuclideChartColors.backgroundColorProperty,
-    });
-    this.addChild(backgroundRect);
+    const strings = StringManager.getInstance().getDecayChainsStrings();
+    const a11y = StringManager.getInstance().getDecayChainsA11yStrings();
+    const layout = chartAndPanelsLayout(this.layoutBounds);
+    const selected = model.shared.selectedNuclideProperty;
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().decayChainsStringProperty, {
-      font: "bold 36px sans-serif",
+    const label = (
+      text: TReadOnlyProperty<string> | string,
+      maxWidth = PANEL_CONTENT_WIDTH,
+      font = FONTS.LABEL,
+    ): RichText => new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
+    const paragraph = (text: TReadOnlyProperty<string>): RichText =>
+      new RichText(text, {
+        font: FONTS.SMALL,
+        fill: NuclideChartColors.textColorProperty,
+        lineWrap: PANEL_CONTENT_WIDTH,
+      });
+
+    // ── Natural series ────────────────────────────────────────────────────────
+    const diagram = new ChainDiagramNode(model.chainProperty, selected, LEFT_WIDTH, DIAGRAM_HEIGHT, {
+      accessibleName: a11y.controls.chainChartStringProperty,
+      accessibleHelpText: a11y.controls.chainChartHelpStringProperty,
+    });
+    const diagramTitle = label(strings.chartTitleStringProperty, LEFT_WIDTH, FONTS.SMALL);
+    const activity = new ActivityChartNode(
+      model.solutionProperty,
+      model.logTimeProperty,
+      selected,
+      LEFT_WIDTH - 60,
+      ACTIVITY_HEIGHT,
+      {
+        time: strings.timeAxisStringProperty,
+        activity: strings.activityAxisStringProperty,
+      },
+    );
+    const seriesContent = new VBox({
+      spacing: 6,
+      align: "right",
+      children: [new VBox({ spacing: 3, align: "left", children: [diagramTitle, diagram] }), activity],
+    });
+
+    // ── Fission products ──────────────────────────────────────────────────────
+    const fission = new FissionProductsNode(
+      model.fissionSystemIndexProperty,
+      model.fissionMassNumberProperty,
+      selected,
+      LEFT_WIDTH - 60,
+      YIELD_HEIGHT,
+    );
+    const left = new Node({ children: [seriesContent, fission] });
+
+    // ── Panels ────────────────────────────────────────────────────────────────
+    const modeGroup = new AquaRadioButtonGroup<string>(
+      model.modeProperty,
+      [
+        { value: "series", createNode: () => label(strings.modes.seriesStringProperty, 240) },
+        { value: "fission", createNode: () => label(strings.modes.fissionStringProperty, 240) },
+      ],
+      {
+        orientation: "vertical",
+        spacing: 5,
+        radioButtonOptions: { radius: 7 },
+        accessibleName: strings.modeTitleStringProperty,
+      },
+    );
+
+    const seriesGroup = new AquaRadioButtonGroup<number>(
+      model.seriesIndexProperty,
+      SERIES_PARENTS.map(([parent], i) => ({
+        value: i,
+        createNode: () => label(`<sup>${parent.split("-")[1]}</sup>${parent.split("-")[0]}`, 80),
+      })),
+      {
+        orientation: "horizontal",
+        spacing: 12,
+        radioButtonOptions: { radius: 6 },
+        accessibleName: strings.seriesTitleStringProperty,
+      },
+    );
+    const families = strings.families;
+    const familyText = new DerivedProperty(
+      [
+        model.chainProperty,
+        strings.familyPatternStringProperty,
+        families.family0StringProperty,
+        families.family1StringProperty,
+        families.family2StringProperty,
+        families.family3StringProperty,
+      ],
+      (chain, pattern, f0, f1, f2, f3) => {
+        const remainder = chain.parent.a % 4;
+        return StringUtils.fillIn(pattern, { remainder, family: [f0, f1, f2, f3][remainder] ?? "" });
+      },
+    );
+    const timeSlider = new HSlider(model.logTimeProperty, model.logTimeProperty.range, {
+      ...NUCLIDE_CHART_SLIDER_OPTIONS,
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(PANEL_CONTENT_WIDTH - 20),
+      keyboardStep: 0.25,
+      shiftKeyboardStep: 0.05,
+      pageKeyboardStep: 1,
+      accessibleName: a11y.controls.timeSliderStringProperty,
+      pdomCreateAriaValueText: (value: number | null) => (value === null ? "" : formatDuration(10 ** value)),
+    });
+    const timeText = new DerivedProperty(
+      [strings.timePatternStringProperty, model.logTimeProperty],
+      (pattern, logTime) => StringUtils.fillIn(pattern, { time: formatDuration(10 ** logTime) }),
+    );
+    const clockText = new DerivedProperty(
+      [strings.clockPatternStringProperty, model.solutionProperty, model.logTimeProperty],
+      (pattern, solution, logTime) => {
+        const chain = solution.chain;
+        const end = chain.nodes.filter((x) => x.lambda === 0).map((x) => `<sup>${x.a}</sup>${x.label.split("-")[0]}`);
+        const clock = datingClock(chain, solution, 10 ** logTime);
+        return StringUtils.fillIn(pattern, {
+          end: end.join(" + "),
+          parent: `<sup>${chain.parent.a}</sup>${chain.parent.label.split("-")[0]}`,
+          ratio: formatValue(clock.ratio, 3),
+          age: formatDuration(clock.age),
+        });
+      },
+    );
+    const seriesControls = new VBox({
+      spacing: 6,
+      align: "left",
+      children: [
+        label(strings.seriesTitleStringProperty, 200, FONTS.SMALL),
+        seriesGroup,
+        paragraph(familyText),
+        label(strings.timeStringProperty, PANEL_CONTENT_WIDTH, FONTS.SMALL),
+        timeSlider,
+        label(timeText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
+        new RichText(clockText, {
+          font: FONTS.SMALL,
+          fill: NuclideChartColors.textColorProperty,
+          lineWrap: PANEL_CONTENT_WIDTH,
+        }),
+        paragraph(strings.equilibriumStringProperty),
+      ],
+    });
+
+    const systems = strings.systems;
+    const systemGroup = new AquaRadioButtonGroup<number>(
+      model.fissionSystemIndexProperty,
+      [systems.u235StringProperty, systems.pu239StringProperty, systems.u238StringProperty].map((text, i) => ({
+        value: i,
+        createNode: () => label(text, 220),
+      })),
+      {
+        orientation: "vertical",
+        spacing: 4,
+        radioButtonOptions: { radius: 6 },
+        accessibleName: strings.fissionSystemTitleStringProperty,
+      },
+    );
+    const aSlider = new HSlider(model.fissionMassNumberProperty, model.fissionMassNumberProperty.range, {
+      ...NUCLIDE_CHART_SLIDER_OPTIONS,
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(180),
+      constrainValue: (value: number) => Math.round(value),
+      keyboardStep: 1,
+      pageKeyboardStep: 5,
+      accessibleName: a11y.controls.massNumberSliderStringProperty,
+    });
+    const aText = new Text(new DerivedProperty([model.fissionMassNumberProperty], (a) => `A = ${a}`), {
+      font: FONTS.READOUT,
       fill: NuclideChartColors.textColorProperty,
-      center: this.layoutBounds.center,
     });
-    this.addChild(placeholderText);
+    const quickButtons = QUICK_FISSION_A.map(
+      (a) =>
+        new RectangularPushButton({
+          ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+          content: new Text(String(a), { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL }),
+          listener: () => {
+            model.fissionMassNumberProperty.value = a;
+          },
+          accessibleName: `A = ${a}`,
+        }),
+    );
+    const fissionControls = new VBox({
+      spacing: 6,
+      align: "left",
+      children: [
+        label(strings.fissionSystemTitleStringProperty, 220, FONTS.SMALL),
+        systemGroup,
+        label(strings.massNumberStringProperty, 220, FONTS.SMALL),
+        new HBox({ spacing: 8, children: [aSlider, aText] }),
+        new HBox({ spacing: 4, children: [label(strings.quickPicksStringProperty, 40, FONTS.SMALL), ...quickButtons] }),
+      ],
+    });
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getDecayChainsA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    model.modeProperty.link((mode) => {
+      seriesContent.visible = mode === "series";
+      seriesControls.visible = mode === "series";
+      fission.visible = mode === "fission";
+      fissionControls.visible = mode === "fission";
+    });
+    const controlsPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 10,
+        align: "left",
+        children: [modeGroup, new Node({ children: [seriesControls, fissionControls] })],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+    const cardPanel = new NuclideChartPanel(new NuclideCardNode(selected, { contentWidth: PANEL_CONTENT_WIDTH }), {
+      minWidth: PANEL_COLUMN_WIDTH,
+      maxWidth: PANEL_COLUMN_WIDTH,
+    });
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
+        this.interruptSubtreeInput();
         model.reset();
-        this.reset();
       },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
-      new Node({
-        pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
-          resetAllButton,
-        ],
-      }),
-    );
+    this.children = [
+      placeInRegion(left, layout.chart, { yAlign: "top" }),
+      placeInRegion(new VBox({ spacing: 8, children: [controlsPanel, cardPanel] }), layout.panels, { yAlign: "top" }),
+      placeInRegion(
+        new HBox({
+          spacing: 10,
+          align: "bottom",
+          children: [new DataCreditNode(PANEL_COLUMN_WIDTH - 60), resetAllButton],
+        }),
+        layout.footer,
+        { xAlign: "right", yAlign: "bottom" },
+      ),
+    ];
+    this.pdomPlayAreaNode.pdomOrder = [
+      diagram,
+      modeGroup,
+      seriesGroup,
+      timeSlider,
+      systemGroup,
+      aSlider,
+      ...quickButtons,
+    ];
+    this.pdomControlAreaNode.pdomOrder = [resetAllButton];
+
+    // Choosing a series selects its parent, so the card and the highlighted curve follow.
+    model.seriesIndexProperty.lazyLink(() => {
+      const parent = model.chainProperty.value.parent;
+      const nuclide = NUCLIDE_TABLE.get(parent.z, parent.n);
+      if (nuclide) {
+        selected.value = nuclide;
+      }
+    });
   }
-
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
-  }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeDecayChainsScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in DecayChainsScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeDecayChainsScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeDecayChainsScreenView();
-  //   super.dispose();
-  // }
 }
