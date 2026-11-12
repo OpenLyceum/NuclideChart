@@ -23,6 +23,7 @@ import { onReadyToLaunch, PreferencesModel, Sim } from "scenerystack/sim";
 import { Tandem } from "scenerystack/tandem";
 import { BindingEnergyScreen } from "./binding-energy/BindingEnergyScreen.js";
 import { ChartScreen } from "./chart/ChartScreen.js";
+import { SharedModel } from "./common/model/SharedModel.js";
 import { DecayChainsScreen } from "./decay-chains/DecayChainsScreen.js";
 import { HalfLivesScreen } from "./half-lives/HalfLivesScreen.js";
 import { StringManager } from "./i18n/StringManager.js";
@@ -38,33 +39,36 @@ onReadyToLaunch(() => {
   // Simulation-specific preferences; initial values come from nuclideChartQueryParameters.
   const simPreferences = new NuclideChartPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
+  // State every screen shares: the selected nuclide, the magic-number guides, the definition of stable.
+  const shared = new SharedModel();
+
   const screens = [
-    new ChartScreen({
+    new ChartScreen(shared, {
       name: stringManager.getScreenNames().chartStringProperty,
       tandem: Tandem.ROOT.createTandem("chartScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new BindingEnergyScreen({
+    new BindingEnergyScreen(shared, {
       name: stringManager.getScreenNames().bindingEnergyStringProperty,
       tandem: Tandem.ROOT.createTandem("bindingEnergyScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new ShellsScreen({
+    new ShellsScreen(shared, {
       name: stringManager.getScreenNames().shellsStringProperty,
       tandem: Tandem.ROOT.createTandem("shellsScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new IsobarsScreen({
+    new IsobarsScreen(shared, {
       name: stringManager.getScreenNames().isobarsStringProperty,
       tandem: Tandem.ROOT.createTandem("isobarsScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new HalfLivesScreen({
+    new HalfLivesScreen(shared, {
       name: stringManager.getScreenNames().halfLivesStringProperty,
       tandem: Tandem.ROOT.createTandem("halfLivesScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,
     }),
-    new DecayChainsScreen({
+    new DecayChainsScreen(shared, {
       name: stringManager.getScreenNames().decayChainsStringProperty,
       tandem: Tandem.ROOT.createTandem("decayChainsScreen"),
       backgroundColorProperty: NuclideChartColors.backgroundColorProperty,

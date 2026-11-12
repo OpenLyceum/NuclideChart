@@ -13,6 +13,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
+import type { SharedModel } from "../common/model/SharedModel.js";
 import { createIsobarsIcon } from "../common/NuclideChartScreenIcons.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { IsobarsModel } from "./model/IsobarsModel.js";
@@ -23,10 +24,10 @@ import { IsobarsScreenView } from "./view/IsobarsScreenView.js";
 type IsobarsScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class IsobarsScreen extends Screen<IsobarsModel, IsobarsScreenView> {
-  public constructor(options: IsobarsScreenOptions) {
+  public constructor(shared: SharedModel, options: IsobarsScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
-      () => new IsobarsModel(),
+      () => new IsobarsModel(shared),
       // View factory — receives the model instance
       (model) =>
         new IsobarsScreenView(model, {

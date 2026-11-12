@@ -13,6 +13,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
+import type { SharedModel } from "../common/model/SharedModel.js";
 import { createHalfLivesIcon } from "../common/NuclideChartScreenIcons.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { HalfLivesModel } from "./model/HalfLivesModel.js";
@@ -23,10 +24,10 @@ import { HalfLivesScreenView } from "./view/HalfLivesScreenView.js";
 type HalfLivesScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class HalfLivesScreen extends Screen<HalfLivesModel, HalfLivesScreenView> {
-  public constructor(options: HalfLivesScreenOptions) {
+  public constructor(shared: SharedModel, options: HalfLivesScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
-      () => new HalfLivesModel(),
+      () => new HalfLivesModel(shared),
       // View factory — receives the model instance
       (model) =>
         new HalfLivesScreenView(model, {

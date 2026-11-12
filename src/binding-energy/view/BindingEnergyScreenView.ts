@@ -1,160 +1,300 @@
 /**
  * BindingEnergyScreenView.ts
  *
- * The top-level view for the simulation screen.
- *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. NuclideChartControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ * The Binding Energy screen: the B/A curve (with a zoom on its peak, where Ni-62 beats Fe-58 and Fe-56),
+ * the semi-empirical mass formula with switchable terms and adjustable or fitted coefficients, the residuals
+ * measured − formula that reveal the magic numbers, and an energy-release calculator for fission and fusion.
  */
 
+import { DerivedProperty, type Property, type TReadOnlyProperty } from "scenerystack/axon";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
+import { StringUtils } from "scenerystack/phetcommon";
+import { GridBox, HBox, Node, RichText, Text, VBox } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/NuclideChartButtonOptions.js";
+import { AquaRadioButtonGroup, Checkbox, ComboBox, HSlider, RectangularPushButton } from "scenerystack/sun";
+import { FUSION_REACTIONS } from "../../common/model/energyRelease.js";
+import { MASS_FORMULA_TERMS, type MassFormulaTerm } from "../../common/model/massFormula.js";
+import {
+  FLAT_RECTANGULAR_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  LIGHT_SURFACE_TEXT_FILL,
+  NUCLIDE_CHART_COMBO_BOX_OPTIONS,
+} from "../../common/NuclideChartButtonOptions.js";
+import {
+  NUCLIDE_CHART_CHECKBOX_OPTIONS,
+  NUCLIDE_CHART_SLIDER_OPTIONS,
+} from "../../common/NuclideChartControlOptions.js";
+import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
+import { DataCreditNode } from "../../common/view/DataCreditNode.js";
+import { formatFixed } from "../../common/view/format.js";
+import { nuclideMarkup } from "../../common/view/NuclideCardNode.js";
+import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../NuclideChartConstants.js";
-import type { BindingEnergyModel } from "../model/BindingEnergyModel.js";
+import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import { type BindingEnergyModel, BindingView } from "../model/BindingEnergyModel.js";
+import { BindingChartNode } from "./BindingChartNode.js";
 import { BindingEnergyScreenSummaryContent } from "./BindingEnergyScreenSummaryContent.js";
 
 export type BindingEnergyScreenViewOptions = ScreenViewOptions;
 
+const CHART_WIDTH = 590;
+const CHART_HEIGHT = 500;
+const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
+const COEFFICIENT_SLIDER_WIDTH = 80;
+
 export class BindingEnergyScreenView extends ScreenView {
   public constructor(model: BindingEnergyModel, providedOptions?: BindingEnergyScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See BindingEnergyScreenSummaryContent for the four content regions.
     const options = optionize<BindingEnergyScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new BindingEnergyScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new BindingEnergyScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: NuclideChartColors.backgroundColorProperty,
+    const strings = StringManager.getInstance().getBindingEnergyStrings();
+    const common = StringManager.getInstance().getCommonStrings();
+    const a11y = StringManager.getInstance().getBindingEnergyA11yStrings();
+    const layout = chartAndPanelsLayout(this.layoutBounds);
+    const listParent = new Node();
+
+    const label = (
+      text: TReadOnlyProperty<string> | string,
+      maxWidth = PANEL_CONTENT_WIDTH,
+      font = FONTS.LABEL,
+    ): RichText => new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
+    const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>, maxWidth = 220): Checkbox =>
+      new Checkbox(property, label(text, maxWidth), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
+    const button = (text: TReadOnlyProperty<string>, listener: () => void): RectangularPushButton =>
+      new RectangularPushButton({
+        ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+        content: new Text(text, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 130 }),
+        listener,
+        accessibleName: text,
+      });
+
+    // ── Chart ─────────────────────────────────────────────────────────────────
+    const chart = new BindingChartNode(model, CHART_WIDTH, CHART_HEIGHT, {
+      accessibleName: a11y.controls.cursorStringProperty,
+      accessibleHelpText: a11y.controls.cursorHelpStringProperty,
     });
-    this.addChild(backgroundRect);
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().bindingEnergyStringProperty, {
-      font: "bold 36px sans-serif",
-      fill: NuclideChartColors.textColorProperty,
-      center: this.layoutBounds.center,
+    // ── View choice ───────────────────────────────────────────────────────────
+    const viewGroup = new AquaRadioButtonGroup(
+      model.viewProperty,
+      [
+        { value: BindingView.CURVE, createNode: () => label(strings.view.curveStringProperty, 220) },
+        { value: BindingView.RESIDUAL_N, createNode: () => label(strings.view.residualNStringProperty, 220) },
+        { value: BindingView.RESIDUAL_Z, createNode: () => label(strings.view.residualZStringProperty, 220) },
+      ],
+      {
+        orientation: "vertical",
+        spacing: 5,
+        radioButtonOptions: { radius: 7 },
+        accessibleName: strings.viewTitleStringProperty,
+      },
+    );
+    const zoomCheckbox = checkbox(model.zoomOnPeakProperty, strings.zoomPeakStringProperty);
+    zoomCheckbox.enabledProperty = new DerivedProperty([model.viewProperty], (view) => view === BindingView.CURVE);
+    const formulaCheckbox = checkbox(model.formulaVisibleProperty, strings.showFormulaStringProperty);
+    const magicCheckbox = checkbox(model.shared.magicNumbersVisibleProperty, common.magicNumbersStringProperty);
+    const viewPanel = new NuclideChartPanel(
+      new VBox({ spacing: 6, align: "left", children: [viewGroup, zoomCheckbox, formulaCheckbox, magicCheckbox] }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+
+    // ── Mass formula ──────────────────────────────────────────────────────────
+    const termNames = strings.formula as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const termRows = MASS_FORMULA_TERMS.map((term: MassFormulaTerm) => {
+      const name = termNames[`${term}StringProperty`] as TReadOnlyProperty<string>;
+      const enabled = model.termEnabledProperties[term];
+      const coefficient = model.coefficientProperties[term];
+      const box = new Checkbox(enabled, label(name, 110), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: name });
+      const slider = new HSlider(coefficient, coefficient.range, {
+        ...NUCLIDE_CHART_SLIDER_OPTIONS,
+        trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(COEFFICIENT_SLIDER_WIDTH),
+        enabledProperty: enabled,
+        constrainValue: (value: number) => Number(value.toFixed(term === "coulomb" ? 3 : 2)),
+        keyboardStep: coefficient.range.getLength() / 50,
+        shiftKeyboardStep: coefficient.range.getLength() / 500,
+        pageKeyboardStep: coefficient.range.getLength() / 10,
+        accessibleName: name,
+        pdomCreateAriaValueText: (value: number | null) =>
+          value === null ? "" : formatFixed(value, term === "coulomb" ? 3 : 2),
+      });
+      const readout = new Text(
+        new DerivedProperty([coefficient], (value) => formatFixed(value, term === "coulomb" ? 3 : 2)),
+        { font: FONTS.READOUT, fill: NuclideChartColors.textColorProperty, maxWidth: 50 },
+      );
+      return { box, slider, readout };
     });
-    this.addChild(placeholderText);
+    const formulaGrid = new GridBox({
+      xSpacing: 8,
+      ySpacing: 4,
+      xAlign: "left",
+      rows: termRows.map((row) => [row.box, row.slider, row.readout]),
+    });
+    const fitButton = button(strings.formula.fitStringProperty, () => model.fit());
+    const textbookButton = button(strings.formula.textbookStringProperty, () => model.useTextbookValues());
+    const rmsText = label(
+      new DerivedProperty([strings.formula.rmsPatternStringProperty, model.rmsProperty], (pattern, rms) =>
+        StringUtils.fillIn(pattern, { value: formatFixed(rms.rms, 2), count: rms.count }),
+      ),
+      PANEL_CONTENT_WIDTH,
+      FONTS.SMALL,
+    );
+    const formulaPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 6,
+        align: "left",
+        children: [
+          label(strings.formula.titleStringProperty, PANEL_CONTENT_WIDTH, FONTS.TITLE),
+          formulaGrid,
+          new HBox({ spacing: 8, children: [fitButton, textbookButton] }),
+          rmsText,
+        ],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getBindingEnergyA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    // ── Energy release ────────────────────────────────────────────────────────
+    const modeGroup = new AquaRadioButtonGroup<string>(
+      model.energyModeProperty,
+      [
+        { value: "fission", createNode: () => label(strings.energy.fissionStringProperty, 100) },
+        { value: "fusion", createNode: () => label(strings.energy.fusionStringProperty, 100) },
+      ],
+      {
+        orientation: "horizontal",
+        spacing: 16,
+        radioButtonOptions: { radius: 7 },
+        accessibleName: strings.energy.titleStringProperty,
+      },
+    );
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
+    const fission = model.fissionProperty;
+    const fragmentSlider = new HSlider(model.lightFragmentAProperty, model.lightFragmentAProperty.range, {
+      ...NUCLIDE_CHART_SLIDER_OPTIONS,
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(130),
+      constrainValue: (value: number) => Math.round(value),
+      keyboardStep: 1,
+      pageKeyboardStep: 5,
+      accessibleName: strings.energy.fragmentAStringProperty,
+    });
+    const fissionReaction = label(
+      new DerivedProperty([strings.energy.fissionPatternStringProperty, fission], (pattern, f) =>
+        f ? StringUtils.fillIn(pattern, { light: nuclideMarkup(f.light), heavy: nuclideMarkup(f.heavy) }) : "",
+      ),
+    );
+    const fissionEstimate = label(
+      new DerivedProperty([strings.energy.estimatePatternStringProperty, fission], (pattern, f) =>
+        f
+          ? StringUtils.fillIn(pattern, {
+              gain: formatFixed(f.gainPerNucleon / 1000, 3),
+              count: f.target.a,
+              energy: formatFixed(f.estimate / 1000, 0),
+            })
+          : "",
+      ),
+      PANEL_CONTENT_WIDTH,
+      FONTS.SMALL,
+    );
+    const fissionQ = label(
+      new DerivedProperty([strings.energy.qPatternStringProperty, fission], (pattern, f) =>
+        f ? StringUtils.fillIn(pattern, { value: formatFixed(f.q / 1000, 1) }) : "",
+      ),
+    );
+    const fissionContent = new VBox({
+      spacing: 5,
+      align: "left",
+      children: [
+        new HBox({
+          spacing: 8,
+          children: [
+            label(strings.energy.fragmentAStringProperty, 90, FONTS.SMALL),
+            fragmentSlider,
+            new Text(new DerivedProperty([model.lightFragmentAProperty], (a) => String(a)), {
+              font: FONTS.READOUT,
+              fill: NuclideChartColors.textColorProperty,
+            }),
+          ],
+        }),
+        fissionReaction,
+        fissionEstimate,
+        fissionQ,
+      ],
+    });
+
+    const reactionBox = new ComboBox(
+      model.fusionReactionIndexProperty,
+      FUSION_REACTIONS.map((reaction, i) => ({
+        value: i,
+        createNode: () =>
+          new RichText(reaction.markup, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 230 }),
+        accessibleName: reaction.markup.replace(/<\/?sup>/g, ""),
+      })),
+      listParent,
+      { ...NUCLIDE_CHART_COMBO_BOX_OPTIONS, accessibleName: strings.energy.reactionStringProperty },
+    );
+    const fusion = model.fusionProperty;
+    const fusionGain = label(
+      new DerivedProperty([strings.energy.bindingGainPatternStringProperty, fusion], (pattern, f) =>
+        StringUtils.fillIn(pattern, { value: formatFixed(f.bindingGain / 1000, 2) }),
+      ),
+    );
+    const fusionQ = label(
+      new DerivedProperty([strings.energy.qPatternStringProperty, fusion], (pattern, f) =>
+        StringUtils.fillIn(pattern, { value: formatFixed(f.q / 1000, 2) }),
+      ),
+    );
+    const fusionContent = new VBox({ spacing: 5, align: "left", children: [reactionBox, fusionGain, fusionQ] });
+    model.energyModeProperty.link((mode) => {
+      fissionContent.visible = mode === "fission";
+      fusionContent.visible = mode === "fusion";
+    });
+    const energyPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 6,
+        align: "left",
+        children: [
+          label(strings.energy.titleStringProperty, PANEL_CONTENT_WIDTH, FONTS.TITLE),
+          modeGroup,
+          new Node({ children: [fissionContent, fusionContent] }),
+        ],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
+        this.interruptSubtreeInput();
         model.reset();
-        this.reset();
       },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
+    const credit = new DataCreditNode(PANEL_COLUMN_WIDTH - 60);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
-      new Node({
-        pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
-          resetAllButton,
-        ],
+    this.children = [
+      placeInRegion(chart, layout.chart),
+      placeInRegion(new VBox({ spacing: 8, children: [viewPanel, formulaPanel, energyPanel] }), layout.panels, {
+        yAlign: "top",
       }),
-    );
-  }
+      placeInRegion(new HBox({ spacing: 10, align: "bottom", children: [credit, resetAllButton] }), layout.footer, {
+        xAlign: "right",
+        yAlign: "bottom",
+      }),
+      listParent,
+    ];
 
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
+    this.pdomPlayAreaNode.pdomOrder = [chart, viewGroup, zoomCheckbox, formulaCheckbox, magicCheckbox];
+    this.pdomControlAreaNode.pdomOrder = [
+      ...termRows.flatMap((row) => [row.box, row.slider]),
+      fitButton,
+      textbookButton,
+      modeGroup,
+      fragmentSlider,
+      reactionBox,
+      resetAllButton,
+    ];
   }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeBindingEnergyScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in BindingEnergyScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeBindingEnergyScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeBindingEnergyScreenView();
-  //   super.dispose();
-  // }
 }

@@ -13,6 +13,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
+import type { SharedModel } from "../common/model/SharedModel.js";
 import { createDecayChainsIcon } from "../common/NuclideChartScreenIcons.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { DecayChainsModel } from "./model/DecayChainsModel.js";
@@ -23,10 +24,10 @@ import { DecayChainsScreenView } from "./view/DecayChainsScreenView.js";
 type DecayChainsScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class DecayChainsScreen extends Screen<DecayChainsModel, DecayChainsScreenView> {
-  public constructor(options: DecayChainsScreenOptions) {
+  public constructor(shared: SharedModel, options: DecayChainsScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
-      () => new DecayChainsModel(),
+      () => new DecayChainsModel(shared),
       // View factory — receives the model instance
       (model) =>
         new DecayChainsScreenView(model, {

@@ -17,7 +17,12 @@
       },
       "currentDetails": "The simulation is in its initial state.",
       "controls": {
-        "exampleControl": "Example control"
+        "map": "Chart of nuclides",
+        "mapHelp": "Arrow keys move the selection one neutron or proton at a time. Plus and minus zoom.",
+        "selectionPattern": "Selected {{label}}: {{z}} protons, {{n}} neutrons, {{decay}}.",
+        "coloring": "Color by",
+        "zoom": "Zoom",
+        "halfLifeThreshold": "Half-life threshold"
       }
     },
     "bindingEnergy": {
@@ -28,7 +33,8 @@
       },
       "currentDetails": "The simulation is in its initial state.",
       "controls": {
-        "exampleControl": "Example control"
+        "cursor": "Nuclide cursor",
+        "cursorHelp": "Left and right arrows step through mass numbers; up and down step through the isobars of one mass number."
       }
     },
     "shells": {
@@ -79,5 +85,180 @@
   "preferences": {
     "title": "Simulation",
     "exampleToggle": "Example Toggle"
+  },
+  "common": {
+    "quantities": {
+      "z": "Z",
+      "n": "N",
+      "a": "A",
+      "halfLife": "Half-life",
+      "decay": "Decay",
+      "bindingPerNucleon": "B/A",
+      "spinParity": "J<sup>π</sup>",
+      "abundance": "Abundance",
+      "massExcess": "Mass excess",
+      "separationNeutron": "S<sub>n</sub>",
+      "separationProton": "S<sub>p</sub>",
+      "radius": "Charge radius",
+      "quadrupole": "Quadrupole moment"
+    },
+    "units": {
+      "mevPattern": "{{value}} MeV",
+      "kevPattern": "{{value}} keV",
+      "mevPerNucleonPattern": "{{value}} MeV per nucleon",
+      "percentPattern": "{{value}} %",
+      "fmPattern": "{{value}} fm",
+      "barnPattern": "{{value}} b"
+    },
+    "decayModes": {
+      "stable": "Stable",
+      "betaMinus": "β⁻",
+      "betaPlus": "β⁺ / electron capture",
+      "alpha": "α",
+      "fission": "Spontaneous fission",
+      "proton": "Proton emission",
+      "neutron": "Neutron emission",
+      "isomeric": "Isomeric transition",
+      "unknown": "Unknown"
+    },
+    "card": {
+      "znaPattern": "Z = {{z}}   N = {{n}}   A = {{a}}",
+      "stable": "stable",
+      "noData": "—",
+      "estimated": "Mass estimated from systematics",
+      "noDecayData": "no decay observed",
+      "branchPattern": "{{mode}} {{percent}} %"
+    },
+    "axes": {
+      "neutronNumber": "Neutron number <i>N</i>",
+      "protonNumber": "Proton number <i>Z</i>",
+      "massNumber": "Mass number <i>A</i>",
+      "bindingPerNucleon": "Binding energy per nucleon <i>B</i>/<i>A</i> (MeV)",
+      "residual": "<i>B</i><sub>measured</sub> − <i>B</i><sub>formula</sub> (MeV)"
+    },
+    "magicNumbers": "Magic numbers",
+    "dataCreditPattern": "Data: IAEA Live Chart of Nuclides (ENSDF, NUBASE2020, AME2020), retrieved {{date}}"
+  },
+  "chart": {
+    "colorBy": "Color by",
+    "colorings": {
+      "decayMode": "Decay mode",
+      "halfLife": "Half-life",
+      "bindingPerNucleon": "Binding energy per nucleon",
+      "residual": "Mass-formula residual",
+      "abundance": "Natural abundance",
+      "measurement": "Measured or estimated mass",
+      "quadrupole": "Quadrupole moment",
+      "spin": "Ground-state spin J"
+    },
+    "legend": {
+      "measured": "Measured",
+      "estimated": "Estimated (systematics)",
+      "noData": "No data",
+      "halfLifeMin": "10⁻²⁰ s",
+      "halfLifeMax": "10²⁵ s",
+      "moreBound": "more bound than the formula",
+      "lessBound": "less bound",
+      "prolate": "prolate (+)",
+      "oblate": "oblate (−)"
+    },
+    "overlays": {
+      "nEqualsZ": "N = Z line",
+      "valley": "Valley of stability",
+      "dripLines": "Drip lines",
+      "markEstimated": "Mark estimated masses"
+    },
+    "filter": {
+      "enabled": "Only half-lives longer than",
+      "thresholdPattern": "{{value}}",
+      "ageOfEarth": "Age of the Earth"
+    },
+    "zoom": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "showAll": "Show whole chart"
+    },
+    "buttons": {
+      "qValues": "Q values…",
+      "census": "Stable census…"
+    },
+    "qValues": {
+      "titlePattern": "Which decays can {{label}} undergo?",
+      "intro": "A decay can happen only if its Q value is positive. Q comes from the atomic mass excesses Δ: Q<sub>α</sub> = Δ(parent) − Δ(daughter) − Δ(<sup>4</sup>He), Q<sub>β⁻</sub> = Q<sub>EC</sub> = Δ(parent) − Δ(daughter), Q<sub>β⁺</sub> = Q<sub>EC</sub> − 2m<sub>e</sub>c<sup>2</sup> (1.022 MeV), and Q<sub>p</sub> = −S<sub>p</sub>, Q<sub>n</sub> = −S<sub>n</sub>.",
+      "channel": "Decay",
+      "daughter": "Daughter",
+      "massExcess": "Δ (MeV)",
+      "q": "Q (MeV)",
+      "verdict": "Verdict",
+      "reveal": "Show Q values",
+      "hide": "Hide Q values",
+      "channels": {
+        "alpha": "α",
+        "betaMinus": "β⁻",
+        "electronCapture": "Electron capture",
+        "betaPlus": "β⁺",
+        "doubleBetaMinus": "Double β⁻",
+        "proton": "Proton emission",
+        "neutron": "Neutron emission"
+      },
+      "verdicts": {
+        "allowedSeen": "Allowed, observed",
+        "allowedUnseen": "Allowed, not observed",
+        "forbidden": "Forbidden (Q ≤ 0)",
+        "unknown": "Mass unknown"
+      },
+      "unseenNote": "\"Allowed, not observed\" means the decay is energetically possible but too slow to see: the α particle must tunnel, a β decay may be forbidden by spin, or a faster mode wins."
+    },
+    "census": {
+      "title": "Stable nuclides by parity of Z and N",
+      "definition": "Count as stable:",
+      "ensdf": "Never seen to decay",
+      "effective": "Half-life over 10¹⁵ years too",
+      "evenZ": "Z even",
+      "oddZ": "Z odd",
+      "evenN": "N even",
+      "oddN": "N odd",
+      "totalPattern": "Total: {{total}}",
+      "oddOddPattern": "Stable odd–odd: {{list}}",
+      "isomerNote": "Ta-180m, an excited state that has never been seen to decay, is the one odd–odd isomer found in nature."
+    }
+  },
+  "bindingEnergy": {
+    "view": {
+      "curve": "B/A against A",
+      "residualN": "Residual against N",
+      "residualZ": "Residual against Z"
+    },
+    "zoomPeak": "Zoom on the peak",
+    "showFormula": "Show formula curve",
+    "formula": {
+      "title": "Mass formula (MeV)",
+      "volume": "Volume a<sub>V</sub>",
+      "surface": "Surface a<sub>S</sub>",
+      "coulomb": "Coulomb a<sub>C</sub>",
+      "asymmetry": "Asymmetry a<sub>A</sub>",
+      "pairing": "Pairing a<sub>P</sub>",
+      "fit": "Fit to measured masses",
+      "textbook": "Textbook values",
+      "rmsPattern": "RMS residual {{value}} MeV over {{count}} nuclides",
+      "equation": "<i>B</i> = a<sub>V</sub><i>A</i> − a<sub>S</sub><i>A</i><sup>2/3</sup> − a<sub>C</sub><i>Z</i>(<i>Z</i>−1)/<i>A</i><sup>1/3</sup> − a<sub>A</sub>(<i>A</i>−2<i>Z</i>)<sup>2</sup>/<i>A</i> ± a<sub>P</sub><i>A</i><sup>−3/4</sup>"
+    },
+    "energy": {
+      "title": "Energy release",
+      "fission": "Fission",
+      "fusion": "Fusion",
+      "fragmentA": "Light fragment A",
+      "fissionPattern": "<sup>235</sup>U + n → {{light}} + {{heavy}} + 2n",
+      "estimatePattern": "From the curve: Δ(B/A) ≈ {{gain}} MeV × {{count}} nucleons ≈ {{energy}} MeV",
+      "qPattern": "From the masses: Q = {{value}} MeV",
+      "bindingGainPattern": "Gain in binding energy: {{value}} MeV",
+      "reaction": "Reaction"
+    },
+    "cursor": {
+      "readoutPattern": "{{label}}: B/A = {{value}} MeV",
+      "residualPattern": "{{label}}: measured − formula = {{value}} MeV"
+    },
+    "noA5A8": "No stable nucleus with A = 5 or A = 8",
+    "viewTitle": "Plot"
   }
 }

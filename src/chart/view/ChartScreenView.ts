@@ -1,160 +1,278 @@
 /**
  * ChartScreenView.ts
  *
- * The top-level view for the simulation screen.
- *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. NuclideChartControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ * The Chart screen: the N–Z map of every known nuclide with a choice of colouring, overlays (magic numbers,
+ * N = Z, valley of stability, drip lines), a half-life filter ("which nuclides survive since the Earth
+ * formed?"), the selected nuclide's card, a Q-value predictor and a census of stable nuclides by parity.
  */
 
+import { DerivedProperty, type Property, type TReadOnlyProperty } from "scenerystack/axon";
+import { Dimension2 } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
-import { ResetAllButton } from "scenerystack/scenery-phet";
+import { StringUtils } from "scenerystack/phetcommon";
+import { GridBox, HBox, Node, RichText, Text, VBox } from "scenerystack/scenery";
+import { MinusNode, PlusNode, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/NuclideChartButtonOptions.js";
+import { Checkbox, ComboBox, HSlider, RectangularPushButton } from "scenerystack/sun";
+import { AGE_OF_EARTH_S } from "../../common/model/NuclearConstants.js";
+import {
+  FLAT_RECTANGULAR_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  LIGHT_SURFACE_TEXT_FILL,
+  NUCLIDE_CHART_COMBO_BOX_OPTIONS,
+} from "../../common/NuclideChartButtonOptions.js";
+import {
+  NUCLIDE_CHART_CHECKBOX_OPTIONS,
+  NUCLIDE_CHART_SLIDER_OPTIONS,
+} from "../../common/NuclideChartControlOptions.js";
+import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
+import { DataCreditNode } from "../../common/view/DataCreditNode.js";
+import { formatDuration } from "../../common/view/format.js";
+import { NuclideCardNode } from "../../common/view/NuclideCardNode.js";
+import { chartStripAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../NuclideChartConstants.js";
+import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
 import type { ChartModel } from "../model/ChartModel.js";
+import { MapColoring } from "../model/MapColoring.js";
+import { CensusDialog } from "./CensusDialog.js";
 import { ChartScreenSummaryContent } from "./ChartScreenSummaryContent.js";
+import { MapLegendNode } from "./MapLegendNode.js";
+import { NuclideMapNode, ZOOM_STEP } from "./NuclideMapNode.js";
+import { QValueDialog } from "./QValueDialog.js";
 
 export type ChartScreenViewOptions = ScreenViewOptions;
 
+const MAP_WIDTH = 630;
+const MAP_HEIGHT = 452;
+const STRIP_HEIGHT = 62;
+const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
+
 export class ChartScreenView extends ScreenView {
   public constructor(model: ChartModel, providedOptions?: ChartScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See ChartScreenSummaryContent for the four content regions.
     const options = optionize<ChartScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new ChartScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new ChartScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: NuclideChartColors.backgroundColorProperty,
-    });
-    this.addChild(backgroundRect);
+    const common = StringManager.getInstance().getCommonStrings();
+    const strings = StringManager.getInstance().getChartStrings();
+    const a11y = StringManager.getInstance().getChartA11yStrings();
+    const layout = chartStripAndPanelsLayout(this.layoutBounds, PANEL_COLUMN_WIDTH, STRIP_HEIGHT);
+    const listParent = new Node();
+    const shared = model.shared;
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().chartStringProperty, {
-      font: "bold 36px sans-serif",
+    const label = (text: TReadOnlyProperty<string>, maxWidth = PANEL_CONTENT_WIDTH): RichText =>
+      new RichText(text, { font: FONTS.LABEL, fill: NuclideChartColors.textColorProperty, maxWidth });
+    const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>, maxWidth = 170): Checkbox =>
+      new Checkbox(property, label(text, maxWidth), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
+    const button = (text: TReadOnlyProperty<string>, listener: () => void): RectangularPushButton =>
+      new RectangularPushButton({
+        ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+        content: new Text(text, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 120 }),
+        listener,
+        accessibleName: text,
+      });
+
+    // ── The map, with its axis titles ─────────────────────────────────────────
+    const map = new NuclideMapNode(model, MAP_WIDTH, MAP_HEIGHT, {
+      accessibleName: a11y.controls.mapStringProperty,
+      accessibleHelpText: a11y.controls.mapHelpStringProperty,
+    });
+    const xTitle = new RichText(common.axes.neutronNumberStringProperty, {
+      font: FONTS.AXIS_LABEL,
       fill: NuclideChartColors.textColorProperty,
-      center: this.layoutBounds.center,
+      maxWidth: MAP_WIDTH,
+      centerX: MAP_WIDTH / 2,
+      top: MAP_HEIGHT + 4,
     });
-    this.addChild(placeholderText);
+    const yTitle = new RichText(common.axes.protonNumberStringProperty, {
+      font: FONTS.AXIS_LABEL,
+      fill: NuclideChartColors.textColorProperty,
+      maxWidth: MAP_HEIGHT,
+      rotation: -Math.PI / 2,
+      right: -6,
+      centerY: MAP_HEIGHT / 2,
+    });
+    xTitle.localBoundsProperty.lazyLink(() => {
+      xTitle.centerX = MAP_WIDTH / 2;
+    });
+    yTitle.localBoundsProperty.lazyLink(() => {
+      yTitle.centerY = MAP_HEIGHT / 2;
+    });
+    const mapWithTitles = new Node({ children: [map, xTitle, yTitle] });
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getChartA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    // ── Strip under the map: zoom and overlays ────────────────────────────────
+    const zoomOut = new RectangularPushButton({
+      ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+      content: new MinusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
+      listener: () => map.zoomBy(1 / ZOOM_STEP),
+      accessibleName: strings.zoom.zoomOutStringProperty,
+    });
+    const zoomIn = new RectangularPushButton({
+      ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+      content: new PlusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
+      listener: () => map.zoomBy(ZOOM_STEP),
+      accessibleName: strings.zoom.zoomInStringProperty,
+    });
+    const zoomSlider = new HSlider(model.zoomProperty, model.zoomProperty.range, {
+      ...NUCLIDE_CHART_SLIDER_OPTIONS,
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(110),
+      accessibleName: a11y.controls.zoomStringProperty,
+      keyboardStep: 0.5,
+      pageKeyboardStep: 2,
+    });
+    model.zoomProperty.lazyLink(() => map.reclamp());
+    const showAll = button(strings.zoom.showAllStringProperty, () => model.showWholeChart());
+    const zoomControls = new HBox({ spacing: 6, children: [zoomOut, zoomSlider, zoomIn, showAll] });
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
+    const overlayChecks = [
+      checkbox(shared.magicNumbersVisibleProperty, common.magicNumbersStringProperty, 140),
+      checkbox(model.nEqualsZVisibleProperty, strings.overlays.nEqualsZStringProperty, 140),
+      checkbox(model.valleyVisibleProperty, strings.overlays.valleyStringProperty, 160),
+      checkbox(model.dripLinesVisibleProperty, strings.overlays.dripLinesStringProperty, 140),
+      checkbox(model.estimatedMassesMarkedProperty, strings.overlays.markEstimatedStringProperty, 160),
+    ];
+    const overlays = new GridBox({
+      autoColumns: 3,
+      xSpacing: 12,
+      ySpacing: 6,
+      xAlign: "left",
+      children: overlayChecks,
+    });
+    const strip = new HBox({ spacing: 20, align: "center", children: [zoomControls, overlays] });
+
+    // ── Colouring and legend ──────────────────────────────────────────────────
+    const colorings = strings.colorings as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const coloringName = (coloring: MapColoring): TReadOnlyProperty<string> =>
+      colorings[`${coloring.key}StringProperty`] as TReadOnlyProperty<string>;
+    const coloringBox = new ComboBox(
+      model.coloringProperty,
+      MapColoring.enumeration.values.map((coloring) => ({
+        value: coloring,
+        createNode: () =>
+          new Text(coloringName(coloring), { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 190 }),
+        accessibleName: coloringName(coloring),
+      })),
+      listParent,
+      { ...NUCLIDE_CHART_COMBO_BOX_OPTIONS, accessibleName: a11y.controls.coloringStringProperty },
+    );
+    const coloringPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 8,
+        align: "left",
+        children: [
+          new HBox({ spacing: 8, children: [label(strings.colorByStringProperty, 70), coloringBox] }),
+          new MapLegendNode(model.coloringProperty, PANEL_CONTENT_WIDTH),
+        ],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+
+    // ── Selected nuclide ──────────────────────────────────────────────────────
+    const qValueDialog = new QValueDialog(shared.selectedNuclideProperty);
+    const censusDialog = new CensusDialog(shared.stabilityDefinitionProperty);
+    const qButton = button(strings.buttons.qValuesStringProperty, () => qValueDialog.show());
+    const censusButton = button(strings.buttons.censusStringProperty, () => censusDialog.show());
+    const cardPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 8,
+        align: "left",
+        children: [
+          new NuclideCardNode(shared.selectedNuclideProperty, { contentWidth: PANEL_CONTENT_WIDTH }),
+          new HBox({ spacing: 8, children: [qButton, censusButton] }),
+        ],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+
+    // ── Half-life filter ──────────────────────────────────────────────────────
+    const filterCheckbox = checkbox(model.halfLifeFilterEnabledProperty, strings.filter.enabledStringProperty, 230);
+    const thresholdText = new DerivedProperty([model.halfLifeThresholdProperty], (log) => formatDuration(10 ** log));
+    const thresholdSlider = new HSlider(model.halfLifeThresholdProperty, model.halfLifeThresholdProperty.range, {
+      ...NUCLIDE_CHART_SLIDER_OPTIONS,
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(170),
+      enabledProperty: model.halfLifeFilterEnabledProperty,
+      keyboardStep: 0.5,
+      shiftKeyboardStep: 0.1,
+      pageKeyboardStep: 2,
+      accessibleName: a11y.controls.halfLifeThresholdStringProperty,
+      pdomCreateAriaValueText: (value: number | null) => (value === null ? "" : formatDuration(10 ** value)),
+    });
+    thresholdSlider.addMajorTick(
+      Math.log10(AGE_OF_EARTH_S),
+      new Text(strings.filter.ageOfEarthStringProperty, {
+        font: FONTS.SMALL,
+        fill: NuclideChartColors.textColorProperty,
+        maxWidth: 110,
+      }),
+    );
+    const filterPanel = new NuclideChartPanel(
+      new VBox({
+        spacing: 4,
+        align: "left",
+        children: [
+          filterCheckbox,
+          new HBox({
+            spacing: 10,
+            children: [
+              thresholdSlider,
+              new Text(thresholdText, {
+                font: FONTS.READOUT,
+                fill: NuclideChartColors.textColorProperty,
+                maxWidth: 80,
+              }),
+            ],
+          }),
+        ],
+      }),
+      { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
+    );
+
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
+        this.interruptSubtreeInput();
         model.reset();
-        this.reset();
       },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
+    const credit = new DataCreditNode(PANEL_COLUMN_WIDTH - 60);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
-      new Node({
-        pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
-          resetAllButton,
-        ],
+    this.children = [
+      placeInRegion(mapWithTitles, layout.chart),
+      placeInRegion(strip, layout.strip),
+      placeInRegion(new VBox({ spacing: 8, children: [coloringPanel, cardPanel, filterPanel] }), layout.panels, {
+        yAlign: "top",
       }),
+      placeInRegion(new HBox({ spacing: 10, align: "bottom", children: [credit, resetAllButton] }), layout.footer, {
+        xAlign: "right",
+        yAlign: "bottom",
+      }),
+      listParent,
+    ];
+
+    // Short description of the selection, for screen readers.
+    const selectionDescription = new DerivedProperty(
+      [a11y.controls.selectionPatternStringProperty, shared.selectedNuclideProperty],
+      (pattern, nuclide) =>
+        StringUtils.fillIn(pattern, {
+          label: nuclide.label,
+          z: nuclide.z,
+          n: nuclide.n,
+          decay: nuclide.isStable ? common.card.stableStringProperty.value : nuclide.halfLifeText,
+        }),
     );
-  }
+    shared.selectedNuclideProperty.lazyLink(() => map.addAccessibleResponse(selectionDescription.value));
 
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
+    this.pdomPlayAreaNode.pdomOrder = [map, zoomOut, zoomSlider, zoomIn, showAll, ...overlayChecks];
+    this.pdomControlAreaNode.pdomOrder = [
+      coloringBox,
+      qButton,
+      censusButton,
+      filterCheckbox,
+      thresholdSlider,
+      resetAllButton,
+    ];
   }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeChartScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in ChartScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeChartScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeChartScreenView();
-  //   super.dispose();
-  // }
 }

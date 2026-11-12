@@ -21,14 +21,21 @@
  * Property declared here.
  */
 import type { TModel } from "scenerystack/joist";
+import type { SharedModel } from "../../common/model/SharedModel.js";
 
 export class HalfLivesModel implements TModel {
+  public readonly shared: SharedModel;
+
+  public constructor(shared: SharedModel) {
+    this.shared = shared;
+  }
+
   /**
    * Resets all model state to initial values.
    * Called when the user presses the Reset All button.
    */
   public reset(): void {
-    // TODO: call .reset() on every Property declared in this model
+    this.shared.reset();
   }
 
   /**

@@ -13,6 +13,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
+import type { SharedModel } from "../common/model/SharedModel.js";
 import { createBindingEnergyIcon } from "../common/NuclideChartScreenIcons.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { BindingEnergyModel } from "./model/BindingEnergyModel.js";
@@ -23,10 +24,10 @@ import { BindingEnergyScreenView } from "./view/BindingEnergyScreenView.js";
 type BindingEnergyScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class BindingEnergyScreen extends Screen<BindingEnergyModel, BindingEnergyScreenView> {
-  public constructor(options: BindingEnergyScreenOptions) {
+  public constructor(shared: SharedModel, options: BindingEnergyScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
-      () => new BindingEnergyModel(),
+      () => new BindingEnergyModel(shared),
       // View factory — receives the model instance
       (model) =>
         new BindingEnergyScreenView(model, {

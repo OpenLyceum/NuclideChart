@@ -13,6 +13,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
+import type { SharedModel } from "../common/model/SharedModel.js";
 import { createChartIcon } from "../common/NuclideChartScreenIcons.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { ChartModel } from "./model/ChartModel.js";
@@ -23,10 +24,10 @@ import { ChartScreenView } from "./view/ChartScreenView.js";
 type ChartScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class ChartScreen extends Screen<ChartModel, ChartScreenView> {
-  public constructor(options: ChartScreenOptions) {
+  public constructor(shared: SharedModel, options: ChartScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
-      () => new ChartModel(),
+      () => new ChartModel(shared),
       // View factory — receives the model instance
       (model) =>
         new ChartScreenView(model, {
