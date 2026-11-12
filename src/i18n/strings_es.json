@@ -184,7 +184,7 @@
     },
     "qValues": {
       "titlePattern": "Which decays can {{label}} undergo?",
-      "intro": "A decay can happen only if its Q value is positive. Q comes from the atomic mass excesses Δ: Q<sub>α</sub> = Δ(parent) − Δ(daughter) − Δ(<sup>4</sup>He), Q<sub>β⁻</sub> = Q<sub>EC</sub> = Δ(parent) − Δ(daughter), Q<sub>β⁺</sub> = Q<sub>EC</sub> − 2m<sub>e</sub>c<sup>2</sup> (1.022 MeV), and Q<sub>p</sub> = −S<sub>p</sub>, Q<sub>n</sub> = −S<sub>n</sub>.",
+      "intro": "A decay can happen only if its Q value is positive. Q comes from the atomic mass excesses Δ:<br>Q<sub>α</sub> = Δ(parent) − Δ(daughter) − Δ(<sup>4</sup>He)<br>Q<sub>β⁻</sub> = Q<sub>EC</sub> = Δ(parent) − Δ(daughter)<br>Q<sub>β⁺</sub> = Q<sub>EC</sub> − 2m<sub>e</sub>c<sup>2</sup> = Q<sub>EC</sub> − 1.022 MeV<br>Q<sub>p</sub> = −S<sub>p</sub> and Q<sub>n</sub> = −S<sub>n</sub>",
       "channel": "Decay",
       "daughter": "Daughter",
       "massExcess": "Δ (MeV)",
