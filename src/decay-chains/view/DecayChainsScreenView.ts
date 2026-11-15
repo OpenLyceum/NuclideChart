@@ -29,7 +29,15 @@ import { NuclideCardNode } from "../../common/view/NuclideCardNode.js";
 import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  CONTROLS,
+  DECAY_CHAINS,
+  FONTS,
+  LAYOUT,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+} from "../../NuclideChartConstants.js";
 import { type DecayChainsModel, datingClock, QUICK_FISSION_A } from "../model/DecayChainsModel.js";
 import { ActivityChartNode } from "./ActivityChartNode.js";
 import { ChainDiagramNode } from "./ChainDiagramNode.js";
@@ -37,12 +45,6 @@ import { DecayChainsScreenSummaryContent } from "./DecayChainsScreenSummaryConte
 import { FissionProductsNode } from "./FissionProductsNode.js";
 
 export type DecayChainsScreenViewOptions = ScreenViewOptions;
-
-const LEFT_WIDTH = 600;
-const DIAGRAM_HEIGHT = 262;
-const ACTIVITY_HEIGHT = 214;
-const YIELD_HEIGHT = 300;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
 
 export class DecayChainsScreenView extends ScreenView {
   public constructor(model: DecayChainsModel, providedOptions?: DecayChainsScreenViewOptions) {
@@ -70,17 +72,23 @@ export class DecayChainsScreenView extends ScreenView {
       });
 
     // ── Natural series ────────────────────────────────────────────────────────
-    const diagram = new ChainDiagramNode(model.chainProperty, selected, LEFT_WIDTH, DIAGRAM_HEIGHT, {
-      accessibleName: a11y.controls.chainChartStringProperty,
-      accessibleHelpText: a11y.controls.chainChartHelpStringProperty,
-    });
-    const diagramTitle = label(strings.chartTitleStringProperty, LEFT_WIDTH, FONTS.SMALL);
+    const diagram = new ChainDiagramNode(
+      model.chainProperty,
+      selected,
+      DECAY_CHAINS.LEFT_WIDTH,
+      DECAY_CHAINS.DIAGRAM_HEIGHT,
+      {
+        accessibleName: a11y.controls.chainChartStringProperty,
+        accessibleHelpText: a11y.controls.chainChartHelpStringProperty,
+      },
+    );
+    const diagramTitle = label(strings.chartTitleStringProperty, DECAY_CHAINS.LEFT_WIDTH, FONTS.SMALL);
     const activity = new ActivityChartNode(
       model.solutionProperty,
       model.logTimeProperty,
       selected,
-      LEFT_WIDTH - 60,
-      ACTIVITY_HEIGHT,
+      DECAY_CHAINS.LEFT_WIDTH - 60,
+      DECAY_CHAINS.ACTIVITY_HEIGHT,
       {
         time: strings.timeAxisStringProperty,
         activity: strings.activityAxisStringProperty,
@@ -97,8 +105,8 @@ export class DecayChainsScreenView extends ScreenView {
       model.fissionSystemIndexProperty,
       model.fissionMassNumberProperty,
       selected,
-      LEFT_WIDTH - 60,
-      YIELD_HEIGHT,
+      DECAY_CHAINS.LEFT_WIDTH - 60,
+      DECAY_CHAINS.YIELD_HEIGHT,
     );
     const left = new Node({ children: [seriesContent, fission] });
 
@@ -112,7 +120,7 @@ export class DecayChainsScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 5,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.modeTitleStringProperty,
       },
     );
@@ -126,7 +134,7 @@ export class DecayChainsScreenView extends ScreenView {
       {
         orientation: "horizontal",
         spacing: 12,
-        radioButtonOptions: { radius: 6 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.seriesTitleStringProperty,
       },
     );
@@ -201,7 +209,7 @@ export class DecayChainsScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 4,
-        radioButtonOptions: { radius: 6 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.fissionSystemTitleStringProperty,
       },
     );
@@ -270,12 +278,16 @@ export class DecayChainsScreenView extends ScreenView {
 
     this.children = [
       placeInRegion(left, layout.chart, { yAlign: "top" }),
-      placeInRegion(new VBox({ spacing: 8, children: [controlsPanel, cardPanel] }), layout.panels, { yAlign: "top" }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [controlsPanel, cardPanel] }),
+        layout.panels,
+        { yAlign: "top" },
+      ),
       placeInRegion(
         new HBox({
-          spacing: 10,
+          spacing: LAYOUT.FOOTER_SPACING,
           align: "bottom",
-          children: [new DataCreditNode(PANEL_COLUMN_WIDTH - 60), resetAllButton],
+          children: [new DataCreditNode(PANEL_CREDIT_WIDTH), resetAllButton],
         }),
         layout.footer,
         { xAlign: "right", yAlign: "bottom" },

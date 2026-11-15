@@ -20,13 +20,13 @@ import { nuclideMarkup } from "../../common/view/NuclideCardNode.js";
 import { PlotFrameNode } from "../../common/view/PlotFrameNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
+import { DECAY_CHAINS, FONTS } from "../../NuclideChartConstants.js";
 
-const A_RANGE = new Range(66, 172);
-const YIELD_MAX = 8;
+const A_RANGE = DECAY_CHAINS.FISSION_A_RANGE;
+const YIELD_MAX = DECAY_CHAINS.YIELD_MAX;
 /** Members made in fewer than this fraction of fissions (and not on the way to the end) are left out. */
-const MIN_INDEPENDENT = 1e-6;
-const ROW_HEIGHT = 21;
+const MIN_INDEPENDENT = DECAY_CHAINS.MIN_INDEPENDENT;
+const ROW_HEIGHT = DECAY_CHAINS.FISSION_ROW_HEIGHT;
 /** Left edge of each table column, as a fraction of the width. */
 const COLUMNS = [0, 0.2, 0.42, 0.66, 1];
 

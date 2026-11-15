@@ -16,10 +16,7 @@
 
 import { Bounds2 } from "scenerystack/dot";
 import { AlignBox, type Node } from "scenerystack/scenery";
-import { PANEL_COLUMN_WIDTH, REGION_GAP, SCREEN_VIEW_MARGIN } from "../../NuclideChartConstants.js";
-
-/** Height of the footer (Reset All, and anything placed beside it). */
-const FOOTER_HEIGHT = 46;
+import { LAYOUT, PANEL_COLUMN_WIDTH, REGION_GAP, SCREEN_VIEW_MARGIN } from "../../NuclideChartConstants.js";
 
 export type ChartAndPanelsLayout = {
   readonly chart: Bounds2;
@@ -30,7 +27,7 @@ export type ChartAndPanelsLayout = {
 export const chartAndPanelsLayout = (layoutBounds: Bounds2, panelWidth = PANEL_COLUMN_WIDTH): ChartAndPanelsLayout => {
   const b = layoutBounds.eroded(SCREEN_VIEW_MARGIN);
   const left = b.maxX - panelWidth;
-  const footerTop = b.maxY - FOOTER_HEIGHT;
+  const footerTop = b.maxY - LAYOUT.FOOTER_HEIGHT;
   return {
     chart: new Bounds2(b.minX, b.minY, left - REGION_GAP, b.maxY),
     panels: new Bounds2(left, b.minY, b.maxX, footerTop - REGION_GAP),
@@ -42,9 +39,6 @@ export type ChartStripAndPanelsLayout = ChartAndPanelsLayout & {
   /** Under the chart: the chart's own settings. */
   readonly strip: Bounds2;
 };
-
-/** Default height of the settings strip under the chart. */
-const STRIP_HEIGHT = 64;
 
 /**
  * The chart-and-panels layout with a settings strip under the chart, for screens whose panel column is
@@ -59,7 +53,7 @@ const STRIP_HEIGHT = 64;
 export const chartStripAndPanelsLayout = (
   layoutBounds: Bounds2,
   panelWidth = PANEL_COLUMN_WIDTH,
-  stripHeight = STRIP_HEIGHT,
+  stripHeight: number = LAYOUT.STRIP_HEIGHT,
 ): ChartStripAndPanelsLayout => {
   const base = chartAndPanelsLayout(layoutBounds, panelWidth);
   const stripTop = base.chart.maxY - stripHeight;

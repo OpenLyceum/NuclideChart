@@ -40,16 +40,20 @@ import type { PointStyle } from "../../common/view/PointCloudNode.js";
 import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  CONTROLS,
+  FONTS,
+  HALF_LIVES,
+  LAYOUT,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+  SCATTER_CHART,
+} from "../../NuclideChartConstants.js";
 import { HalfLifeView, type HalfLivesModel } from "../model/HalfLivesModel.js";
 import { HalfLivesScreenSummaryContent } from "./HalfLivesScreenSummaryContent.js";
 
 export type HalfLivesScreenViewOptions = ScreenViewOptions;
-
-const CHART_WIDTH = 590;
-const CHART_HEIGHT = 500;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
-const AGE_OF_UNIVERSE_S = 13.8e9 * SECONDS_PER_YEAR;
 
 /** Nuclides called out on the explorer, chosen for what students meet in class. */
 const NOTABLE = ["K-40", "U-238", "U-235", "Th-232", "Pu-244", "Np-237", "C-14", "I-131", "Cs-137", "Te-128"];
@@ -116,7 +120,7 @@ export class HalfLivesScreenView extends ScreenView {
     const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>): Checkbox =>
       new Checkbox(property, label(text, 230), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
 
-    const chart = new NuclideScatterNode(selected, CHART_WIDTH, CHART_HEIGHT, {
+    const chart = new NuclideScatterNode(selected, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT, {
       accessibleName: a11y.controls.chartStringProperty,
       accessibleHelpText: a11y.controls.chartHelpStringProperty,
     });
@@ -137,7 +141,7 @@ export class HalfLivesScreenView extends ScreenView {
     const smallLabel = (
       text: string | TReadOnlyProperty<string>,
       fill = NuclideChartColors.axisColorProperty,
-    ): RichText => new RichText(text, { font: FONTS.CHART_LABEL, fill, maxWidth: CHART_WIDTH / 2 });
+    ): RichText => new RichText(text, { font: FONTS.CHART_LABEL, fill, maxWidth: SCATTER_CHART.WIDTH / 2 });
 
     /** A horizontal guide at a half-life, with its label at the right. */
     const horizontalGuide = (
@@ -151,15 +155,15 @@ export class HalfLivesScreenView extends ScreenView {
     ): void => {
       const y = logScale ? seconds : seconds / SECONDS_PER_YEAR / 1e9;
       const view = chart.viewPosition(chart.frame.axes.x.range.min, y);
-      if (!view || view.y < 0 || view.y > CHART_HEIGHT) {
+      if (!view || view.y < 0 || view.y > SCATTER_CHART.HEIGHT) {
         return;
       }
-      shape.moveTo(0, view.y).lineTo(CHART_WIDTH, view.y);
+      shape.moveTo(0, view.y).lineTo(SCATTER_CHART.WIDTH, view.y);
       const guideLabel = smallLabel(text);
       if (alignLeft) {
         guideLabel.left = 4;
       } else {
-        guideLabel.right = CHART_WIDTH - 4;
+        guideLabel.right = SCATTER_CHART.WIDTH - 4;
       }
       if (below) {
         guideLabel.top = view.y + 2;
@@ -197,7 +201,7 @@ export class HalfLivesScreenView extends ScreenView {
         explorerX(tcGround),
         logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / 1e9,
       );
-      if (!view || view.y <= 8 || view.y >= CHART_HEIGHT - 4) {
+      if (!view || view.y <= 8 || view.y >= SCATTER_CHART.HEIGHT - 4) {
         return [];
       }
       return [
@@ -218,7 +222,7 @@ export class HalfLivesScreenView extends ScreenView {
         const p = chart.pointOf(x);
         return { x, view: p ? chart.viewPosition(p.x, p.y) : null };
       })
-        .filter((c) => c.view !== null && c.view.y > 8 && c.view.y < CHART_HEIGHT - 4)
+        .filter((c) => c.view !== null && c.view.y > 8 && c.view.y < SCATTER_CHART.HEIGHT - 4)
         .sort((p, q) => (p.view?.y ?? 0) - (q.view?.y ?? 0));
       for (const { x, view } of candidates) {
         if (!view) {
@@ -245,8 +249,10 @@ export class HalfLivesScreenView extends ScreenView {
       const logScale = model.logScaleProperty.value;
       const byA = model.explorerAxisProperty.value === "massNumber";
       chart.setAxes(
-        { range: byA ? new Range(0, 300) : new Range(-16, 12), log: false },
-        logScale ? { range: new Range(1e-24, 1e34), log: true } : { range: new Range(0, 16), log: false },
+        { range: byA ? new Range(0, HALF_LIVES.EXPLORER_A_MAX) : HALF_LIVES.EXPLORER_VALLEY_X, log: false },
+        logScale
+          ? { range: HALF_LIVES.EXPLORER_LOG_Y, log: true }
+          : { range: HALF_LIVES.EXPLORER_LINEAR_Y, log: false },
       );
       chart.frame.setAxisLabels(
         byA ? common.axes.massNumberStringProperty : strings.axes.valleyDistanceStringProperty,
@@ -266,14 +272,21 @@ export class HalfLivesScreenView extends ScreenView {
       if (logScale) {
         horizontalGuide(guides, 1, strings.guides.secondStringProperty, true, labels);
         horizontalGuide(guides, SECONDS_PER_YEAR, strings.guides.yearStringProperty, true, labels);
-        horizontalGuide(guides, AGE_OF_UNIVERSE_S, strings.guides.universeStringProperty, true, labels, true);
+        horizontalGuide(
+          guides,
+          HALF_LIVES.AGE_OF_UNIVERSE_S,
+          strings.guides.universeStringProperty,
+          true,
+          labels,
+          true,
+        );
       } else {
         labels.push(
           Object.assign(
             new RichText(strings.linearNoteStringProperty, {
               font: FONTS.LABEL,
               fill: NuclideChartColors.textColorProperty,
-              lineWrap: CHART_WIDTH - 40,
+              lineWrap: SCATTER_CHART.WIDTH - 40,
             }),
             { left: 20, top: 30 },
           ),
@@ -313,8 +326,8 @@ export class HalfLivesScreenView extends ScreenView {
     };
 
     const updateGeigerNuttall = (): void => {
-      const xRange = new Range(0.3, 0.56);
-      chart.setAxes({ range: xRange, log: false }, { range: new Range(1e-8, 1e24), log: true });
+      const xRange = HALF_LIVES.GEIGER_X;
+      chart.setAxes({ range: xRange, log: false }, { range: HALF_LIVES.GEIGER_Y, log: true });
       chart.frame.setAxisLabels(strings.axes.qAlphaInverseRootStringProperty, strings.axes.alphaHalfLifeStringProperty);
       const z = selected.value.z;
       const points = GEIGER_NUTTALL.map((p: GeigerNuttallPoint) => ({
@@ -377,8 +390,8 @@ export class HalfLivesScreenView extends ScreenView {
     };
 
     const updateSargent = (): void => {
-      const xRange = new Range(0.01, 30);
-      chart.setAxes({ range: xRange, log: true }, { range: new Range(1e-4, 1e20), log: true });
+      const xRange = HALF_LIVES.SARGENT_X;
+      chart.setAxes({ range: xRange, log: true }, { range: HALF_LIVES.SARGENT_Y, log: true });
       chart.frame.setAxisLabels(strings.axes.qBetaStringProperty, strings.axes.betaHalfLifeStringProperty);
       chart.setPoints(
         SARGENT.map((p) => ({ nuclide: p.nuclide, x: p.qBeta, y: 10 ** p.logHalfLife, group: 0 })),
@@ -444,7 +457,7 @@ export class HalfLivesScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 5,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.viewTitleStringProperty,
       },
     );
@@ -457,7 +470,7 @@ export class HalfLivesScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 4,
-        radioButtonOptions: { radius: 6 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.xAxisTitleStringProperty,
       },
     );
@@ -565,12 +578,16 @@ export class HalfLivesScreenView extends ScreenView {
 
     this.children = [
       placeInRegion(chart, layout.chart),
-      placeInRegion(new VBox({ spacing: 8, children: [controlsPanel, cardPanel] }), layout.panels, { yAlign: "top" }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [controlsPanel, cardPanel] }),
+        layout.panels,
+        { yAlign: "top" },
+      ),
       placeInRegion(
         new HBox({
-          spacing: 10,
+          spacing: LAYOUT.FOOTER_SPACING,
           align: "bottom",
-          children: [new DataCreditNode(PANEL_COLUMN_WIDTH - 60), resetAllButton],
+          children: [new DataCreditNode(PANEL_CREDIT_WIDTH), resetAllButton],
         }),
         layout.footer,
         { xAlign: "right", yAlign: "bottom" },

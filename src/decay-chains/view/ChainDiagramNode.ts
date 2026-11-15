@@ -17,9 +17,9 @@ import { categoryOfMode, DecayCategory } from "../../common/model/DecayCategory.
 import type { ChainNode, DecayChain } from "../../common/model/decayChains.js";
 import { NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
+import { DECAY_CHAINS, FONTS } from "../../NuclideChartConstants.js";
 
-const MAX_CELL = 34;
+const MAX_CELL = DECAY_CHAINS.MAX_CELL;
 
 /** The category a chain member is coloured by: its strongest kept branch, or stable. */
 const nodeCategory = (node: ChainNode): DecayCategory => {

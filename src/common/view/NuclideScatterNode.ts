@@ -11,7 +11,7 @@ import type { Property, TReadOnlyProperty } from "scenerystack/axon";
 import { Vector2 } from "scenerystack/dot";
 import { Circle, KeyboardListener, Node, type NodeOptions, Rectangle } from "scenerystack/scenery";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { PICK_DISTANCE } from "../../NuclideChartConstants.js";
+import { SELECTION } from "../../NuclideChartConstants.js";
 import type { Nuclide } from "../model/NuclideTable.js";
 import { type PlotAxis, PlotFrameNode, toAxis } from "./PlotFrameNode.js";
 import { PointCloudNode, type PointStyle } from "./PointCloudNode.js";
@@ -52,13 +52,17 @@ export class NuclideScatterNode extends Node {
     this.selectedProperty = selectedProperty;
     this.frame = new PlotFrameNode(width, height);
     this.cloud = new PointCloudNode(this.frame.chartTransform);
-    this.ring = new Circle(6, { stroke: NuclideChartColors.selectionColorProperty, lineWidth: 2, pickable: false });
+    this.ring = new Circle(SELECTION.RING_RADIUS, {
+      stroke: NuclideChartColors.selectionColorProperty,
+      lineWidth: SELECTION.RING_LINE_WIDTH,
+      pickable: false,
+    });
 
     const hitArea = new Rectangle(0, 0, width, height, { fill: "rgba(0,0,0,0)", cursor: "pointer" });
     hitArea.addInputListener({
       down: (event) => {
         const local = this.frame.plotLayer.globalToLocalPoint(event.pointer.point);
-        const k = this.cloud.nearest(local.x, local.y, PICK_DISTANCE * 2);
+        const k = this.cloud.nearest(local.x, local.y, SELECTION.CLICK_PICK_DISTANCE);
         const point = k === null ? null : this.points[k];
         if (point) {
           selectedProperty.value = point.nuclide;

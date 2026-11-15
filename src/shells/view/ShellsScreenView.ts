@@ -34,15 +34,21 @@ import type { PointStyle } from "../../common/view/PointCloudNode.js";
 import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  CONTROLS,
+  FONTS,
+  LAYOUT,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+  SCATTER_CHART,
+  SHELLS,
+  STROKE,
+} from "../../NuclideChartConstants.js";
 import { isNeutronKind, SEPARATION_KINDS, type ShellsModel } from "../model/ShellsModel.js";
 import { ShellsScreenSummaryContent } from "./ShellsScreenSummaryContent.js";
 
 export type ShellsScreenViewOptions = ScreenViewOptions;
-
-const CHART_WIDTH = 590;
-const CHART_HEIGHT = 500;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
 
 const css =
   (property: { value: { toCSS(): string } }): (() => string) =>
@@ -78,7 +84,7 @@ export class ShellsScreenView extends ScreenView {
       new Checkbox(property, label(text, 230), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
 
     // ── Chart ─────────────────────────────────────────────────────────────────
-    const chart = new NuclideScatterNode(selected, CHART_WIDTH, CHART_HEIGHT, {
+    const chart = new NuclideScatterNode(selected, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT, {
       accessibleName: a11y.controls.chartStringProperty,
       accessibleHelpText: a11y.controls.chartHelpStringProperty,
     });
@@ -86,9 +92,12 @@ export class ShellsScreenView extends ScreenView {
     const unboundLabel = new RichText(strings.unboundStringProperty, {
       font: FONTS.SMALL,
       fill: NuclideChartColors.betaPlusColorProperty,
-      maxWidth: CHART_WIDTH - 20,
+      maxWidth: SCATTER_CHART.WIDTH - 20,
     });
-    const magicPath = new Path(null, { stroke: NuclideChartColors.magicLineColorProperty, lineDash: [5, 4] });
+    const magicPath = new Path(null, {
+      stroke: NuclideChartColors.magicLineColorProperty,
+      lineDash: [...STROKE.MAGIC_DASH],
+    });
     const linesPath = new Path(null, { stroke: NuclideChartColors.pointColorProperty, lineWidth: 0.6, opacity: 0.5 });
     const highlightPath = new Path(null, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 2.5 });
     const magicLabels = new Node();
@@ -149,8 +158,8 @@ export class ShellsScreenView extends ScreenView {
       }
       const labels: Node[] = [];
       const xs = visible ? MAGIC_NUMBERS.map((m) => [m, transform.modelToViewX(m)] as const) : [];
-      for (const [m, x] of xs.filter(([, at]) => at > 0 && at < CHART_WIDTH)) {
-        magicShape.moveTo(x, 0).lineTo(x, CHART_HEIGHT);
+      for (const [m, x] of xs.filter(([, at]) => at > 0 && at < SCATTER_CHART.WIDTH)) {
+        magicShape.moveTo(x, 0).lineTo(x, SCATTER_CHART.HEIGHT);
         labels.push(
           new RichText(String(m), {
             font: FONTS.CHART_LABEL,
@@ -169,8 +178,8 @@ export class ShellsScreenView extends ScreenView {
       const neutron = isNeutronKind(kind);
       const two = kind === "twoNeutron" || kind === "twoProton";
       chart.setAxes(
-        { range: new Range(0, neutron ? 165 : 120), log: false },
-        { range: new Range(-5, two ? 40 : 28), log: false },
+        { range: new Range(0, neutron ? SHELLS.N_MAX : SHELLS.Z_MAX), log: false },
+        { range: new Range(SHELLS.Y_MIN, two ? SHELLS.Y_MAX_TWO : SHELLS.Y_MAX_ONE), log: false },
       );
       const axes = strings.axes as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
       chart.frame.setAxisLabels(
@@ -191,9 +200,9 @@ export class ShellsScreenView extends ScreenView {
       const transform = chart.frame.chartTransform;
       updateMagic(model.shared.magicNumbersVisibleProperty.value);
       const zeroY = transform.modelToViewY(0);
-      unboundBand.setRect(0, zeroY, CHART_WIDTH, CHART_HEIGHT - zeroY);
+      unboundBand.setRect(0, zeroY, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT - zeroY);
       unboundLabel.left = 6;
-      unboundLabel.bottom = CHART_HEIGHT - 4;
+      unboundLabel.bottom = SCATTER_CHART.HEIGHT - 4;
     };
     Multilink.multilink(
       [model.kindProperty, model.estimatedVisibleProperty, model.shared.magicNumbersVisibleProperty],
@@ -223,7 +232,7 @@ export class ShellsScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 5,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.kindTitleStringProperty,
       },
     );
@@ -308,14 +317,18 @@ export class ShellsScreenView extends ScreenView {
 
     this.children = [
       placeInRegion(chart, layout.chart),
-      placeInRegion(new VBox({ spacing: 8, children: [controlsPanel, readoutPanel, cardPanel] }), layout.panels, {
-        yAlign: "top",
-      }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [controlsPanel, readoutPanel, cardPanel] }),
+        layout.panels,
+        {
+          yAlign: "top",
+        },
+      ),
       placeInRegion(
         new HBox({
-          spacing: 10,
+          spacing: LAYOUT.FOOTER_SPACING,
           align: "bottom",
-          children: [new DataCreditNode(PANEL_COLUMN_WIDTH - 60), resetAllButton],
+          children: [new DataCreditNode(PANEL_CREDIT_WIDTH), resetAllButton],
         }),
         layout.footer,
         { xAlign: "right", yAlign: "bottom" },

@@ -29,7 +29,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { Node } from "scenerystack/scenery";
 import { Panel, type PanelOptions } from "scenerystack/sun";
 import NuclideChartColors from "../NuclideChartColors.js";
-import { PANEL_CORNER_RADIUS } from "../NuclideChartConstants.js";
+import { PANEL, PANEL_CORNER_RADIUS } from "../NuclideChartConstants.js";
 
 export type NuclideChartPanelOptions = PanelOptions;
 
@@ -40,8 +40,8 @@ export class NuclideChartPanel extends Panel {
         fill: NuclideChartColors.panelBackgroundColorProperty,
         stroke: NuclideChartColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: 12,
-        yMargin: 10,
+        xMargin: PANEL.X_MARGIN,
+        yMargin: PANEL.Y_MARGIN,
       },
       providedOptions,
     );

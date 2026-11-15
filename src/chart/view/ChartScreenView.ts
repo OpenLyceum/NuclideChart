@@ -32,21 +32,24 @@ import { NuclideCardNode } from "../../common/view/NuclideCardNode.js";
 import { chartStripAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  CHART,
+  FONTS,
+  LAYOUT,
+  MAP,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+} from "../../NuclideChartConstants.js";
 import type { ChartModel } from "../model/ChartModel.js";
 import { MapColoring } from "../model/MapColoring.js";
 import { CensusDialog } from "./CensusDialog.js";
 import { ChartScreenSummaryContent } from "./ChartScreenSummaryContent.js";
 import { MapLegendNode } from "./MapLegendNode.js";
-import { NuclideMapNode, ZOOM_STEP } from "./NuclideMapNode.js";
+import { NuclideMapNode } from "./NuclideMapNode.js";
 import { QValueDialog } from "./QValueDialog.js";
 
 export type ChartScreenViewOptions = ScreenViewOptions;
-
-const MAP_WIDTH = 630;
-const MAP_HEIGHT = 452;
-const STRIP_HEIGHT = 62;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
 
 export class ChartScreenView extends ScreenView {
   public constructor(model: ChartModel, providedOptions?: ChartScreenViewOptions) {
@@ -59,7 +62,7 @@ export class ChartScreenView extends ScreenView {
     const common = StringManager.getInstance().getCommonStrings();
     const strings = StringManager.getInstance().getChartStrings();
     const a11y = StringManager.getInstance().getChartA11yStrings();
-    const layout = chartStripAndPanelsLayout(this.layoutBounds, PANEL_COLUMN_WIDTH, STRIP_HEIGHT);
+    const layout = chartStripAndPanelsLayout(this.layoutBounds, PANEL_COLUMN_WIDTH, CHART.STRIP_HEIGHT);
     const listParent = new Node();
     const shared = model.shared;
 
@@ -76,30 +79,30 @@ export class ChartScreenView extends ScreenView {
       });
 
     // ── The map, with its axis titles ─────────────────────────────────────────
-    const map = new NuclideMapNode(model, MAP_WIDTH, MAP_HEIGHT, {
+    const map = new NuclideMapNode(model, CHART.MAP_WIDTH, CHART.MAP_HEIGHT, {
       accessibleName: a11y.controls.mapStringProperty,
       accessibleHelpText: a11y.controls.mapHelpStringProperty,
     });
     const xTitle = new RichText(common.axes.neutronNumberStringProperty, {
       font: FONTS.AXIS_LABEL,
       fill: NuclideChartColors.textColorProperty,
-      maxWidth: MAP_WIDTH,
-      centerX: MAP_WIDTH / 2,
-      top: MAP_HEIGHT + 4,
+      maxWidth: CHART.MAP_WIDTH,
+      centerX: CHART.MAP_WIDTH / 2,
+      top: CHART.MAP_HEIGHT + 4,
     });
     const yTitle = new RichText(common.axes.protonNumberStringProperty, {
       font: FONTS.AXIS_LABEL,
       fill: NuclideChartColors.textColorProperty,
-      maxWidth: MAP_HEIGHT,
+      maxWidth: CHART.MAP_HEIGHT,
       rotation: -Math.PI / 2,
       right: -6,
-      centerY: MAP_HEIGHT / 2,
+      centerY: CHART.MAP_HEIGHT / 2,
     });
     xTitle.localBoundsProperty.lazyLink(() => {
-      xTitle.centerX = MAP_WIDTH / 2;
+      xTitle.centerX = CHART.MAP_WIDTH / 2;
     });
     yTitle.localBoundsProperty.lazyLink(() => {
-      yTitle.centerY = MAP_HEIGHT / 2;
+      yTitle.centerY = CHART.MAP_HEIGHT / 2;
     });
     const mapWithTitles = new Node({ children: [map, xTitle, yTitle] });
 
@@ -107,13 +110,13 @@ export class ChartScreenView extends ScreenView {
     const zoomOut = new RectangularPushButton({
       ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
       content: new MinusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
-      listener: () => map.zoomBy(1 / ZOOM_STEP),
+      listener: () => map.zoomBy(1 / MAP.ZOOM_STEP),
       accessibleName: strings.zoom.zoomOutStringProperty,
     });
     const zoomIn = new RectangularPushButton({
       ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
       content: new PlusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
-      listener: () => map.zoomBy(ZOOM_STEP),
+      listener: () => map.zoomBy(MAP.ZOOM_STEP),
       accessibleName: strings.zoom.zoomInStringProperty,
     });
     const zoomSlider = new HSlider(model.zoomProperty, model.zoomProperty.range, {
@@ -237,18 +240,26 @@ export class ChartScreenView extends ScreenView {
         model.reset();
       },
     });
-    const credit = new DataCreditNode(PANEL_COLUMN_WIDTH - 60);
+    const credit = new DataCreditNode(PANEL_CREDIT_WIDTH);
 
     this.children = [
       placeInRegion(mapWithTitles, layout.chart),
       placeInRegion(strip, layout.strip),
-      placeInRegion(new VBox({ spacing: 8, children: [coloringPanel, cardPanel, filterPanel] }), layout.panels, {
-        yAlign: "top",
-      }),
-      placeInRegion(new HBox({ spacing: 10, align: "bottom", children: [credit, resetAllButton] }), layout.footer, {
-        xAlign: "right",
-        yAlign: "bottom",
-      }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [coloringPanel, cardPanel, filterPanel] }),
+        layout.panels,
+        {
+          yAlign: "top",
+        },
+      ),
+      placeInRegion(
+        new HBox({ spacing: LAYOUT.FOOTER_SPACING, align: "bottom", children: [credit, resetAllButton] }),
+        layout.footer,
+        {
+          xAlign: "right",
+          yAlign: "bottom",
+        },
+      ),
       listParent,
     ];
 

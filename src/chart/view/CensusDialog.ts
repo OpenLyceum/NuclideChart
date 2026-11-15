@@ -8,18 +8,13 @@
 import { DerivedProperty, type Property, type TReadOnlyProperty } from "scenerystack/axon";
 import { StringUtils } from "scenerystack/phetcommon";
 import { GridBox, RichText, Text, VBox } from "scenerystack/scenery";
-import { PhetFont } from "scenerystack/scenery-phet";
 import { Dialog } from "scenerystack/sim";
 import { AquaRadioButtonGroup } from "scenerystack/sun";
 import type { StabilityDefinition } from "../../common/model/NuclideTable.js";
 import { pairingCensus } from "../../common/model/pairingCensus.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
-
-const CONTENT_WIDTH = 420;
-const COUNT_FONT = new PhetFont({ size: 22, weight: "bold" });
-const HEADER_FONT = new PhetFont({ size: 13, weight: "bold" });
+import { CONTROLS, DIALOG, FONTS } from "../../NuclideChartConstants.js";
 
 export class CensusDialog extends Dialog {
   public constructor(definitionProperty: Property<string>) {
@@ -27,7 +22,7 @@ export class CensusDialog extends Dialog {
     const text = (
       content: TReadOnlyProperty<string> | string,
       font = FONTS.LABEL,
-      maxWidth = CONTENT_WIDTH,
+      maxWidth: number = DIALOG.CENSUS_WIDTH,
     ): RichText => new RichText(content, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
 
     const census = new DerivedProperty([definitionProperty], (definition) =>
@@ -35,7 +30,7 @@ export class CensusDialog extends Dialog {
     );
     const count = (pick: (c: ReturnType<typeof pairingCensus>) => number): Text =>
       new Text(new DerivedProperty([census], (c) => String(pick(c))), {
-        font: COUNT_FONT,
+        font: FONTS.BIG_LABEL,
         fill: NuclideChartColors.textColorProperty,
       });
 
@@ -45,16 +40,16 @@ export class CensusDialog extends Dialog {
       rows: [
         [
           text(""),
-          text(strings.evenNStringProperty, HEADER_FONT, 110),
-          text(strings.oddNStringProperty, HEADER_FONT, 110),
+          text(strings.evenNStringProperty, FONTS.HEADER, 110),
+          text(strings.oddNStringProperty, FONTS.HEADER, 110),
         ],
         [
-          text(strings.evenZStringProperty, HEADER_FONT, 110),
+          text(strings.evenZStringProperty, FONTS.HEADER, 110),
           count((c) => c.evenEven.length),
           count((c) => c.evenOdd.length),
         ],
         [
-          text(strings.oddZStringProperty, HEADER_FONT, 110),
+          text(strings.oddZStringProperty, FONTS.HEADER, 110),
           count((c) => c.oddEven.length),
           count((c) => c.oddOdd.length),
         ],
@@ -70,7 +65,7 @@ export class CensusDialog extends Dialog {
       {
         orientation: "vertical",
         spacing: 4,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.definitionStringProperty,
       },
     );
@@ -88,13 +83,13 @@ export class CensusDialog extends Dialog {
     const note = new RichText(strings.isomerNoteStringProperty, {
       font: FONTS.SMALL,
       fill: NuclideChartColors.textColorProperty,
-      lineWrap: CONTENT_WIDTH,
+      lineWrap: DIALOG.CENSUS_WIDTH,
     });
 
     const title = new Text(strings.titleStringProperty, {
       font: FONTS.TITLE,
       fill: NuclideChartColors.textColorProperty,
-      maxWidth: CONTENT_WIDTH,
+      maxWidth: DIALOG.CENSUS_WIDTH,
     });
     super(
       new VBox({

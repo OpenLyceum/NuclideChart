@@ -17,11 +17,11 @@ import type { ChainNode } from "../../common/model/decayChains.js";
 import type { Nuclide } from "../../common/model/NuclideTable.js";
 import { PlotFrameNode } from "../../common/view/PlotFrameNode.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
+import { DECAY_CHAINS, FONTS } from "../../NuclideChartConstants.js";
 import { LOG_TIME_RANGE } from "../model/DecayChainsModel.js";
 
-const SAMPLES = 260;
-const ACTIVITY_RANGE = new Range(1e-6, 3);
+const SAMPLES = DECAY_CHAINS.ACTIVITY_SAMPLES;
+const ACTIVITY_RANGE = DECAY_CHAINS.ACTIVITY_RANGE;
 const ALWAYS_LABELLED = new Set(["Rn-222"]);
 
 export class ActivityChartNode extends Node {

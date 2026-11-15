@@ -22,23 +22,10 @@ import { MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
 import { isStableUnder, NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
 import { boundRange } from "../../common/model/separationEnergies.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { MAP_LABEL_CELL_SIZE, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
+import { MAP, MAP_LABEL_CELL_SIZE, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
 import type { ChartModel } from "../model/ChartModel.js";
 import { MapColoring } from "../model/MapColoring.js";
 import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleColor } from "./mapColors.js";
-
-/** Zoom factor per step of the buttons, the keyboard and one wheel notch. */
-export const ZOOM_STEP = 1.5;
-
-/** Pointer travel (view px) below which a press-and-release counts as a click, not a drag. */
-const CLICK_TOLERANCE = 4;
-
-/** Selected cells closer than this fraction of the view to an edge pull the view along. */
-const KEEP_IN_VIEW_MARGIN = 0.08;
-
-/** Size of the minimap (view px). */
-const MINIMAP_WIDTH = 120;
-const MINIMAP_MARGIN = 8;
 
 /** Spacing of the N and Z tick labels along the edges, by cell size. */
 const tickSpacing = (cellSize: number): number => (cellSize > 20 ? 2 : cellSize > 8 ? 5 : cellSize > 4 ? 10 : 20);
@@ -103,7 +90,10 @@ class MapGeometry {
 
   /** Cell size (px) at zoom 1, fitting the whole chart. */
   public static baseScale(width: number, height: number): number {
-    return Math.min(width / (NUCLIDE_TABLE.maxN + 3), height / (NUCLIDE_TABLE.maxZ + 3));
+    return Math.min(
+      width / (NUCLIDE_TABLE.maxN + MAP.CHART_PADDING_CELLS),
+      height / (NUCLIDE_TABLE.maxZ + MAP.CHART_PADDING_CELLS),
+    );
   }
 
   public x(n: number): number {
@@ -285,7 +275,7 @@ class MapCanvas extends CanvasNode {
       return;
     }
     const box = MINIMAP_BOUNDS;
-    const k = box.width / (NUCLIDE_TABLE.maxN + 3);
+    const k = box.width / (NUCLIDE_TABLE.maxN + MAP.CHART_PADDING_CELLS);
     context.globalAlpha = 0.85;
     context.fillStyle = this.theme.background;
     context.fillRect(box.minX, box.minY, box.width, box.height);
@@ -307,10 +297,12 @@ class MapCanvas extends CanvasNode {
 
 /** Where the minimap sits: the empty upper-left corner of the chart (few neutrons, many protons). */
 const MINIMAP_BOUNDS = new Bounds2(
-  MINIMAP_MARGIN + 18,
-  MINIMAP_MARGIN,
-  MINIMAP_MARGIN + 18 + MINIMAP_WIDTH,
-  MINIMAP_MARGIN + (MINIMAP_WIDTH * (NUCLIDE_TABLE.maxZ + 3)) / (NUCLIDE_TABLE.maxN + 3),
+  MAP.MINIMAP_MARGIN + MAP.MINIMAP_OFFSET_X,
+  MAP.MINIMAP_MARGIN,
+  MAP.MINIMAP_MARGIN + MAP.MINIMAP_OFFSET_X + MAP.MINIMAP_WIDTH,
+  MAP.MINIMAP_MARGIN +
+    (MAP.MINIMAP_WIDTH * (NUCLIDE_TABLE.maxZ + MAP.CHART_PADDING_CELLS)) /
+      (NUCLIDE_TABLE.maxN + MAP.CHART_PADDING_CELLS),
 );
 
 export type NuclideMapNodeOptions = NodeOptions & {
@@ -469,7 +461,7 @@ export class NuclideMapNode extends Node {
           }
           const point = this.globalToLocalPoint(event.pointer.point);
           const delta = point.minus(start);
-          moved ||= delta.magnitude > CLICK_TOLERANCE;
+          moved ||= delta.magnitude > MAP.CLICK_TOLERANCE;
           if (moved) {
             const scale = this.canvas.geometry.scale;
             this.centerOn(new Vector2(startCenter.x - delta.x / scale, startCenter.y + delta.y / scale));
@@ -490,7 +482,7 @@ export class NuclideMapNode extends Node {
           return;
         }
         event.handle();
-        const factor = domEvent.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+        const factor = domEvent.deltaY < 0 ? MAP.ZOOM_STEP : 1 / MAP.ZOOM_STEP;
         this.zoomBy(factor, this.globalToLocalPoint(event.pointer.point));
       },
     });
@@ -500,7 +492,7 @@ export class NuclideMapNode extends Node {
     const g = this.canvas.geometry;
     const box = MINIMAP_BOUNDS;
     if (g.scale > MapGeometry.baseScale(g.width, g.height) * 1.05 && box.containsPoint(point)) {
-      const k = box.width / (NUCLIDE_TABLE.maxN + 3);
+      const k = box.width / (NUCLIDE_TABLE.maxN + MAP.CHART_PADDING_CELLS);
       this.centerOn(new Vector2((point.x - box.minX) / k - 1, (box.maxY - point.y) / k - 2));
       return;
     }
@@ -531,10 +523,10 @@ export class NuclideMapNode extends Node {
               this.moveSelection(0, -1);
               break;
             case "minus":
-              this.zoomBy(1 / ZOOM_STEP);
+              this.zoomBy(1 / MAP.ZOOM_STEP);
               break;
             default:
-              this.zoomBy(ZOOM_STEP);
+              this.zoomBy(MAP.ZOOM_STEP);
           }
         },
       }),
@@ -569,8 +561,8 @@ export class NuclideMapNode extends Node {
     const g = this.canvas.geometry;
     const x = g.x(nuclide.n);
     const y = g.y(nuclide.z);
-    const mx = g.width * KEEP_IN_VIEW_MARGIN;
-    const my = g.height * KEEP_IN_VIEW_MARGIN;
+    const mx = g.width * MAP.KEEP_IN_VIEW_MARGIN;
+    const my = g.height * MAP.KEEP_IN_VIEW_MARGIN;
     if (x < mx || x > g.width - mx || y < my || y > g.height - my) {
       this.centerOn(new Vector2(nuclide.n, nuclide.z));
     }

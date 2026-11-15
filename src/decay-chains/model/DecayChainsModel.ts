@@ -18,6 +18,7 @@ import { type DecayChain, SERIES_PARENTS, traceChain } from "../../common/model/
 import { FISSION_SYSTEMS } from "../../common/model/FissionYields.js";
 import { SECONDS_PER_YEAR } from "../../common/model/NuclearConstants.js";
 import type { SharedModel } from "../../common/model/SharedModel.js";
+import { DECAY_CHAINS } from "../../NuclideChartConstants.js";
 
 /** Time slider range: log₁₀ of seconds, from 1 s to 30 billion years. */
 export const LOG_TIME_RANGE = new Range(0, Math.log10(3e10 * SECONDS_PER_YEAR));
@@ -49,7 +50,7 @@ export class DecayChainsModel implements TModel {
     numberType: "Integer",
   });
   public readonly fissionMassNumberProperty = new NumberProperty(137, {
-    range: new Range(66, 172),
+    range: DECAY_CHAINS.FISSION_A_RANGE,
     numberType: "Integer",
   });
 

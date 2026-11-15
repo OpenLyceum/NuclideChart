@@ -10,7 +10,6 @@
 import { BooleanProperty, DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
 import { StringUtils } from "scenerystack/phetcommon";
 import { GridBox, type Node, RichText, type TColor, Text, VBox } from "scenerystack/scenery";
-import { PhetFont } from "scenerystack/scenery-phet";
 import { Dialog } from "scenerystack/sim";
 import { BooleanRectangularToggleButton } from "scenerystack/sun";
 import { NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
@@ -20,10 +19,7 @@ import { formatFixed } from "../../common/view/format.js";
 import { nuclideMarkup } from "../../common/view/NuclideCardNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
-
-const CONTENT_WIDTH = 560;
-const HEADER_FONT = new PhetFont({ size: 13, weight: "bold" });
+import { DIALOG, FONTS } from "../../NuclideChartConstants.js";
 
 /** Colour of each verdict's text. */
 const VERDICT_FILLS: Readonly<Record<ChannelVerdict, TColor>> = {
@@ -44,12 +40,12 @@ export class QValueDialog extends Dialog {
       new DerivedProperty([strings.titlePatternStringProperty, nuclideProperty], (pattern, nuclide) =>
         StringUtils.fillIn(pattern, { label: nuclideMarkup(nuclide) }),
       ),
-      { font: FONTS.TITLE, fill: NuclideChartColors.textColorProperty, maxWidth: CONTENT_WIDTH },
+      { font: FONTS.TITLE, fill: NuclideChartColors.textColorProperty, maxWidth: DIALOG.QVALUE_WIDTH },
     );
     const intro = new RichText(strings.introStringProperty, {
       font: FONTS.LABEL,
       fill: NuclideChartColors.textColorProperty,
-      lineWrap: CONTENT_WIDTH,
+      lineWrap: DIALOG.QVALUE_WIDTH,
     });
     const table = new GridBox({ xSpacing: 18, ySpacing: 5, xAlign: "left" });
     const revealedProperty = new BooleanProperty(false);
@@ -62,7 +58,7 @@ export class QValueDialog extends Dialog {
     const note = new RichText(strings.unseenNoteStringProperty, {
       font: FONTS.SMALL,
       fill: NuclideChartColors.textColorProperty,
-      lineWrap: CONTENT_WIDTH,
+      lineWrap: DIALOG.QVALUE_WIDTH,
     });
 
     super(new VBox({ spacing: 12, align: "left", children: [intro, table, revealButton, note] }), {
@@ -108,11 +104,11 @@ export class QValueDialog extends Dialog {
     const helium = NUCLIDE_TABLE.get(2, 2);
     const rows: Node[][] = [
       [
-        text(strings.channelStringProperty, HEADER_FONT),
-        text(strings.daughterStringProperty, HEADER_FONT),
-        text(strings.massExcessStringProperty, HEADER_FONT),
-        text(strings.qStringProperty, HEADER_FONT),
-        text(strings.verdictStringProperty, HEADER_FONT),
+        text(strings.channelStringProperty, FONTS.HEADER),
+        text(strings.daughterStringProperty, FONTS.HEADER),
+        text(strings.massExcessStringProperty, FONTS.HEADER),
+        text(strings.qStringProperty, FONTS.HEADER),
+        text(strings.verdictStringProperty, FONTS.HEADER),
       ],
       [text(nuclideMarkup(nuclide)), text(""), text(mev(nuclide.massExcess)), text(""), text("")],
     ];

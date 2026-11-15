@@ -32,7 +32,7 @@ import { type PlotAxis, PlotFrameNode } from "../../common/view/PlotFrameNode.js
 import { PointCloudNode, type PointStyle } from "../../common/view/PointCloudNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PICK_DISTANCE } from "../../NuclideChartConstants.js";
+import { BINDING, FONTS, SELECTION, STROKE } from "../../NuclideChartConstants.js";
 import { type BindingEnergyModel, BindingView } from "../model/BindingEnergyModel.js";
 
 /** Light nuclei that sit above the trend (alpha clustering). */
@@ -52,10 +52,6 @@ const ALPHA_LABEL_HEIGHTS: Readonly<Record<string, number>> = {
   "C-12": 8.4,
   "He-4": 8.1,
 };
-
-const CURVE_AXES = { x: new Range(0, 270), y: new Range(0, 9.2) };
-const PEAK_AXES = { x: new Range(46, 70), y: new Range(8.6, 8.81) };
-const RESIDUAL_RANGE = new Range(-15, 15);
 
 const css =
   (property: { value: { toCSS(): string } }): (() => string) =>
@@ -95,7 +91,7 @@ export class BindingChartNode extends Node {
     const magicPath = new Path(null, {
       stroke: NuclideChartColors.magicLineColorProperty,
       lineWidth: 1,
-      lineDash: [5, 4],
+      lineDash: [...STROKE.MAGIC_DASH],
     });
     const gapPath = new Path(null, {
       stroke: NuclideChartColors.dripLineColorProperty,
@@ -109,7 +105,10 @@ export class BindingChartNode extends Node {
     });
     const alphaLabels = new Node();
     const reactionMarkers = new Node();
-    const selectionRing = new Circle(6, { stroke: NuclideChartColors.selectionColorProperty, lineWidth: 2 });
+    const selectionRing = new Circle(SELECTION.RING_RADIUS, {
+      stroke: NuclideChartColors.selectionColorProperty,
+      lineWidth: SELECTION.RING_LINE_WIDTH,
+    });
     const selectionLabel = new RichText("", { font: FONTS.LABEL, fill: NuclideChartColors.selectionColorProperty });
     const selectionBackground = new Rectangle(0, 0, 1, 1, {
       fill: NuclideChartColors.chartBackgroundColorProperty,
@@ -122,7 +121,7 @@ export class BindingChartNode extends Node {
     hitArea.addInputListener({
       down: (event) => {
         const local = frame.plotLayer.globalToLocalPoint(event.pointer.point);
-        const k = cloud.nearest(local.x, local.y, PICK_DISTANCE * 2);
+        const k = cloud.nearest(local.x, local.y, SELECTION.CLICK_PICK_DISTANCE);
         const nuclide = k === null ? null : this.pointNuclides[k];
         if (nuclide) {
           model.shared.selectedNuclideProperty.value = nuclide;
@@ -151,9 +150,12 @@ export class BindingChartNode extends Node {
       const zoom = curve && model.zoomOnPeakProperty.value;
       const axes = curve
         ? zoom
-          ? PEAK_AXES
-          : CURVE_AXES
-        : { x: new Range(0, view === BindingView.RESIDUAL_N ? 160 : 110), y: RESIDUAL_RANGE };
+          ? BINDING.PEAK_AXES
+          : BINDING.CURVE_AXES
+        : {
+            x: new Range(0, view === BindingView.RESIDUAL_N ? BINDING.RESIDUAL_N_MAX : BINDING.RESIDUAL_Z_MAX),
+            y: BINDING.RESIDUAL_RANGE,
+          };
       const xAxis: PlotAxis = { range: axes.x, log: false };
       const yAxis: PlotAxis = { range: axes.y, log: false };
       frame.setAxes(xAxis, yAxis);

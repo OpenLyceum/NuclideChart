@@ -20,12 +20,9 @@ import {
 import { DecayCategory } from "../../common/model/DecayCategory.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS } from "../../NuclideChartConstants.js";
+import { FONTS, MAP } from "../../NuclideChartConstants.js";
 import { MapColoring } from "../model/MapColoring.js";
 import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleStops } from "./mapColors.js";
-
-const SWATCH = 11;
-const BAR_HEIGHT = 12;
 
 /** Decay categories in the order the legend lists them. */
 const LEGEND_CATEGORIES = [
@@ -48,7 +45,7 @@ export class MapLegendNode extends Node {
     const small = (text: TReadOnlyProperty<string> | string, maxWidth: number): RichText =>
       new RichText(text, { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, maxWidth });
     const swatch = (fill: TColor): Rectangle =>
-      new Rectangle(0, 0, SWATCH, SWATCH, {
+      new Rectangle(0, 0, MAP.LEGEND_SWATCH, MAP.LEGEND_SWATCH, {
         fill,
         stroke: NuclideChartColors.axisColorProperty,
         lineWidth: 0.5,
@@ -88,7 +85,7 @@ export class MapLegendNode extends Node {
     });
 
     const barWidth = width;
-    const bar = new Rectangle(0, 0, barWidth, BAR_HEIGHT, {
+    const bar = new Rectangle(0, 0, barWidth, MAP.LEGEND_BAR_HEIGHT, {
       stroke: NuclideChartColors.axisColorProperty,
       lineWidth: 0.5,
     });

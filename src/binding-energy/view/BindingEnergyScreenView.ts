@@ -32,18 +32,22 @@ import { nuclideMarkup } from "../../common/view/NuclideCardNode.js";
 import { chartAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  BINDING,
+  CONTROLS,
+  FONTS,
+  LAYOUT,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+  SCATTER_CHART,
+} from "../../NuclideChartConstants.js";
 import type { NuclideChartPreferencesModel } from "../../preferences/NuclideChartPreferencesModel.js";
 import { type BindingEnergyModel, BindingView } from "../model/BindingEnergyModel.js";
 import { BindingChartNode } from "./BindingChartNode.js";
 import { BindingEnergyScreenSummaryContent } from "./BindingEnergyScreenSummaryContent.js";
 
 export type BindingEnergyScreenViewOptions = ScreenViewOptions;
-
-const CHART_WIDTH = 590;
-const CHART_HEIGHT = 500;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
-const COEFFICIENT_SLIDER_WIDTH = 80;
 
 export class BindingEnergyScreenView extends ScreenView {
   public constructor(
@@ -79,7 +83,7 @@ export class BindingEnergyScreenView extends ScreenView {
       });
 
     // ── Chart ─────────────────────────────────────────────────────────────────
-    const chart = new BindingChartNode(model, CHART_WIDTH, CHART_HEIGHT, {
+    const chart = new BindingChartNode(model, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT, {
       accessibleName: a11y.controls.cursorStringProperty,
       accessibleHelpText: a11y.controls.cursorHelpStringProperty,
     });
@@ -95,7 +99,7 @@ export class BindingEnergyScreenView extends ScreenView {
       {
         orientation: "vertical",
         spacing: 5,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.viewTitleStringProperty,
       },
     );
@@ -117,7 +121,7 @@ export class BindingEnergyScreenView extends ScreenView {
       const box = new Checkbox(enabled, label(name, 110), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: name });
       const slider = new HSlider(coefficient, coefficient.range, {
         ...NUCLIDE_CHART_SLIDER_OPTIONS,
-        trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(COEFFICIENT_SLIDER_WIDTH),
+        trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(BINDING.COEFFICIENT_SLIDER_WIDTH),
         enabledProperty: enabled,
         constrainValue: (value: number) => Number(value.toFixed(term === "coulomb" ? 3 : 2)),
         keyboardStep: coefficient.range.getLength() / 50,
@@ -178,7 +182,7 @@ export class BindingEnergyScreenView extends ScreenView {
       {
         orientation: "horizontal",
         spacing: 16,
-        radioButtonOptions: { radius: 7 },
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.energy.titleStringProperty,
       },
     );
@@ -284,17 +288,25 @@ export class BindingEnergyScreenView extends ScreenView {
         model.reset();
       },
     });
-    const credit = new DataCreditNode(PANEL_COLUMN_WIDTH - 60);
+    const credit = new DataCreditNode(PANEL_CREDIT_WIDTH);
 
     this.children = [
       placeInRegion(chart, layout.chart),
-      placeInRegion(new VBox({ spacing: 8, children: [viewPanel, formulaPanel, energyPanel] }), layout.panels, {
-        yAlign: "top",
-      }),
-      placeInRegion(new HBox({ spacing: 10, align: "bottom", children: [credit, resetAllButton] }), layout.footer, {
-        xAlign: "right",
-        yAlign: "bottom",
-      }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [viewPanel, formulaPanel, energyPanel] }),
+        layout.panels,
+        {
+          yAlign: "top",
+        },
+      ),
+      placeInRegion(
+        new HBox({ spacing: LAYOUT.FOOTER_SPACING, align: "bottom", children: [credit, resetAllButton] }),
+        layout.footer,
+        {
+          xAlign: "right",
+          yAlign: "bottom",
+        },
+      ),
       listParent,
     ];
 

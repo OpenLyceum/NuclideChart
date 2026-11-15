@@ -35,19 +35,18 @@ import { type MarkerShape, markerShape, type PointStyle } from "../../common/vie
 import { chartStripAndPanelsLayout, placeInRegion } from "../../common/view/ScreenLayout.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
-import { FONTS, PANEL_COLUMN_WIDTH } from "../../NuclideChartConstants.js";
+import {
+  FONTS,
+  ISOBARS,
+  LAYOUT,
+  PANEL_COLUMN_WIDTH,
+  PANEL_CONTENT_WIDTH,
+  PANEL_CREDIT_WIDTH,
+} from "../../NuclideChartConstants.js";
 import { type IsobarsModel, QUICK_MASS_NUMBERS } from "../model/IsobarsModel.js";
 import { IsobarsScreenSummaryContent } from "./IsobarsScreenSummaryContent.js";
 
 export type IsobarsScreenViewOptions = ScreenViewOptions;
-
-const CHART_WIDTH = 600;
-const CHART_HEIGHT = 440;
-const STRIP_HEIGHT = 50;
-const PANEL_CONTENT_WIDTH = PANEL_COLUMN_WIDTH - 24;
-/** Charge numbers shown either side of the valley bottom. */
-const Z_HALF_WIDTH = 6;
-const MARKER_RADIUS = 6;
 
 const css =
   (property: { value: { toCSS(): string } }): (() => string) =>
@@ -59,14 +58,14 @@ const SHAPES: readonly MarkerShape[] = ["circle", "square", "diamond"];
 const STYLES: readonly PointStyle[] = [
   ...SHAPES.map((shape) => ({
     css: css(NuclideChartColors.pointColorProperty),
-    radius: MARKER_RADIUS,
+    radius: ISOBARS.MARKER_RADIUS,
     alpha: 1,
     shape,
     stroke: css(NuclideChartColors.chartBackgroundColorProperty),
   })),
   ...SHAPES.map((shape) => ({
     css: css(NuclideChartColors.stablePointColorProperty),
-    radius: MARKER_RADIUS,
+    radius: ISOBARS.MARKER_RADIUS,
     alpha: 1,
     shape,
     stroke: css(NuclideChartColors.chartBackgroundColorProperty),
@@ -86,7 +85,7 @@ export class IsobarsScreenView extends ScreenView {
     const strings = StringManager.getInstance().getIsobarsStrings();
     const common = StringManager.getInstance().getCommonStrings();
     const a11y = StringManager.getInstance().getIsobarsA11yStrings();
-    const layout = chartStripAndPanelsLayout(this.layoutBounds, PANEL_COLUMN_WIDTH, STRIP_HEIGHT);
+    const layout = chartStripAndPanelsLayout(this.layoutBounds, PANEL_COLUMN_WIDTH, ISOBARS.STRIP_HEIGHT);
     const selected = model.shared.selectedNuclideProperty;
 
     const label = (
@@ -98,7 +97,7 @@ export class IsobarsScreenView extends ScreenView {
       new Checkbox(property, label(text, 220), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
 
     // ── Chart ─────────────────────────────────────────────────────────────────
-    const chart = new NuclideScatterNode(selected, CHART_WIDTH, CHART_HEIGHT, {
+    const chart = new NuclideScatterNode(selected, ISOBARS.CHART_WIDTH, ISOBARS.CHART_HEIGHT, {
       accessibleName: a11y.controls.chartStringProperty,
       accessibleHelpText: a11y.controls.chartHelpStringProperty,
     });
@@ -124,7 +123,7 @@ export class IsobarsScreenView extends ScreenView {
         analysis.betaStable[0]?.z ??
           members.reduce((best, x) => ((x.massExcess ?? 0) < (best.massExcess ?? 0) ? x : best)).z,
       );
-      const zRange = new Range(zCenter - Z_HALF_WIDTH - 0.5, zCenter + Z_HALF_WIDTH + 0.5);
+      const zRange = new Range(zCenter - ISOBARS.Z_HALF_WIDTH - 0.5, zCenter + ISOBARS.Z_HALF_WIDTH + 0.5);
       const shown = members.filter((x) => zRange.contains(x.z));
       const floor = Math.min(...shown.map((x) => x.massExcess ?? 0));
       const height = (x: Nuclide): number => ((x.massExcess ?? 0) - floor) / 1000;
@@ -163,7 +162,7 @@ export class IsobarsScreenView extends ScreenView {
           font: FONTS.CHART_LABEL,
           fill: NuclideChartColors.textColorProperty,
           centerX: view.x,
-          bottom: view.y - MARKER_RADIUS - 3,
+          bottom: view.y - ISOBARS.MARKER_RADIUS - 3,
         });
       });
     };
@@ -214,7 +213,7 @@ export class IsobarsScreenView extends ScreenView {
 
     // ── Panels ────────────────────────────────────────────────────────────────
     const legendEntry = (shape: MarkerShape, fill: TColor, text: TReadOnlyProperty<string>): HBox => {
-      const marker = markerShape(shape, MARKER_RADIUS - 1);
+      const marker = markerShape(shape, ISOBARS.MARKER_RADIUS - 1);
       return new HBox({
         spacing: 6,
         children: [
@@ -332,14 +331,18 @@ export class IsobarsScreenView extends ScreenView {
     this.children = [
       placeInRegion(chart, layout.chart),
       placeInRegion(strip, layout.strip),
-      placeInRegion(new VBox({ spacing: 8, children: [controlsPanel, readoutPanel, cardPanel] }), layout.panels, {
-        yAlign: "top",
-      }),
+      placeInRegion(
+        new VBox({ spacing: LAYOUT.PANEL_STACK_SPACING, children: [controlsPanel, readoutPanel, cardPanel] }),
+        layout.panels,
+        {
+          yAlign: "top",
+        },
+      ),
       placeInRegion(
         new HBox({
-          spacing: 10,
+          spacing: LAYOUT.FOOTER_SPACING,
           align: "bottom",
-          children: [new DataCreditNode(PANEL_COLUMN_WIDTH - 60), resetAllButton],
+          children: [new DataCreditNode(PANEL_CREDIT_WIDTH), resetAllButton],
         }),
         layout.footer,
         { xAlign: "right", yAlign: "bottom" },
@@ -377,7 +380,7 @@ export class IsobarsScreenView extends ScreenView {
     const direction = to.minus(from);
     const length = direction.magnitude;
     const unit = length > 0 ? direction.dividedScalar(length) : Vector2.X_UNIT;
-    const gap = MARKER_RADIUS + 3;
+    const gap = ISOBARS.MARKER_RADIUS + 3;
     const start = from.plus(unit.timesScalar(gap));
     const end = to.minus(unit.timesScalar(gap));
     const fill =

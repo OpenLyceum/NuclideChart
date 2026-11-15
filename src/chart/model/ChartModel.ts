@@ -12,11 +12,11 @@ import type { TModel } from "scenerystack/joist";
 import { AGE_OF_EARTH_S } from "../../common/model/NuclearConstants.js";
 import { NUCLIDE_TABLE } from "../../common/model/NuclideTable.js";
 import type { SharedModel } from "../../common/model/SharedModel.js";
-import { MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
+import { CHART, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
 import { MapColoring } from "./MapColoring.js";
 
 /** Range of the half-life filter, as log₁₀ of seconds (1 s to 10²⁵ s). */
-export const HALF_LIFE_FILTER_RANGE = new Range(0, 25);
+export const HALF_LIFE_FILTER_RANGE = CHART.HALF_LIFE_FILTER_RANGE;
 
 export class ChartModel implements TModel {
   public readonly shared: SharedModel;
