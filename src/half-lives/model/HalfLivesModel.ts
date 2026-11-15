@@ -27,8 +27,6 @@ export class HalfLifeView extends EnumerationValue {
   }
 }
 
-export type ExplorerAxis = "massNumber" | "valleyDistance";
-
 export class HalfLivesModel implements TModel {
   public readonly shared: SharedModel;
   public readonly viewProperty = new EnumerationProperty(HalfLifeView.EXPLORER);

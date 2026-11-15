@@ -13,7 +13,7 @@ import { ELECTRON_REST_ENERGY_KEV } from "./NuclearConstants.js";
 import { NUCLIDE_TABLE, type Nuclide, type NuclideTable } from "./NuclideTable.js";
 
 /** Isobars within this many charge units of the valley bottom enter the parabola fit. */
-export const PARABOLA_FIT_HALF_WIDTH = 4;
+const PARABOLA_FIT_HALF_WIDTH = 4;
 
 export type Parabola = {
   /** Mass excess (keV) = minimum + curvature (Z − zMin)². */

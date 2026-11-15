@@ -26,7 +26,7 @@ export type DecayChannel =
   | "proton"
   | "neutron";
 
-export const DECAY_CHANNELS: readonly DecayChannel[] = [
+const DECAY_CHANNELS: readonly DecayChannel[] = [
   "alpha",
   "betaMinus",
   "electronCapture",
@@ -37,7 +37,7 @@ export const DECAY_CHANNELS: readonly DecayChannel[] = [
 ];
 
 /** The ENSDF mode codes that count as an observation of each channel. */
-export const CHANNEL_MODES: Readonly<Record<DecayChannel, readonly string[]>> = {
+const CHANNEL_MODES: Readonly<Record<DecayChannel, readonly string[]>> = {
   alpha: ["A"],
   betaMinus: ["B-", "B-N", "B-2N", "B-A"],
   electronCapture: ["EC", "EC+B+", "ECP", "ECSF", "B+P"],

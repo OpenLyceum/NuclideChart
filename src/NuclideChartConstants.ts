@@ -34,7 +34,7 @@ export const REGION_GAP = 12;
 export const PANEL_COLUMN_WIDTH = 300;
 
 /** Radius (view px) within which a click picks the nearest plotted point. */
-export const PICK_DISTANCE = 9;
+const PICK_DISTANCE = 9;
 
 /** Panel margins and content insets (px). */
 export const PANEL = {

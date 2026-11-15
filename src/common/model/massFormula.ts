@@ -48,7 +48,7 @@ export function pairingSign(z: number, a: number): number {
 }
 
 /** Each term's value per unit coefficient (MeV per MeV), signed as it enters B. */
-export function termBasis(term: MassFormulaTerm, z: number, a: number): number {
+function termBasis(term: MassFormulaTerm, z: number, a: number): number {
   switch (term) {
     case "volume":
       return a;
@@ -64,7 +64,7 @@ export function termBasis(term: MassFormulaTerm, z: number, a: number): number {
 }
 
 /** One term's contribution to B (MeV). */
-export function termEnergy(term: MassFormulaTerm, z: number, a: number, coefficients: MassFormulaCoefficients): number {
+function termEnergy(term: MassFormulaTerm, z: number, a: number, coefficients: MassFormulaCoefficients): number {
   return coefficients[term] * termBasis(term, z, a);
 }
 

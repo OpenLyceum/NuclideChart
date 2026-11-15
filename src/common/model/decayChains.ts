@@ -18,7 +18,7 @@ import { CHAIN_BRANCH_THRESHOLD, LN2 } from "./NuclearConstants.js";
 import { type DecayBranch, ISOMERS, NUCLIDE_TABLE, type NuclideTable } from "./NuclideTable.js";
 
 /** (ΔZ, ΔN) from parent to daughter for each ENSDF decay mode that leads to a single daughter. */
-export const MODE_SHIFT: Readonly<Record<string, readonly [number, number]>> = {
+const MODE_SHIFT: Readonly<Record<string, readonly [number, number]>> = {
   A: [-2, -2],
   "B-": [1, -1],
   "B-N": [1, -2],
@@ -52,7 +52,7 @@ const ISOMER_FEEDING: Readonly<Record<string, string>> = {
   "90-144": "Pa-234m",
 };
 
-export type ChainLink = {
+type ChainLink = {
   /** Key of the daughter node. */
   readonly to: string;
   readonly mode: string;

@@ -12,7 +12,7 @@ import { Shape } from "scenerystack/kite";
 import { CanvasNode } from "scenerystack/scenery";
 
 /** Group index that is never drawn. */
-export const HIDDEN_GROUP = 255;
+const HIDDEN_GROUP = 255;
 
 /** Points in chart (model) coordinates, each with a group. */
 export type PointSet = {
@@ -21,7 +21,7 @@ export type PointSet = {
   readonly groups: Uint8Array;
 };
 
-export const EMPTY_POINTS: PointSet = {
+const EMPTY_POINTS: PointSet = {
   xs: new Float64Array(0),
   ys: new Float64Array(0),
   groups: new Uint8Array(0),
@@ -42,13 +42,7 @@ export type PointStyle = {
 export type MarkerShape = "circle" | "diamond" | "square";
 
 /** Adds one marker of the given shape and radius to the current canvas path. */
-export const traceMarker = (
-  context: CanvasRenderingContext2D,
-  shape: MarkerShape,
-  x: number,
-  y: number,
-  r: number,
-): void => {
+const traceMarker = (context: CanvasRenderingContext2D, shape: MarkerShape, x: number, y: number, r: number): void => {
   if (shape === "diamond") {
     const d = r * 1.3;
     context.moveTo(x, y - d);

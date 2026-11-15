@@ -13,7 +13,7 @@ import type { TModel } from "scenerystack/joist";
 import { NUCLIDE_TABLE, type Nuclide, type StabilityDefinition } from "./NuclideTable.js";
 
 /** The nuclide selected at startup. */
-export const DEFAULT_SELECTION = "Fe-56";
+const DEFAULT_SELECTION = "Fe-56";
 
 export class SharedModel implements TModel {
   public readonly selectedNuclideProperty: Property<Nuclide>;

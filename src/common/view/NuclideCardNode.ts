@@ -40,7 +40,7 @@ const MODE_SYMBOLS: Readonly<Record<string, string>> = {
 };
 
 /** Display symbol of an ENSDF decay mode. */
-export const formatMode = (mode: string): string => MODE_SYMBOLS[mode] ?? mode;
+const formatMode = (mode: string): string => MODE_SYMBOLS[mode] ?? mode;
 
 /** "⁵⁶Fe" as rich text. */
 export const nuclideMarkup = (nuclide: Nuclide): string => `<sup>${nuclide.a}</sup>${nuclide.symbol}`;

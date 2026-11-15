@@ -16,7 +16,7 @@ import { CHART, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
 import { MapColoring } from "./MapColoring.js";
 
 /** Range of the half-life filter, as log₁₀ of seconds (1 s to 10²⁵ s). */
-export const HALF_LIFE_FILTER_RANGE = CHART.HALF_LIFE_FILTER_RANGE;
+const HALF_LIFE_FILTER_RANGE = CHART.HALF_LIFE_FILTER_RANGE;
 
 export class ChartModel implements TModel {
   public readonly shared: SharedModel;

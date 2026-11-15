@@ -83,7 +83,7 @@ export function separationLine(
  * (a two-nucleon energy that cannot be computed is not held against it). O-26 shows why S₂ₙ matters: its
  * S_n is positive, yet it lies above O-24 and decays by emitting two neutrons.
  */
-export function isParticleBound(nuclide: Nuclide, table: NuclideTable = NUCLIDE_TABLE): boolean {
+function isParticleBound(nuclide: Nuclide, table: NuclideTable = NUCLIDE_TABLE): boolean {
   if ((nuclide.sn ?? -1) <= 0 || (nuclide.sp ?? -1) <= 0) {
     return false;
   }

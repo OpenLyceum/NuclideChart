@@ -29,8 +29,6 @@ export const QUICK_FISSION_A: readonly number[] = [87, 90, 131, 135, 137];
 /** The four natural series, traced once. */
 export const SERIES: readonly DecayChain[] = SERIES_PARENTS.map(([, z, n]) => traceChain(z, n));
 
-export type ChainsMode = "series" | "fission";
-
 export class DecayChainsModel implements TModel {
   public readonly shared: SharedModel;
   public readonly modeProperty = new StringProperty("series", { validValues: ["series", "fission"] });

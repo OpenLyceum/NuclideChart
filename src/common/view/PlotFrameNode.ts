@@ -24,7 +24,7 @@ export type PlotAxis = {
 };
 
 /** A "nice" step (1, 2 or 5 × 10ⁿ) giving about `divisions` segments across `span`. */
-export const niceStep = (span: number, divisions = 5): number => {
+const niceStep = (span: number, divisions = 5): number => {
   const raw = (Number.isFinite(span) && span > 0 ? span : 1) / divisions;
   const magnitude = 10 ** Math.floor(Math.log10(raw));
   const normalized = raw / magnitude;

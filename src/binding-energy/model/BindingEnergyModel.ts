@@ -55,7 +55,7 @@ export class BindingView extends EnumerationValue {
 }
 
 /** Slider range of each coefficient (MeV). */
-export const COEFFICIENT_RANGES: Readonly<Record<MassFormulaTerm, Range>> = {
+const COEFFICIENT_RANGES: Readonly<Record<MassFormulaTerm, Range>> = {
   volume: new Range(10, 20),
   surface: new Range(10, 25),
   coulomb: new Range(0.4, 1),
@@ -65,8 +65,6 @@ export const COEFFICIENT_RANGES: Readonly<Record<MassFormulaTerm, Range>> = {
 
 /** The mass formula as the plots use it. */
 export type MassFormula = { readonly coefficients: MassFormulaCoefficients; readonly terms: MassFormulaTermSet };
-
-export type EnergyMode = "fission" | "fusion";
 
 export class BindingEnergyModel implements TModel {
   public readonly shared: SharedModel;

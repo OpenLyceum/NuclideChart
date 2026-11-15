@@ -7,13 +7,6 @@
 
 import { toFixed } from "scenerystack/dot";
 
-/** Narrow no-break space, the SI thousands separator, which reads the same in every locale. */
-const GROUP_SEPARATOR = " ";
-
-/** An integer with grouped thousands: 6 464. */
-export const formatCount = (value: number): string =>
-  String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, GROUP_SEPARATOR);
-
 /** Superscript digits for plain-text exponents. */
 const SUPERSCRIPTS: Record<string, string> = {
   "0": "⁰",
@@ -29,7 +22,7 @@ const SUPERSCRIPTS: Record<string, string> = {
   "-": "⁻",
 };
 
-export const superscript = (exponent: number): string =>
+const superscript = (exponent: number): string =>
   String(exponent)
     .split("")
     .map((c) => SUPERSCRIPTS[c] ?? c)
@@ -59,9 +52,6 @@ export const formatValue = (value: number, digits = 3): string => {
   return (magnitude >= 10 ** digits ? toFixed(rounded, 0) : String(rounded)).replace("-", "−");
 };
 
-/** A whole number (year, count) without grouping. */
-export const formatInteger = (value: number): string => (Number.isFinite(value) ? String(Math.round(value)) : "—");
-
 /** A decade tick label: 0.01, 0.1, 1, 10, 100, 1000, then 10⁴, 10⁵, … */
 export const formatDecade = (exponent: number): string => {
   const n = Math.round(exponent);
@@ -70,10 +60,6 @@ export const formatDecade = (exponent: number): string => {
   }
   return `10${superscript(n)}`;
 };
-
-/** A percentage to one decimal place: 74.2. */
-export const formatPercent = (fraction: number): string =>
-  Number.isFinite(fraction) ? toFixed(100 * fraction, 1) : "—";
 
 /** A value with a fixed number of decimals and a true minus sign. */
 export const formatFixed = (value: number, decimals: number): string =>

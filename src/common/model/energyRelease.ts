@@ -12,10 +12,10 @@
 import { NUCLIDE_TABLE, type Nuclide, type NuclideTable } from "./NuclideTable.js";
 
 /** Prompt neutrons per fission in the simplified reaction. */
-export const FISSION_NEUTRONS = 2;
+const FISSION_NEUTRONS = 2;
 
 /** The fissioning nucleus (U-235, hit by one neutron). */
-export const FISSION_TARGET = "U-235";
+const FISSION_TARGET = "U-235";
 
 /** Range of the light fragment's mass number. */
 export const LIGHT_FRAGMENT_RANGE = { min: 72, max: 117 } as const;
