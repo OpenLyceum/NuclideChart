@@ -15,11 +15,11 @@ import { Shape } from "scenerystack/kite";
 import { Node, Path, Rectangle } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import { ScreenIcon } from "scenerystack/sim";
-import { DECAY_CATEGORY_COLORS } from "../chart/view/mapColors.js";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { decayCategoryOf } from "./model/DecayCategory.js";
 import { NUCLIDE_TABLE } from "./model/NuclideTable.js";
 import { separationLine } from "./model/separationEnergies.js";
+import { DECAY_CATEGORY_COLORS } from "./view/mapColors.js";
 
 const W = 548;
 const H = 373;

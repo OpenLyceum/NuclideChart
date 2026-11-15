@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseSpin } from "../../src/chart/model/MapColoring.js";
 import { DecayCategory, decayCategoryOf, strongestBranch } from "../../src/common/model/DecayCategory.js";
+import { parseSpin } from "../../src/common/model/MapColoring.js";
 import { NUCLIDE_TABLE as T } from "../../src/common/model/NuclideTable.js";
 
 describe("DecayCategory", () => {
