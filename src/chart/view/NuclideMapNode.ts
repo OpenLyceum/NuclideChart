@@ -17,15 +17,15 @@ import { Shape } from "scenerystack/kite";
 import { CanvasNode, DragListener, KeyboardListener, Node, type NodeOptions, Rectangle } from "scenerystack/scenery";
 import { decayCategoryOf } from "../../common/model/DecayCategory.js";
 import { FITTED_MASS_FORMULA } from "../../common/model/fittedMassFormula.js";
+import { MapColoring } from "../../common/model/MapColoring.js";
 import { valleyZ } from "../../common/model/massFormula.js";
 import { MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
 import { isStableUnder, NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
 import { boundRange } from "../../common/model/separationEnergies.js";
+import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleColor } from "../../common/view/mapColors.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
 import { MAP, MAP_LABEL_CELL_SIZE, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
 import type { ChartModel } from "../model/ChartModel.js";
-import { MapColoring } from "../model/MapColoring.js";
-import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleColor } from "./mapColors.js";
 
 /** Spacing of the N and Z tick labels along the edges, by cell size. */
 const tickSpacing = (cellSize: number): number => (cellSize > 20 ? 2 : cellSize > 8 ? 5 : cellSize > 4 ? 10 : 20);

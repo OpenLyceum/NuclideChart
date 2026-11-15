@@ -9,11 +9,11 @@
 import { BooleanProperty, EnumerationProperty, NumberProperty } from "scenerystack/axon";
 import { Range, Vector2, Vector2Property } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { MapColoring } from "../../common/model/MapColoring.js";
 import { AGE_OF_EARTH_S } from "../../common/model/NuclearConstants.js";
 import { NUCLIDE_TABLE } from "../../common/model/NuclideTable.js";
 import type { SharedModel } from "../../common/model/SharedModel.js";
 import { CHART, MAP_ZOOM_RANGE } from "../../NuclideChartConstants.js";
-import { MapColoring } from "./MapColoring.js";
 
 /** Range of the half-life filter, as log₁₀ of seconds (1 s to 10²⁵ s). */
 const HALF_LIFE_FILTER_RANGE = CHART.HALF_LIFE_FILTER_RANGE;

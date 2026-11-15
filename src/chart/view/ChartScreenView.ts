@@ -14,6 +14,7 @@ import { GridBox, HBox, Node, RichText, Text, VBox } from "scenerystack/scenery"
 import { MinusNode, PlusNode, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { Checkbox, ComboBox, HSlider, RectangularPushButton } from "scenerystack/sun";
+import { MapColoring } from "../../common/model/MapColoring.js";
 import { AGE_OF_EARTH_S } from "../../common/model/NuclearConstants.js";
 import {
   FLAT_RECTANGULAR_BUTTON_OPTIONS,
@@ -42,7 +43,6 @@ import {
   PANEL_CREDIT_WIDTH,
 } from "../../NuclideChartConstants.js";
 import type { ChartModel } from "../model/ChartModel.js";
-import { MapColoring } from "../model/MapColoring.js";
 import { CensusDialog } from "./CensusDialog.js";
 import { ChartScreenSummaryContent } from "./ChartScreenSummaryContent.js";
 import { MapLegendNode } from "./MapLegendNode.js";

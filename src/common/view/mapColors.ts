@@ -10,8 +10,8 @@
  */
 
 import type { ProfileColorProperty } from "scenerystack/scenery";
-import { DecayCategory } from "../../common/model/DecayCategory.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
+import { DecayCategory } from "../model/DecayCategory.js";
 import type { MapColoring } from "../model/MapColoring.js";
 
 /** Viridis, sampled at nine evenly spaced stops. */

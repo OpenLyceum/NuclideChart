@@ -16,7 +16,6 @@ import { HBox, Line, Node, Path, Rectangle, RichText, VBox } from "scenerystack/
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { AquaRadioButtonGroup, Checkbox } from "scenerystack/sun";
-import { DECAY_CATEGORY_COLORS } from "../../chart/view/mapColors.js";
 import { DecayCategory, decayCategoryOf } from "../../common/model/DecayCategory.js";
 import { FITTED_MASS_FORMULA } from "../../common/model/fittedMassFormula.js";
 import {
@@ -34,6 +33,7 @@ import { NUCLIDE_CHART_CHECKBOX_OPTIONS } from "../../common/NuclideChartControl
 import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
 import { DataCreditNode } from "../../common/view/DataCreditNode.js";
 import { formatFixed } from "../../common/view/format.js";
+import { DECAY_CATEGORY_COLORS } from "../../common/view/mapColors.js";
 import { NuclideCardNode, nuclideMarkup } from "../../common/view/NuclideCardNode.js";
 import { NuclideScatterNode, type ScatterPoint } from "../../common/view/NuclideScatterNode.js";
 import type { PointStyle } from "../../common/view/PointCloudNode.js";

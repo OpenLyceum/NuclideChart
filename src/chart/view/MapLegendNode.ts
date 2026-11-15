@@ -18,11 +18,11 @@ import {
   VBox,
 } from "scenerystack/scenery";
 import { DecayCategory } from "../../common/model/DecayCategory.js";
+import { MapColoring } from "../../common/model/MapColoring.js";
+import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleStops } from "../../common/view/mapColors.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
 import { FONTS, MAP } from "../../NuclideChartConstants.js";
-import { MapColoring } from "../model/MapColoring.js";
-import { DECAY_CATEGORY_COLORS, MEASUREMENT_COLORS, scaleStops } from "./mapColors.js";
 
 /** Decay categories in the order the legend lists them. */
 const LEGEND_CATEGORIES = [

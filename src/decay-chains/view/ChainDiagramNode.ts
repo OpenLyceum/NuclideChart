@@ -12,10 +12,10 @@ import type { Property, TReadOnlyProperty } from "scenerystack/axon";
 import { Vector2 } from "scenerystack/dot";
 import { KeyboardListener, Node, type NodeOptions, Rectangle, RichText, type TColor, Text } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
-import { DECAY_CATEGORY_COLORS } from "../../chart/view/mapColors.js";
 import { categoryOfMode, DecayCategory } from "../../common/model/DecayCategory.js";
 import type { ChainNode, DecayChain } from "../../common/model/decayChains.js";
 import { NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
+import { DECAY_CATEGORY_COLORS } from "../../common/view/mapColors.js";
 import NuclideChartColors from "../../NuclideChartColors.js";
 import { DECAY_CHAINS, FONTS } from "../../NuclideChartConstants.js";
 
