@@ -51,6 +51,7 @@ export const FISSION_SYSTEMS: readonly FissionSystem[] = (fissionJson.systems as
   })),
 }));
 
+/** @internal Exported for unit tests; not part of the application API. */
 export function requireFissionSystem(parent: string): FissionSystem {
   const system = FISSION_SYSTEMS.find((s) => s.parent === parent);
   if (!system) {

@@ -59,7 +59,10 @@ export function categoryOfMode(mode: string): DecayCategory {
   return MODE_CATEGORY[mode] ?? DecayCategory.UNKNOWN;
 }
 
-/** The branch with the largest branching ratio (a lone branch without a ratio counts as 100 %). */
+/**
+ * The branch with the largest branching ratio (a lone branch without a ratio counts as 100 %).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function strongestBranch(branches: readonly DecayBranch[]): DecayBranch | null {
   let best: DecayBranch | null = null;
   let bestPercent = -1;

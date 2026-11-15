@@ -74,6 +74,7 @@ export class MapColoring extends EnumerationValue {
 
 /**
  * The spin J of an ENSDF J^π string ("0+", "(7/2-)", "1/2+,3/2+"), using the first value listed, or null.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function parseSpin(spinParity: string): number | null {
   const match = /(\d+)(?:\/(\d+))?/.exec(spinParity);

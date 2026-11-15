@@ -15,7 +15,7 @@ import { NUCLIDE_TABLE, type Nuclide, type NuclideTable } from "./NuclideTable.j
 /** Isobars within this many charge units of the valley bottom enter the parabola fit. */
 const PARABOLA_FIT_HALF_WIDTH = 4;
 
-export type Parabola = {
+type Parabola = {
   /** Mass excess (keV) = minimum + curvature (Z − zMin)². */
   readonly zMin: number;
   readonly minimum: number;
@@ -27,6 +27,7 @@ export type Parabola = {
 /**
  * Least-squares parabola Δ = c₀ + c₁Z + c₂Z² through the given (Z, Δ) points, with its vertex form.
  * Null with fewer than three points or a non-positive curvature.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function fitParabola(
   points: readonly { z: number; massExcess: number }[],
@@ -191,7 +192,10 @@ export function analyzeIsobars(
   return { a, members, parabolas: fitIsobarParabolas(a, members, zValley), transitions, betaStable };
 }
 
-/** Mattauch's isobar rule: no two neighbouring isobars (ΔZ = 1) are both β-stable. Returns violating pairs. */
+/**
+ * Mattauch's isobar rule: no two neighbouring isobars (ΔZ = 1) are both β-stable. Returns violating pairs.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function mattauchViolations(analysis: IsobarAnalysis): [Nuclide, Nuclide][] {
   const stableZ = new Set(analysis.betaStable.map((x) => x.z));
   return analysis.betaStable

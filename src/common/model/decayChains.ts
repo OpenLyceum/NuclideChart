@@ -137,7 +137,10 @@ function stateFor(key: string, table: NuclideTable): State | null {
     : null;
 }
 
-/** Branch fractions after subtracting delayed-particle sub-branches, thresholding and renormalizing. */
+/**
+ * Branch fractions after subtracting delayed-particle sub-branches, thresholding and renormalizing.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function effectiveBranches(
   branches: readonly DecayBranch[],
   threshold = CHAIN_BRANCH_THRESHOLD,

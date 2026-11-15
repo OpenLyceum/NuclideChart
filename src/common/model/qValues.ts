@@ -110,6 +110,7 @@ export type ChannelAnalysis = {
   readonly verdict: ChannelVerdict;
 };
 
+/** @internal Exported for unit tests; not part of the application API. */
 export function analyzeChannel(
   nuclide: Nuclide,
   channel: DecayChannel,

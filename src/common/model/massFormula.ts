@@ -38,7 +38,10 @@ export const ALL_TERMS: MassFormulaTermSet = {
   pairing: true,
 };
 
-/** +1 for even–even, −1 for odd–odd, 0 for odd A. */
+/**
+ * +1 for even–even, −1 for odd–odd, 0 for odd A.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function pairingSign(z: number, a: number): number {
   const n = a - z;
   if (a % 2 === 1) {
@@ -176,7 +179,10 @@ export function semfResidual(
     : nuclide.binding / 1000 - semfBinding(nuclide.z, nuclide.a, coefficients, terms);
 }
 
-/** Gaussian elimination with partial pivoting on an augmented k × (k+1) matrix. Singular rows give 0. */
+/**
+ * Gaussian elimination with partial pivoting on an augmented k × (k+1) matrix. Singular rows give 0.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function solveLinearSystem(augmented: number[][]): number[] {
   const m = augmented.map((row) => row.slice());
   const k = m.length;

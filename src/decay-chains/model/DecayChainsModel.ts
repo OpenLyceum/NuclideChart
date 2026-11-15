@@ -26,7 +26,10 @@ export const LOG_TIME_RANGE = new Range(0, Math.log10(3e10 * SECONDS_PER_YEAR));
 /** Mass numbers of fission-product chains worth a look. */
 export const QUICK_FISSION_A: readonly number[] = [87, 90, 131, 135, 137];
 
-/** The four natural series, traced once. */
+/**
+ * The four natural series, traced once.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const SERIES: readonly DecayChain[] = SERIES_PARENTS.map(([, z, n]) => traceChain(z, n));
 
 export class DecayChainsModel implements TModel {

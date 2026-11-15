@@ -14,9 +14,12 @@ import {
   type StabilityDefinition,
 } from "./NuclideTable.js";
 
-export type ParityClass = "evenEven" | "evenOdd" | "oddEven" | "oddOdd";
+type ParityClass = "evenEven" | "evenOdd" | "oddEven" | "oddOdd";
 
-/** Classified as (Z parity)(N parity). */
+/**
+ * Classified as (Z parity)(N parity).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function parityClass(nuclide: Nuclide): ParityClass {
   const zEven = nuclide.z % 2 === 0;
   const nEven = nuclide.n % 2 === 0;
