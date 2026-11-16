@@ -1,3 +1,4 @@
+import { DECAY_CHAINS_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * DecayChainsScreenView.ts
  *
@@ -95,9 +96,16 @@ export class DecayChainsScreenView extends ScreenView {
       },
     );
     const seriesContent = new VBox({
-      spacing: 6,
+      spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_CONTENT_SPACING,
       align: "right",
-      children: [new VBox({ spacing: 3, align: "left", children: [diagramTitle, diagram] }), activity],
+      children: [
+        new VBox({
+          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_SERIES_CONTENT_SPACING,
+          align: "left",
+          children: [diagramTitle, diagram],
+        }),
+        activity,
+      ],
     });
 
     // ── Fission products ──────────────────────────────────────────────────────
@@ -114,12 +122,20 @@ export class DecayChainsScreenView extends ScreenView {
     const modeGroup = new AquaRadioButtonGroup<string>(
       model.modeProperty,
       [
-        { value: "series", createNode: () => label(strings.modes.seriesStringProperty, 240) },
-        { value: "fission", createNode: () => label(strings.modes.fissionStringProperty, 240) },
+        {
+          value: "series",
+          createNode: () =>
+            label(strings.modes.seriesStringProperty, DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_LABEL_MAX_WIDTH),
+        },
+        {
+          value: "fission",
+          createNode: () =>
+            label(strings.modes.fissionStringProperty, DECAY_CHAINS_SCREEN_VIEW_SETTINGS.FISSION_LABEL_MAX_WIDTH),
+        },
       ],
       {
         orientation: "vertical",
-        spacing: 5,
+        spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.MODE_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.modeTitleStringProperty,
       },
@@ -129,11 +145,15 @@ export class DecayChainsScreenView extends ScreenView {
       model.seriesIndexProperty,
       SERIES_PARENTS.map(([parent], i) => ({
         value: i,
-        createNode: () => label(`<sup>${parent.split("-")[1]}</sup>${parent.split("-")[0]}`, 80),
+        createNode: () =>
+          label(
+            `<sup>${parent.split("-")[1]}</sup>${parent.split("-")[0]}`,
+            DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_GROUP_MAX_WIDTH,
+          ),
       })),
       {
         orientation: "horizontal",
-        spacing: 12,
+        spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.seriesTitleStringProperty,
       },
@@ -156,8 +176,8 @@ export class DecayChainsScreenView extends ScreenView {
     const timeSlider = new HSlider(model.logTimeProperty, model.logTimeProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(PANEL_CONTENT_WIDTH - 20),
-      keyboardStep: 0.25,
-      shiftKeyboardStep: 0.05,
+      keyboardStep: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.TIME_SLIDER_KEYBOARD_STEP,
+      shiftKeyboardStep: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.TIME_SLIDER_SHIFT_KEYBOARD_STEP,
       pageKeyboardStep: 1,
       accessibleName: a11y.controls.timeSliderStringProperty,
       pdomCreateAriaValueText: (value: number | null) => (value === null ? "" : formatDuration(10 ** value)),
@@ -175,16 +195,20 @@ export class DecayChainsScreenView extends ScreenView {
         return StringUtils.fillIn(pattern, {
           end: end.join(" + "),
           parent: `<sup>${chain.parent.a}</sup>${chain.parent.label.split("-")[0]}`,
-          ratio: formatValue(clock.ratio, 3),
+          ratio: formatValue(clock.ratio, DECAY_CHAINS_SCREEN_VIEW_SETTINGS.RATIO_FORMAT_VALUE_DIGITS),
           age: formatDuration(clock.age),
         });
       },
     );
     const seriesControls = new VBox({
-      spacing: 6,
+      spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_CONTROLS_SPACING,
       align: "left",
       children: [
-        label(strings.seriesTitleStringProperty, 200, FONTS.SMALL),
+        label(
+          strings.seriesTitleStringProperty,
+          DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_TITLE_LABEL_MAX_WIDTH,
+          FONTS.SMALL,
+        ),
         seriesGroup,
         paragraph(familyText),
         label(strings.timeStringProperty, PANEL_CONTENT_WIDTH, FONTS.SMALL),
@@ -204,22 +228,24 @@ export class DecayChainsScreenView extends ScreenView {
       model.fissionSystemIndexProperty,
       [systems.u235StringProperty, systems.pu239StringProperty, systems.u238StringProperty].map((text, i) => ({
         value: i,
-        createNode: () => label(text, 220),
+        createNode: () => label(text, DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SYSTEM_GROUP_MAX_WIDTH),
       })),
       {
         orientation: "vertical",
-        spacing: 4,
+        spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SYSTEM_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.fissionSystemTitleStringProperty,
       },
     );
     const aSlider = new HSlider(model.fissionMassNumberProperty, model.fissionMassNumberProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
-      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(180),
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
+        .copy()
+        .setWidth(DECAY_CHAINS_SCREEN_VIEW_SETTINGS.A_SLIDER_WIDTH),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
-      pageKeyboardStep: 5,
+      pageKeyboardStep: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.A_SLIDER_PAGE_KEYBOARD_STEP,
       accessibleName: a11y.controls.massNumberSliderStringProperty,
     });
     const aText = new Text(new DerivedProperty([model.fissionMassNumberProperty], (a) => `A = ${a}`), {
@@ -238,14 +264,35 @@ export class DecayChainsScreenView extends ScreenView {
         }),
     );
     const fissionControls = new VBox({
-      spacing: 6,
+      spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.FISSION_CONTROLS_SPACING,
       align: "left",
       children: [
-        label(strings.fissionSystemTitleStringProperty, 220, FONTS.SMALL),
+        label(
+          strings.fissionSystemTitleStringProperty,
+          DECAY_CHAINS_SCREEN_VIEW_SETTINGS.FISSION_SYSTEM_TITLE_LABEL_MAX_WIDTH,
+          FONTS.SMALL,
+        ),
         systemGroup,
-        label(strings.massNumberStringProperty, 220, FONTS.SMALL),
-        new HBox({ spacing: 8, children: [aSlider, aText] }),
-        new HBox({ spacing: 4, children: [label(strings.quickPicksStringProperty, 40, FONTS.SMALL), ...quickButtons] }),
+        label(
+          strings.massNumberStringProperty,
+          DECAY_CHAINS_SCREEN_VIEW_SETTINGS.MASS_NUMBER_LABEL_MAX_WIDTH,
+          FONTS.SMALL,
+        ),
+        new HBox({
+          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FISSION_CONTROLS_SPACING,
+          children: [aSlider, aText],
+        }),
+        new HBox({
+          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.FISSION_CONTROLS_ITEM_5_SPACING,
+          children: [
+            label(
+              strings.quickPicksStringProperty,
+              DECAY_CHAINS_SCREEN_VIEW_SETTINGS.QUICK_PICKS_LABEL_MAX_WIDTH,
+              FONTS.SMALL,
+            ),
+            ...quickButtons,
+          ],
+        }),
       ],
     });
 
@@ -257,7 +304,7 @@ export class DecayChainsScreenView extends ScreenView {
     });
     const controlsPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 10,
+        spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.CONTROLS_PANEL_SPACING,
         align: "left",
         children: [modeGroup, new Node({ children: [seriesControls, fissionControls] })],
       }),

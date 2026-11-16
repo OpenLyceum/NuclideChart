@@ -1,3 +1,4 @@
+import { SHELLS_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * ShellsScreenView.ts
  *
@@ -56,9 +57,21 @@ const css =
     property.value.toCSS();
 
 const STYLES: readonly PointStyle[] = [
-  { css: css(NuclideChartColors.pointColorProperty), radius: 1.6, alpha: 0.7 },
-  { css: css(NuclideChartColors.systematicPointColorProperty), radius: 1.4, alpha: 0.6 },
-  { css: css(NuclideChartColors.highlightColorProperty), radius: 3, alpha: 1 },
+  {
+    css: css(NuclideChartColors.pointColorProperty),
+    radius: SHELLS_SCREEN_VIEW_SETTINGS.STYLES_RADIUS,
+    alpha: SHELLS_SCREEN_VIEW_SETTINGS.STYLES_ITEM_1_ALPHA,
+  },
+  {
+    css: css(NuclideChartColors.systematicPointColorProperty),
+    radius: SHELLS_SCREEN_VIEW_SETTINGS.STYLES_ITEM_2_RADIUS,
+    alpha: SHELLS_SCREEN_VIEW_SETTINGS.STYLES_ITEM_2_ALPHA,
+  },
+  {
+    css: css(NuclideChartColors.highlightColorProperty),
+    radius: SHELLS_SCREEN_VIEW_SETTINGS.STYLES_ITEM_3_RADIUS,
+    alpha: 1,
+  },
 ];
 
 /** The fixed coordinate of the line through a nuclide: Z for isotope lines, N for isotone lines. */
@@ -81,25 +94,38 @@ export class ShellsScreenView extends ScreenView {
     const label = (text: TReadOnlyProperty<string>, maxWidth = PANEL_CONTENT_WIDTH, font = FONTS.LABEL): RichText =>
       new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
     const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>): Checkbox =>
-      new Checkbox(property, label(text, 230), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
+      new Checkbox(property, label(text, SHELLS_SCREEN_VIEW_SETTINGS.CHECKBOX_MAX_WIDTH), {
+        ...NUCLIDE_CHART_CHECKBOX_OPTIONS,
+        accessibleName: text,
+      });
 
     // ── Chart ─────────────────────────────────────────────────────────────────
     const chart = new NuclideScatterNode(selected, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT, {
       accessibleName: a11y.controls.chartStringProperty,
       accessibleHelpText: a11y.controls.chartHelpStringProperty,
     });
-    const unboundBand = new Rectangle(0, 0, 1, 1, { fill: NuclideChartColors.betaPlusColorProperty, opacity: 0.12 });
+    const unboundBand = new Rectangle(0, 0, 1, 1, {
+      fill: NuclideChartColors.betaPlusColorProperty,
+      opacity: SHELLS_SCREEN_VIEW_SETTINGS.UNBOUND_BAND_OPACITY,
+    });
     const unboundLabel = new RichText(strings.unboundStringProperty, {
       font: FONTS.SMALL,
       fill: NuclideChartColors.betaPlusColorProperty,
-      maxWidth: SCATTER_CHART.WIDTH - 20,
+      maxWidth: SCATTER_CHART.WIDTH - SHELLS_SCREEN_VIEW_SETTINGS.UNBOUND_LABEL_MAX_WIDTH_OFFSET,
     });
     const magicPath = new Path(null, {
       stroke: NuclideChartColors.magicLineColorProperty,
       lineDash: [...STROKE.MAGIC_DASH],
     });
-    const linesPath = new Path(null, { stroke: NuclideChartColors.pointColorProperty, lineWidth: 0.6, opacity: 0.5 });
-    const highlightPath = new Path(null, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 2.5 });
+    const linesPath = new Path(null, {
+      stroke: NuclideChartColors.pointColorProperty,
+      lineWidth: SHELLS_SCREEN_VIEW_SETTINGS.LINES_PATH_LINE_WIDTH,
+      opacity: SHELLS_SCREEN_VIEW_SETTINGS.LINES_PATH_OPACITY,
+    });
+    const highlightPath = new Path(null, {
+      stroke: NuclideChartColors.highlightColorProperty,
+      lineWidth: SHELLS_SCREEN_VIEW_SETTINGS.HIGHLIGHT_PATH_LINE_WIDTH,
+    });
     const magicLabels = new Node();
     chart.underLayer.children = [unboundBand, magicPath, linesPath, highlightPath];
     chart.overLayer.children = [unboundLabel, magicLabels];
@@ -144,7 +170,12 @@ export class ShellsScreenView extends ScreenView {
         }
         for (const p of line) {
           const group = key === highlightKey ? 2 : p.systematic ? 1 : 0;
-          points.push({ nuclide: p.nuclide, x: p.x, y: p.energy / 1000, group });
+          points.push({
+            nuclide: p.nuclide,
+            x: p.x,
+            y: p.energy / SHELLS_SCREEN_VIEW_SETTINGS.BUILD_LINES_Y_FACTOR,
+            group,
+          });
         }
       }
       return { allLines, points, highlighted };
@@ -165,7 +196,7 @@ export class ShellsScreenView extends ScreenView {
             font: FONTS.CHART_LABEL,
             fill: NuclideChartColors.magicLineColorProperty,
             centerX: x,
-            top: 3,
+            top: SHELLS_SCREEN_VIEW_SETTINGS.UPDATE_MAGIC_TOP,
           }),
         );
       }
@@ -201,8 +232,8 @@ export class ShellsScreenView extends ScreenView {
       updateMagic(model.shared.magicNumbersVisibleProperty.value);
       const zeroY = transform.modelToViewY(0);
       unboundBand.setRect(0, zeroY, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT - zeroY);
-      unboundLabel.left = 6;
-      unboundLabel.bottom = SCATTER_CHART.HEIGHT - 4;
+      unboundLabel.left = SHELLS_SCREEN_VIEW_SETTINGS.LEFT_LEFT;
+      unboundLabel.bottom = SCATTER_CHART.HEIGHT - SHELLS_SCREEN_VIEW_SETTINGS.UPDATE_BOTTOM_OFFSET;
     };
     Multilink.multilink(
       [model.kindProperty, model.estimatedVisibleProperty, model.shared.magicNumbersVisibleProperty],
@@ -227,11 +258,15 @@ export class ShellsScreenView extends ScreenView {
       model.kindProperty,
       SEPARATION_KINDS.map((kind) => ({
         value: kind,
-        createNode: () => label(kinds[`${kind}StringProperty`] as TReadOnlyProperty<string>, 240),
+        createNode: () =>
+          label(
+            kinds[`${kind}StringProperty`] as TReadOnlyProperty<string>,
+            SHELLS_SCREEN_VIEW_SETTINGS.KIND_GROUP_MAX_WIDTH,
+          ),
       })),
       {
         orientation: "vertical",
-        spacing: 5,
+        spacing: SHELLS_SCREEN_VIEW_SETTINGS.KIND_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.kindTitleStringProperty,
       },
@@ -257,7 +292,7 @@ export class ShellsScreenView extends ScreenView {
         const value = separationEnergy(nuclide, kind as SeparationKind);
         return StringUtils.fillIn(pattern, {
           label: nuclideMarkup(nuclide),
-          value: value === null ? none : formatFixed(value / 1000, 2),
+          value: value === null ? none : formatFixed(value / 1000, SHELLS_SCREEN_VIEW_SETTINGS.VALUE_TEXT_DECIMALS),
         });
       },
     );
@@ -277,17 +312,21 @@ export class ShellsScreenView extends ScreenView {
         }
         return StringUtils.fillIn(pattern, {
           next: nuclideMarkup(next),
-          change: formatSigned((there - here) / 1000, 2),
+          change: formatSigned((there - here) / 1000, SHELLS_SCREEN_VIEW_SETTINGS.DROP_TEXT_DECIMALS),
         });
       },
     );
     const controlsPanel = new NuclideChartPanel(
-      new VBox({ spacing: 6, align: "left", children: [kindGroup, estimatedCheckbox, magicCheckbox] }),
+      new VBox({
+        spacing: SHELLS_SCREEN_VIEW_SETTINGS.CONTROLS_PANEL_SPACING,
+        align: "left",
+        children: [kindGroup, estimatedCheckbox, magicCheckbox],
+      }),
       { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
     );
     const readoutPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 5,
+        spacing: SHELLS_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
         align: "left",
         children: [
           label(lineText),

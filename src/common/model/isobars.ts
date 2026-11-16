@@ -1,3 +1,4 @@
+import { ISOBARS_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * isobars.ts
  *
@@ -13,7 +14,7 @@ import { ELECTRON_REST_ENERGY_KEV } from "./NuclearConstants.js";
 import { NUCLIDE_TABLE, type Nuclide, type NuclideTable } from "./NuclideTable.js";
 
 /** Isobars within this many charge units of the valley bottom enter the parabola fit. */
-const PARABOLA_FIT_HALF_WIDTH = 4;
+const PARABOLA_FIT_HALF_WIDTH: number = ISOBARS_SETTINGS.PARABOLA_FIT_HALF_WIDTH;
 
 type Parabola = {
   /** Mass excess (keV) = minimum + curvature (Z − zMin)². */
@@ -96,7 +97,7 @@ export type IsobarAnalysis = {
 };
 
 /** A missing neighbour counts as "no decay that way" only this close (in Z) to the valley bottom. */
-const EDGE_TRUST_HALF_WIDTH = 3;
+const EDGE_TRUST_HALF_WIDTH: number = ISOBARS_SETTINGS.EDGE_TRUST_HALF_WIDTH;
 
 function fitIsobarParabolas(a: number, members: readonly Nuclide[], zValley: number): Parabola[] {
   const fitPoints = members

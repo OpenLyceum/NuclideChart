@@ -1,3 +1,4 @@
+import { ISOBARS_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * IsobarsScreenView.ts
  *
@@ -94,7 +95,10 @@ export class IsobarsScreenView extends ScreenView {
       font = FONTS.LABEL,
     ): RichText => new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
     const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>): Checkbox =>
-      new Checkbox(property, label(text, 220), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
+      new Checkbox(property, label(text, ISOBARS_SCREEN_VIEW_SETTINGS.CHECKBOX_MAX_WIDTH), {
+        ...NUCLIDE_CHART_CHECKBOX_OPTIONS,
+        accessibleName: text,
+      });
 
     // ── Chart ─────────────────────────────────────────────────────────────────
     const chart = new NuclideScatterNode(selected, ISOBARS.CHART_WIDTH, ISOBARS.CHART_HEIGHT, {
@@ -104,8 +108,8 @@ export class IsobarsScreenView extends ScreenView {
     chart.frame.setAxisLabels(common.axes.protonNumberStringProperty, strings.yAxisStringProperty);
     const parabolaPath = new Path(null, {
       stroke: NuclideChartColors.referenceLineColorProperty,
-      lineWidth: 1.2,
-      opacity: 0.7,
+      lineWidth: ISOBARS_SCREEN_VIEW_SETTINGS.PARABOLA_PATH_LINE_WIDTH,
+      opacity: ISOBARS_SCREEN_VIEW_SETTINGS.PARABOLA_PATH_OPACITY,
     });
     const arrows = new Node();
     const labels = new Node();
@@ -128,7 +132,10 @@ export class IsobarsScreenView extends ScreenView {
       const floor = Math.min(...shown.map((x) => x.massExcess ?? 0));
       const height = (x: Nuclide): number => ((x.massExcess ?? 0) - floor) / 1000;
       const top = Math.min(30, Math.max(6, Math.max(...shown.map(height)) * 1.08 + 0.5));
-      chart.setAxes({ range: zRange, log: false }, { range: new Range(-0.4, top), log: false });
+      chart.setAxes(
+        { range: zRange, log: false },
+        { range: new Range(ISOBARS_SCREEN_VIEW_SETTINGS.UPDATE_RANGE_MIN, top), log: false },
+      );
 
       const points: ScatterPoint[] = shown.map((x) => ({
         nuclide: x,
@@ -162,7 +169,7 @@ export class IsobarsScreenView extends ScreenView {
           font: FONTS.CHART_LABEL,
           fill: NuclideChartColors.textColorProperty,
           centerX: view.x,
-          bottom: view.y - ISOBARS.MARKER_RADIUS - 3,
+          bottom: view.y - ISOBARS.MARKER_RADIUS - ISOBARS_SCREEN_VIEW_SETTINGS.UPDATE_BOTTOM_OFFSET,
         });
       });
     };
@@ -179,11 +186,11 @@ export class IsobarsScreenView extends ScreenView {
     // ── Strip: choose A ───────────────────────────────────────────────────────
     const aSlider = new HSlider(model.massNumberProperty, model.massNumberProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
-      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(230),
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(ISOBARS_SCREEN_VIEW_SETTINGS.A_SLIDER_WIDTH),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
-      pageKeyboardStep: 10,
+      pageKeyboardStep: ISOBARS_SCREEN_VIEW_SETTINGS.A_SLIDER_PAGE_KEYBOARD_STEP,
       accessibleName: strings.massNumberStringProperty,
     });
     const aReadout = new Text(new DerivedProperty([model.massNumberProperty], (a) => `A = ${a}`), {
@@ -202,12 +209,18 @@ export class IsobarsScreenView extends ScreenView {
         }),
     );
     const strip = new HBox({
-      spacing: 14,
+      spacing: ISOBARS_SCREEN_VIEW_SETTINGS.STRIP_SPACING,
       children: [
-        label(strings.massNumberStringProperty, 120),
+        label(strings.massNumberStringProperty, ISOBARS_SCREEN_VIEW_SETTINGS.MASS_NUMBER_LABEL_MAX_WIDTH),
         aSlider,
         aReadout,
-        new HBox({ spacing: 6, children: [label(strings.quickPicksStringProperty, 50), ...quickButtons] }),
+        new HBox({
+          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_STRIP_SPACING,
+          children: [
+            label(strings.quickPicksStringProperty, ISOBARS_SCREEN_VIEW_SETTINGS.QUICK_PICKS_LABEL_MAX_WIDTH),
+            ...quickButtons,
+          ],
+        }),
       ],
     });
 
@@ -215,31 +228,41 @@ export class IsobarsScreenView extends ScreenView {
     const legendEntry = (shape: MarkerShape, fill: TColor, text: TReadOnlyProperty<string>): HBox => {
       const marker = markerShape(shape, ISOBARS.MARKER_RADIUS - 1);
       return new HBox({
-        spacing: 6,
+        spacing: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_ENTRY_SPACING,
         children: [
-          new Path(marker, { fill, stroke: NuclideChartColors.axisColorProperty, lineWidth: 0.5 }),
-          label(text, 110, FONTS.SMALL),
+          new Path(marker, {
+            fill,
+            stroke: NuclideChartColors.axisColorProperty,
+            lineWidth: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_ENTRY_LINE_WIDTH,
+          }),
+          label(text, ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_ENTRY_MAX_WIDTH, FONTS.SMALL),
         ],
       });
     };
     const arrowEntry = (fill: TColor, text: TReadOnlyProperty<string>): HBox =>
       new HBox({
-        spacing: 6,
+        spacing: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_SPACING,
         children: [
-          new ArrowNode(0, 0, 22, 0, { fill, stroke: null, headHeight: 7, headWidth: 8, tailWidth: 2 }),
-          label(text, 110, FONTS.SMALL),
+          new ArrowNode(0, 0, ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_END_X, 0, {
+            fill,
+            stroke: null,
+            headHeight: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_HEAD_HEIGHT,
+            headWidth: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_HEAD_WIDTH,
+            tailWidth: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_TAIL_WIDTH,
+          }),
+          label(text, ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_ENTRY_MAX_WIDTH, FONTS.SMALL),
         ],
       });
     const legend = new VBox({
-      spacing: 3,
+      spacing: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_SPACING,
       align: "left",
       children: [
         new HBox({
-          spacing: 14,
+          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEGEND_SPACING,
           align: "top",
           children: [
             new VBox({
-              spacing: 3,
+              spacing: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_SPACING,
               align: "left",
               children: [
                 legendEntry("circle", NuclideChartColors.pointColorProperty, strings.legend.evenEvenStringProperty),
@@ -249,7 +272,7 @@ export class IsobarsScreenView extends ScreenView {
               ],
             }),
             new VBox({
-              spacing: 3,
+              spacing: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_SPACING,
               align: "left",
               children: [
                 arrowEntry(NuclideChartColors.betaMinusColorProperty, strings.legend.betaMinusStringProperty),
@@ -264,7 +287,11 @@ export class IsobarsScreenView extends ScreenView {
     const parabolaCheckbox = checkbox(model.parabolasVisibleProperty, strings.showParabolasStringProperty);
     const arrowCheckbox = checkbox(model.arrowsVisibleProperty, strings.showArrowsStringProperty);
     const controlsPanel = new NuclideChartPanel(
-      new VBox({ spacing: 6, align: "left", children: [parabolaCheckbox, arrowCheckbox, legend] }),
+      new VBox({
+        spacing: ISOBARS_SCREEN_VIEW_SETTINGS.CONTROLS_PANEL_SPACING,
+        align: "left",
+        children: [parabolaCheckbox, arrowCheckbox, legend],
+      }),
       { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
     );
 
@@ -281,7 +308,8 @@ export class IsobarsScreenView extends ScreenView {
           (t) => t.kind === "doubleBetaMinus" || t.kind === "doubleElectronCapture",
         );
         const text = double.map(
-          (t) => `${nuclideMarkup(t.from)} → ${nuclideMarkup(t.to)} (${formatFixed(t.q / 1000, 3)} MeV)`,
+          (t) =>
+            `${nuclideMarkup(t.from)} → ${nuclideMarkup(t.to)} (${formatFixed(t.q / 1000, ISOBARS_SCREEN_VIEW_SETTINGS.TEXT_DECIMALS)} MeV)`,
         );
         return StringUtils.fillIn(pattern, { list: text.length > 0 ? text.join(", ") : none });
       },
@@ -292,7 +320,7 @@ export class IsobarsScreenView extends ScreenView {
     );
     const readoutPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 5,
+        spacing: ISOBARS_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
         align: "left",
         children: [
           label(stableText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
@@ -392,10 +420,10 @@ export class IsobarsScreenView extends ScreenView {
     return new ArrowNode(start.x, start.y, end.x, end.y, {
       fill,
       stroke: null,
-      headHeight: 8,
-      headWidth: 8,
-      tailWidth: t.kind.startsWith("double") ? 1.5 : 2,
-      opacity: 0.9,
+      headHeight: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_FOR_HEAD_HEIGHT,
+      headWidth: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_FOR_HEAD_WIDTH,
+      tailWidth: t.kind.startsWith("double") ? ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_FOR_TAIL_WIDTH : 2,
+      opacity: ISOBARS_SCREEN_VIEW_SETTINGS.ARROW_FOR_OPACITY,
     });
   }
 }

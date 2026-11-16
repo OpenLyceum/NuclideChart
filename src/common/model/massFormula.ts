@@ -1,3 +1,4 @@
+import { MASS_FORMULA_NUMERICS } from "../../NuclideChartConstants.js";
 /**
  * massFormula.ts
  *
@@ -196,7 +197,7 @@ export function solveLinearSystem(augmented: number[][]): number[] {
     [m[col], m[pivot]] = [m[pivot] as number[], m[col] as number[]];
     const pivotRow = m[col] as number[];
     const p = pivotRow[col] ?? 0;
-    if (Math.abs(p) < 1e-300) {
+    if (Math.abs(p) < MASS_FORMULA_NUMERICS.MIN_PIVOT) {
       continue;
     }
     for (let r = 0; r < k; r++) {
@@ -211,6 +212,6 @@ export function solveLinearSystem(augmented: number[][]): number[] {
   }
   return m.map((row, i) => {
     const p = row[i] ?? 0;
-    return Math.abs(p) < 1e-300 ? 0 : (row[k] ?? 0) / p;
+    return Math.abs(p) < MASS_FORMULA_NUMERICS.MIN_PIVOT ? 0 : (row[k] ?? 0) / p;
   });
 }

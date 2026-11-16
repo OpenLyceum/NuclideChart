@@ -1,3 +1,4 @@
+import { PLOT_FRAME_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * PlotFrameNode.ts
  *
@@ -84,8 +85,8 @@ export class PlotFrameNode extends Node {
     });
     this.minorGrid = new Path(null, {
       stroke: NuclideChartColors.gridLineColorProperty,
-      lineWidth: 0.5,
-      opacity: 0.5,
+      lineWidth: PLOT_FRAME_NODE_SETTINGS.MINOR_GRID_LINE_WIDTH,
+      opacity: PLOT_FRAME_NODE_SETTINGS.MINOR_GRID_OPACITY,
     });
     const gridOptions = { stroke: NuclideChartColors.gridLineColorProperty };
     this.gridX = new GridLineSet(transform, Orientation.HORIZONTAL, 1, gridOptions);
@@ -121,10 +122,10 @@ export class PlotFrameNode extends Node {
     });
     const placeAxisLabels = (): void => {
       this.xAxisLabel.centerX = viewWidth / 2;
-      this.xAxisLabel.top = viewHeight + 20;
+      this.xAxisLabel.top = viewHeight + PLOT_FRAME_NODE_SETTINGS.PLACE_AXIS_LABELS_TOP_OFFSET;
       this.yAxisLabel.centerY = viewHeight / 2;
       const labelsLeft = this.labelsY.bounds.isFinite() ? this.labelsY.left : 0;
-      this.yAxisLabel.right = Math.min(-30, labelsLeft - 6);
+      this.yAxisLabel.right = Math.min(-30, labelsLeft - PLOT_FRAME_NODE_SETTINGS.PLACE_AXIS_LABELS_RIGHT_OFFSET);
     };
     this.xAxisLabel.boundsProperty.lazyLink(placeAxisLabels);
     this.yAxisLabel.boundsProperty.lazyLink(placeAxisLabels);

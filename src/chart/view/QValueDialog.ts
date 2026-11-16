@@ -1,3 +1,4 @@
+import { Q_VALUE_DIALOG_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * QValueDialog.ts
  *
@@ -47,12 +48,24 @@ export class QValueDialog extends Dialog {
       fill: NuclideChartColors.textColorProperty,
       lineWrap: DIALOG.QVALUE_WIDTH,
     });
-    const table = new GridBox({ xSpacing: 18, ySpacing: 5, xAlign: "left" });
+    const table = new GridBox({
+      xSpacing: Q_VALUE_DIALOG_SETTINGS.TABLE_X_SPACING,
+      ySpacing: Q_VALUE_DIALOG_SETTINGS.TABLE_Y_SPACING,
+      xAlign: "left",
+    });
     const revealedProperty = new BooleanProperty(false);
     const revealButton = new BooleanRectangularToggleButton(
       revealedProperty,
-      new Text(strings.hideStringProperty, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 200 }),
-      new Text(strings.revealStringProperty, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 200 }),
+      new Text(strings.hideStringProperty, {
+        font: FONTS.LABEL,
+        fill: LIGHT_SURFACE_TEXT_FILL,
+        maxWidth: Q_VALUE_DIALOG_SETTINGS.REVEAL_BUTTON_MAX_WIDTH,
+      }),
+      new Text(strings.revealStringProperty, {
+        font: FONTS.LABEL,
+        fill: LIGHT_SURFACE_TEXT_FILL,
+        maxWidth: Q_VALUE_DIALOG_SETTINGS.REVEAL_BUTTON_MAX_WIDTH,
+      }),
       { ...FLAT_RECTANGULAR_BUTTON_OPTIONS, accessibleName: strings.revealStringProperty },
     );
     const note = new RichText(strings.unseenNoteStringProperty, {
@@ -61,13 +74,20 @@ export class QValueDialog extends Dialog {
       lineWrap: DIALOG.QVALUE_WIDTH,
     });
 
-    super(new VBox({ spacing: 12, align: "left", children: [intro, table, revealButton, note] }), {
-      title,
-      fill: NuclideChartColors.panelBackgroundColorProperty,
-      stroke: NuclideChartColors.panelBorderColorProperty,
-      closeButtonColor: NuclideChartColors.textColorProperty,
-      accessibleName: title.stringProperty,
-    });
+    super(
+      new VBox({
+        spacing: Q_VALUE_DIALOG_SETTINGS.CONSTRUCTOR_SPACING,
+        align: "left",
+        children: [intro, table, revealButton, note],
+      }),
+      {
+        title,
+        fill: NuclideChartColors.panelBackgroundColorProperty,
+        stroke: NuclideChartColors.panelBorderColorProperty,
+        closeButtonColor: NuclideChartColors.textColorProperty,
+        accessibleName: title.stringProperty,
+      },
+    );
     this.table = table;
     this.nuclideProperty = nuclideProperty;
     this.revealedProperty = revealedProperty;
@@ -95,8 +115,9 @@ export class QValueDialog extends Dialog {
       content: string | TReadOnlyProperty<string>,
       font = FONTS.LABEL,
       fill: TColor = NuclideChartColors.textColorProperty,
-    ): Node => new RichText(content, { font, fill, maxWidth: 170 });
-    const mev = (kev: number | null): string => (kev === null ? "—" : formatFixed(kev / 1000, 3));
+    ): Node => new RichText(content, { font, fill, maxWidth: Q_VALUE_DIALOG_SETTINGS.TEXT_MAX_WIDTH });
+    const mev = (kev: number | null): string =>
+      kev === null ? "—" : formatFixed(kev / 1000, Q_VALUE_DIALOG_SETTINGS.MEV_DECIMALS);
 
     for (const child of this.table.children) {
       child.dispose();

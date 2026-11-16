@@ -1,3 +1,4 @@
+import { DECAY_CHAINS_MODEL_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * DecayChainsModel.ts
  *
@@ -36,7 +37,7 @@ export class DecayChainsModel implements TModel {
   public readonly shared: SharedModel;
   public readonly modeProperty = new StringProperty("series", { validValues: ["series", "fission"] });
   /** Index into SERIES; U-238 by default. */
-  public readonly seriesIndexProperty = new NumberProperty(2, {
+  public readonly seriesIndexProperty = new NumberProperty(DECAY_CHAINS_MODEL_SETTINGS.SERIES_INDEX_DEFAULT, {
     range: new Range(0, SERIES.length - 1),
     numberType: "Integer",
   });
@@ -50,10 +51,13 @@ export class DecayChainsModel implements TModel {
     range: new Range(0, FISSION_SYSTEMS.length - 1),
     numberType: "Integer",
   });
-  public readonly fissionMassNumberProperty = new NumberProperty(137, {
-    range: DECAY_CHAINS.FISSION_A_RANGE,
-    numberType: "Integer",
-  });
+  public readonly fissionMassNumberProperty = new NumberProperty(
+    DECAY_CHAINS_MODEL_SETTINGS.FISSION_MASS_NUMBER_DEFAULT,
+    {
+      range: DECAY_CHAINS.FISSION_A_RANGE,
+      numberType: "Integer",
+    },
+  );
 
   public constructor(shared: SharedModel) {
     this.shared = shared;

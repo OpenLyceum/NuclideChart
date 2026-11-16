@@ -1,3 +1,4 @@
+import { POINT_CLOUD_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * PointCloudNode.ts
  *
@@ -12,7 +13,7 @@ import { Shape } from "scenerystack/kite";
 import { CanvasNode } from "scenerystack/scenery";
 
 /** Group index that is never drawn. */
-const HIDDEN_GROUP = 255;
+const HIDDEN_GROUP: number = POINT_CLOUD_NODE_SETTINGS.HIDDEN_GROUP;
 
 /** Points in chart (model) coordinates, each with a group. */
 export type PointSet = {
@@ -145,7 +146,7 @@ export class PointCloudNode extends CanvasNode {
       context.fill();
       if (style.stroke) {
         context.globalAlpha = 1;
-        context.lineWidth = 0.6;
+        context.lineWidth = POINT_CLOUD_NODE_SETTINGS.LINE_WIDTH_LINE_WIDTH;
         context.strokeStyle = style.stroke();
         context.stroke();
       }

@@ -1,3 +1,4 @@
+import { FORMAT_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * format.ts
  *
@@ -32,7 +33,7 @@ const superscript = (exponent: number): string =>
  * A value to `digits` significant figures in plain text: decimals between 10⁻³ and 10⁶, otherwise
  * m × 10ⁿ with Unicode superscripts (so it fits in a plain Text node).
  */
-export const formatValue = (value: number, digits = 3): string => {
+export const formatValue = (value: number, digits: number = FORMAT_SETTINGS.DEFAULT_DIGITS): string => {
   if (!Number.isFinite(value)) {
     return "—";
   }
@@ -86,7 +87,7 @@ const TIME_UNITS: readonly (readonly [number, string])[] = [
 ];
 
 /** A duration in seconds in the largest unit that keeps the number ≥ 1: "4.47 × 10⁹ y", "6.01 h", "294 ns". */
-export const formatDuration = (seconds: number, digits = 3): string => {
+export const formatDuration = (seconds: number, digits: number = FORMAT_SETTINGS.DEFAULT_DIGITS): string => {
   if (!Number.isFinite(seconds) || seconds <= 0) {
     return "—";
   }

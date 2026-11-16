@@ -1,3 +1,4 @@
+import { MAP_LEGEND_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * MapLegendNode.ts
  *
@@ -48,15 +49,15 @@ export class MapLegendNode extends Node {
       new Rectangle(0, 0, MAP.LEGEND_SWATCH, MAP.LEGEND_SWATCH, {
         fill,
         stroke: NuclideChartColors.axisColorProperty,
-        lineWidth: 0.5,
+        lineWidth: MAP_LEGEND_NODE_SETTINGS.SWATCH_LINE_WIDTH,
       });
     const entry = (fill: TColor, text: TReadOnlyProperty<string>, maxWidth: number): HBox =>
-      new HBox({ spacing: 5, children: [swatch(fill), small(text, maxWidth)] });
+      new HBox({ spacing: MAP_LEGEND_NODE_SETTINGS.ENTRY_SPACING, children: [swatch(fill), small(text, maxWidth)] });
 
     const decayLegend = new GridBox({
       autoColumns: 2,
-      xSpacing: 10,
-      ySpacing: 3,
+      xSpacing: MAP_LEGEND_NODE_SETTINGS.DECAY_LEGEND_X_SPACING,
+      ySpacing: MAP_LEGEND_NODE_SETTINGS.DECAY_LEGEND_Y_SPACING,
       xAlign: "left",
       children: LEGEND_CATEGORIES.map((category) =>
         entry(
@@ -67,7 +68,7 @@ export class MapLegendNode extends Node {
       ),
     });
     const measurementLegend = new VBox({
-      spacing: 3,
+      spacing: MAP_LEGEND_NODE_SETTINGS.MEASUREMENT_LEGEND_SPACING,
       align: "left",
       children: [
         entry(
@@ -87,14 +88,14 @@ export class MapLegendNode extends Node {
     const barWidth = width;
     const bar = new Rectangle(0, 0, barWidth, MAP.LEGEND_BAR_HEIGHT, {
       stroke: NuclideChartColors.axisColorProperty,
-      lineWidth: 0.5,
+      lineWidth: MAP_LEGEND_NODE_SETTINGS.BAR_LINE_WIDTH,
     });
     const minLabel = new Text("", { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty });
     const maxLabel = new Text("", { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty });
     const noteLow = small("", barWidth / 2 - 4);
     const noteHigh = small("", barWidth / 2 - 4);
     const extra = new HBox({
-      spacing: 12,
+      spacing: MAP_LEGEND_NODE_SETTINGS.EXTRA_SPACING,
       children: [entry(NuclideChartColors.noDataColorProperty, chart.legend.noDataStringProperty, barWidth / 2 - 20)],
     });
     const scaleLegend = new Node({ children: [bar, minLabel, maxLabel, noteLow, noteHigh, extra] });
@@ -122,7 +123,8 @@ export class MapLegendNode extends Node {
       noteHigh.top = maxLabel.bottom + 1;
       extra.left = 0;
       extra.top =
-        Math.max(noteLow.visible ? noteLow.bottom : minLabel.bottom, noteHigh.visible ? noteHigh.bottom : 0) + 4;
+        Math.max(noteLow.visible ? noteLow.bottom : minLabel.bottom, noteHigh.visible ? noteHigh.bottom : 0) +
+        MAP_LEGEND_NODE_SETTINGS.LAYOUT_SCALE_TOP_OFFSET;
     };
 
     coloringProperty.link((coloring) => {

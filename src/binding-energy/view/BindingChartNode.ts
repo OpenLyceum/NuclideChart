@@ -1,3 +1,4 @@
+import { BINDING_CHART_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingChartNode.ts
  *
@@ -60,9 +61,21 @@ const css =
 
 /** Point groups, drawn in this order (later on top). */
 const STYLES: readonly PointStyle[] = [
-  { css: css(NuclideChartColors.systematicPointColorProperty), radius: 1.6, alpha: 0.6 },
-  { css: css(NuclideChartColors.pointColorProperty), radius: 1.8, alpha: 0.85 },
-  { css: css(NuclideChartColors.stablePointColorProperty), radius: 2.4, alpha: 1 },
+  {
+    css: css(NuclideChartColors.systematicPointColorProperty),
+    radius: BINDING_CHART_NODE_SETTINGS.STYLES_RADIUS,
+    alpha: BINDING_CHART_NODE_SETTINGS.STYLES_ITEM_1_ALPHA,
+  },
+  {
+    css: css(NuclideChartColors.pointColorProperty),
+    radius: BINDING_CHART_NODE_SETTINGS.STYLES_ITEM_2_RADIUS,
+    alpha: BINDING_CHART_NODE_SETTINGS.STYLES_ITEM_2_ALPHA,
+  },
+  {
+    css: css(NuclideChartColors.stablePointColorProperty),
+    radius: BINDING_CHART_NODE_SETTINGS.STYLES_ITEM_3_RADIUS,
+    alpha: 1,
+  },
 ];
 
 export type BindingChartNodeOptions = NodeOptions & {
@@ -87,7 +100,10 @@ export class BindingChartNode extends Node {
     const cloud = new PointCloudNode(frame.chartTransform);
     this.cloud = cloud;
 
-    const formulaPath = new Path(null, { stroke: NuclideChartColors.referenceLineColorProperty, lineWidth: 1.5 });
+    const formulaPath = new Path(null, {
+      stroke: NuclideChartColors.referenceLineColorProperty,
+      lineWidth: BINDING_CHART_NODE_SETTINGS.FORMULA_PATH_LINE_WIDTH,
+    });
     const magicPath = new Path(null, {
       stroke: NuclideChartColors.magicLineColorProperty,
       lineWidth: 1,
@@ -96,12 +112,15 @@ export class BindingChartNode extends Node {
     const gapPath = new Path(null, {
       stroke: NuclideChartColors.dripLineColorProperty,
       lineWidth: 1,
-      lineDash: [3, 3],
+      lineDash: [
+        BINDING_CHART_NODE_SETTINGS.GAP_PATH_LINE_DASH_DASH,
+        BINDING_CHART_NODE_SETTINGS.GAP_PATH_LINE_DASH_DASH,
+      ],
     });
     const gapLabel = new RichText(strings.noA5A8StringProperty, {
       font: FONTS.SMALL,
       fill: NuclideChartColors.dripLineColorProperty,
-      maxWidth: width * 0.4,
+      maxWidth: width * BINDING_CHART_NODE_SETTINGS.GAP_LABEL_MAX_WIDTH_FACTOR,
     });
     const alphaLabels = new Node();
     const reactionMarkers = new Node();
@@ -112,8 +131,8 @@ export class BindingChartNode extends Node {
     const selectionLabel = new RichText("", { font: FONTS.LABEL, fill: NuclideChartColors.selectionColorProperty });
     const selectionBackground = new Rectangle(0, 0, 1, 1, {
       fill: NuclideChartColors.chartBackgroundColorProperty,
-      opacity: 0.8,
-      cornerRadius: 3,
+      opacity: BINDING_CHART_NODE_SETTINGS.SELECTION_BACKGROUND_OPACITY,
+      cornerRadius: BINDING_CHART_NODE_SETTINGS.SELECTION_BACKGROUND_CORNER_RADIUS,
     });
 
     // Clicking picks the nearest point.
@@ -232,8 +251,8 @@ export class BindingChartNode extends Node {
         const x = transform.modelToViewX(a);
         shape.moveTo(x, transform.modelToViewY(0)).lineTo(x, transform.modelToViewY(4.5));
       }
-      label.left = transform.modelToViewX(10);
-      label.centerY = transform.modelToViewY(4.6);
+      label.left = transform.modelToViewX(BINDING_CHART_NODE_SETTINGS.UPDATE_MASS_GAP_LEFT);
+      label.centerY = transform.modelToViewY(BINDING_CHART_NODE_SETTINGS.UPDATE_MASS_GAP_CENTER_Y);
     }
     path.shape = shape;
     label.visible = visible;
@@ -245,7 +264,7 @@ export class BindingChartNode extends Node {
     if (view === BindingView.CURVE) {
       return nuclide.bindingPerNucleon === null || nuclide.a < 2
         ? null
-        : { x: nuclide.a, y: nuclide.bindingPerNucleon / 1000 };
+        : { x: nuclide.a, y: nuclide.bindingPerNucleon / BINDING_CHART_NODE_SETTINGS.PLOT_VALUE_Y_FACTOR };
     }
     if (nuclide.a < 16) {
       return null;
@@ -326,14 +345,14 @@ export class BindingChartNode extends Node {
       font: FONTS.CHART_LABEL,
       fill: NuclideChartColors.highlightColorProperty,
     });
-    label.left = transform.modelToViewX(0) + 4;
+    label.left = transform.modelToViewX(0) + BINDING_CHART_NODE_SETTINGS.LEADER_LABEL_LEFT_OFFSET;
     label.centerY = transform.modelToViewY(labelBA);
     if (!p) {
       return label;
     }
     const line = new Line(label.right + 2, label.centerY, transform.modelToViewX(p.x), transform.modelToViewY(p.y), {
       stroke: NuclideChartColors.highlightColorProperty,
-      lineWidth: 0.6,
+      lineWidth: BINDING_CHART_NODE_SETTINGS.LINE_LINE_WIDTH,
     });
     return new Node({ children: [line, label] });
   }
@@ -379,7 +398,16 @@ export class BindingChartNode extends Node {
         const x = this.frame.chartTransform.modelToViewX(p.x);
         const y = this.frame.chartTransform.modelToViewY(p.y);
         children.push(
-          new Rectangle(x - 4, y - 4, 8, 8, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 2 }),
+          new Rectangle(
+            x - 4,
+            y - 4,
+            BINDING_CHART_NODE_SETTINGS.UPDATE_REACTION_MARKERS_WIDTH,
+            BINDING_CHART_NODE_SETTINGS.UPDATE_REACTION_MARKERS_HEIGHT,
+            {
+              stroke: NuclideChartColors.highlightColorProperty,
+              lineWidth: BINDING_CHART_NODE_SETTINGS.UPDATE_REACTION_MARKERS_LINE_WIDTH,
+            },
+          ),
           this.pointLabel(nuclide),
         );
       }
@@ -409,8 +437,8 @@ export class BindingChartNode extends Node {
       label: nuclideMarkup(nuclide),
       value,
     });
-    label.right = this.frame.viewWidth - 8;
-    label.top = 8;
+    label.right = this.frame.viewWidth - BINDING_CHART_NODE_SETTINGS.UPDATE_SELECTION_RIGHT_OFFSET;
+    label.top = BINDING_CHART_NODE_SETTINGS.TOP_TOP;
     background.setRect(label.left - 4, label.top - 2, label.width + 8, label.height + 4);
   }
 

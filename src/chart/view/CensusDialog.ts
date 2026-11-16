@@ -1,3 +1,4 @@
+import { CENSUS_DIALOG_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * CensusDialog.ts
  *
@@ -35,21 +36,21 @@ export class CensusDialog extends Dialog {
       });
 
     const table = new GridBox({
-      xSpacing: 30,
-      ySpacing: 8,
+      xSpacing: CENSUS_DIALOG_SETTINGS.TABLE_X_SPACING,
+      ySpacing: CENSUS_DIALOG_SETTINGS.TABLE_Y_SPACING,
       rows: [
         [
           text(""),
-          text(strings.evenNStringProperty, FONTS.HEADER, 110),
-          text(strings.oddNStringProperty, FONTS.HEADER, 110),
+          text(strings.evenNStringProperty, FONTS.HEADER, CENSUS_DIALOG_SETTINGS.EVEN_N_TEXT_MAX_WIDTH),
+          text(strings.oddNStringProperty, FONTS.HEADER, CENSUS_DIALOG_SETTINGS.ODD_N_TEXT_MAX_WIDTH),
         ],
         [
-          text(strings.evenZStringProperty, FONTS.HEADER, 110),
+          text(strings.evenZStringProperty, FONTS.HEADER, CENSUS_DIALOG_SETTINGS.EVEN_Z_TEXT_MAX_WIDTH),
           count((c) => c.evenEven.length),
           count((c) => c.evenOdd.length),
         ],
         [
-          text(strings.oddZStringProperty, FONTS.HEADER, 110),
+          text(strings.oddZStringProperty, FONTS.HEADER, CENSUS_DIALOG_SETTINGS.ODD_Z_TEXT_MAX_WIDTH),
           count((c) => c.oddEven.length),
           count((c) => c.oddOdd.length),
         ],
@@ -59,12 +60,19 @@ export class CensusDialog extends Dialog {
     const definitionGroup = new AquaRadioButtonGroup<string>(
       definitionProperty,
       [
-        { value: "ensdf", createNode: () => text(strings.ensdfStringProperty, FONTS.LABEL, 300) },
-        { value: "effective", createNode: () => text(strings.effectiveStringProperty, FONTS.LABEL, 300) },
+        {
+          value: "ensdf",
+          createNode: () => text(strings.ensdfStringProperty, FONTS.LABEL, CENSUS_DIALOG_SETTINGS.ENSDF_TEXT_MAX_WIDTH),
+        },
+        {
+          value: "effective",
+          createNode: () =>
+            text(strings.effectiveStringProperty, FONTS.LABEL, CENSUS_DIALOG_SETTINGS.EFFECTIVE_TEXT_MAX_WIDTH),
+        },
       ],
       {
         orientation: "vertical",
-        spacing: 4,
+        spacing: CENSUS_DIALOG_SETTINGS.DEFINITION_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.definitionStringProperty,
       },
@@ -93,10 +101,14 @@ export class CensusDialog extends Dialog {
     });
     super(
       new VBox({
-        spacing: 12,
+        spacing: CENSUS_DIALOG_SETTINGS.CONSTRUCTOR_SPACING,
         align: "left",
         children: [
-          new VBox({ spacing: 4, align: "left", children: [text(strings.definitionStringProperty), definitionGroup] }),
+          new VBox({
+            spacing: CENSUS_DIALOG_SETTINGS.ITEM_1_SPACING,
+            align: "left",
+            children: [text(strings.definitionStringProperty), definitionGroup],
+          }),
           table,
           total,
           oddOdd,

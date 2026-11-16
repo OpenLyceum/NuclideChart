@@ -1,3 +1,4 @@
+import { NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS } from "../NuclideChartConstants.js";
 /**
  * NuclideChartPreferencesNode.ts
  *
@@ -36,14 +37,14 @@ export class NuclideChartPreferencesNode extends VBox {
       {
         checkboxColor: NuclideChartColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: NuclideChartColors.controlSurfaceColorProperty,
-        spacing: 8,
+        spacing: NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS.SHOW_EQUATIONS_CHECKBOX_SPACING,
         ...(tandem && { tandem: tandem.createTandem("showEquationsCheckbox") }),
       },
     );
 
     super({
       align: "left",
-      spacing: 12,
+      spacing: NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [header, showEquationsCheckbox],
     });
   }

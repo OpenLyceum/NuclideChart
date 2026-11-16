@@ -1,3 +1,4 @@
+import { NUCLIDE_CARD_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * NuclideCardNode.ts
  *
@@ -48,10 +49,10 @@ export const nuclideMarkup = (nuclide: Nuclide): string => `<sup>${nuclide.a}</s
 /** A branching ratio for display: 100, 64.06, 1.4 × 10⁻⁵ … */
 const formatPercent = (percent: number): string => {
   if (percent >= 0.01) {
-    return String(Number(percent.toPrecision(4)));
+    return String(Number(percent.toPrecision(NUCLIDE_CARD_NODE_SETTINGS.FORMAT_PERCENT_SIGNIFICANT_FIGURES)));
   }
   const exponent = Math.floor(Math.log10(percent));
-  return `${Number((percent / 10 ** exponent).toPrecision(2))}×10<sup>${exponent}</sup>`;
+  return `${Number((percent / 10 ** exponent).toPrecision(NUCLIDE_CARD_NODE_SETTINGS.FORMAT_PERCENT_SIGNIFICANT_FIGURES_SEGMENT_2))}×10<sup>${exponent}</sup>`;
 };
 
 export type NuclideCardNodeOptions = VBoxOptions & { readonly contentWidth?: number };
@@ -65,9 +66,17 @@ export class NuclideCardNode extends VBox {
     const card = common.card;
 
     const label = (text: TReadOnlyProperty<string>): RichText =>
-      new RichText(text, { font: FONTS.LABEL, fill: NuclideChartColors.textColorProperty, maxWidth: width * 0.38 });
+      new RichText(text, {
+        font: FONTS.LABEL,
+        fill: NuclideChartColors.textColorProperty,
+        maxWidth: width * NUCLIDE_CARD_NODE_SETTINGS.LABEL_MAX_WIDTH_FACTOR,
+      });
     const value = (text: TReadOnlyProperty<string>): RichText =>
-      new RichText(text, { font: FONTS.READOUT, fill: NuclideChartColors.textColorProperty, maxWidth: width * 0.6 });
+      new RichText(text, {
+        font: FONTS.READOUT,
+        fill: NuclideChartColors.textColorProperty,
+        maxWidth: width * NUCLIDE_CARD_NODE_SETTINGS.VALUE_MAX_WIDTH_FACTOR,
+      });
     const pattern = (
       patternProperty: TReadOnlyProperty<string>,
       read: (nuclide: Nuclide) => number | null,
@@ -81,13 +90,17 @@ export class NuclideCardNode extends VBox {
     const title = new RichText(new DerivedProperty([nuclideProperty], (nuclide) => nuclideMarkup(nuclide)), {
       font: FONTS.BIG_LABEL,
       fill: NuclideChartColors.textColorProperty,
-      maxWidth: width * 0.3,
+      maxWidth: width * NUCLIDE_CARD_NODE_SETTINGS.TITLE_MAX_WIDTH_FACTOR,
     });
     const zna = new RichText(
       new DerivedProperty([card.znaPatternStringProperty, nuclideProperty], (p, nuclide) =>
         StringUtils.fillIn(p, { z: nuclide.z, n: nuclide.n, a: nuclide.a }),
       ),
-      { font: FONTS.LABEL, fill: NuclideChartColors.textColorProperty, maxWidth: width * 0.68 },
+      {
+        font: FONTS.LABEL,
+        fill: NuclideChartColors.textColorProperty,
+        maxWidth: width * NUCLIDE_CARD_NODE_SETTINGS.ZNA_MAX_WIDTH_FACTOR,
+      },
     );
     const halfLife = new DerivedProperty(
       [card.stableStringProperty, card.noDataStringProperty, nuclideProperty],
@@ -109,8 +122,8 @@ export class NuclideCardNode extends VBox {
     );
 
     const rows = new GridBox({
-      xSpacing: 10,
-      ySpacing: 3,
+      xSpacing: NUCLIDE_CARD_NODE_SETTINGS.ROWS_X_SPACING,
+      ySpacing: NUCLIDE_CARD_NODE_SETTINGS.ROWS_Y_SPACING,
       xAlign: "left",
       rows: [
         [label(q.halfLifeStringProperty), value(halfLife)],
@@ -121,25 +134,50 @@ export class NuclideCardNode extends VBox {
             pattern(
               units.mevPatternStringProperty,
               (x) => (x.bindingPerNucleon === null ? null : x.bindingPerNucleon / 1000),
-              4,
+              NUCLIDE_CARD_NODE_SETTINGS.MEV_PATTERN_PATTERN_DECIMALS,
             ),
           ),
         ],
         [
           label(q.massExcessStringProperty),
           value(
-            pattern(units.mevPatternStringProperty, (x) => (x.massExcess === null ? null : x.massExcess / 1000), 3),
+            pattern(
+              units.mevPatternStringProperty,
+              (x) => (x.massExcess === null ? null : x.massExcess / 1000),
+              NUCLIDE_CARD_NODE_SETTINGS.MEV_PATTERN_PATTERN_DECIMALS_SEGMENT_2,
+            ),
           ),
         ],
         [label(q.spinParityStringProperty), value(spin)],
-        [label(q.abundanceStringProperty), value(pattern(units.percentPatternStringProperty, (x) => x.abundance, 3))],
+        [
+          label(q.abundanceStringProperty),
+          value(
+            pattern(
+              units.percentPatternStringProperty,
+              (x) => x.abundance,
+              NUCLIDE_CARD_NODE_SETTINGS.PERCENT_PATTERN_PATTERN_DECIMALS,
+            ),
+          ),
+        ],
         [
           label(q.separationNeutronStringProperty),
-          value(pattern(units.mevPatternStringProperty, (x) => (x.sn === null ? null : x.sn / 1000), 3)),
+          value(
+            pattern(
+              units.mevPatternStringProperty,
+              (x) => (x.sn === null ? null : x.sn / 1000),
+              NUCLIDE_CARD_NODE_SETTINGS.MEV_PATTERN_PATTERN_DECIMALS_SEGMENT_2,
+            ),
+          ),
         ],
         [
           label(q.separationProtonStringProperty),
-          value(pattern(units.mevPatternStringProperty, (x) => (x.sp === null ? null : x.sp / 1000), 3)),
+          value(
+            pattern(
+              units.mevPatternStringProperty,
+              (x) => (x.sp === null ? null : x.sp / 1000),
+              NUCLIDE_CARD_NODE_SETTINGS.MEV_PATTERN_PATTERN_DECIMALS_SEGMENT_2,
+            ),
+          ),
         ],
       ],
     });
@@ -152,9 +190,13 @@ export class NuclideCardNode extends VBox {
     });
 
     super({
-      spacing: 6,
+      spacing: NUCLIDE_CARD_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       align: "left",
-      children: [new VBox({ spacing: 2, align: "left", children: [title, zna] }), rows, estimated],
+      children: [
+        new VBox({ spacing: NUCLIDE_CARD_NODE_SETTINGS.ITEM_1_SPACING, align: "left", children: [title, zna] }),
+        rows,
+        estimated,
+      ],
       ...providedOptions,
     });
   }

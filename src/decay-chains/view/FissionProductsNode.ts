@@ -1,3 +1,4 @@
+import { FISSION_PRODUCTS_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * FissionProductsNode.ts
  *
@@ -67,8 +68,12 @@ export class FissionProductsNode extends Node {
     });
     const chainRow = new VBox({ spacing: 1, align: "left" });
     const notes = new RichText("", { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, lineWrap: width });
-    const chainBox = new VBox({ spacing: 8, align: "left", children: [chainTitle, chainRow, notes] });
-    chainBox.top = plotHeight + 40;
+    const chainBox = new VBox({
+      spacing: FISSION_PRODUCTS_NODE_SETTINGS.CHAIN_BOX_SPACING,
+      align: "left",
+      children: [chainTitle, chainRow, notes],
+    });
+    chainBox.top = plotHeight + FISSION_PRODUCTS_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
     this.children = [frame, chainBox];
 
     const barShape = (yields: readonly number[], only?: number): Shape => {
@@ -132,7 +137,9 @@ export class FissionProductsNode extends Node {
             [
               `${i > 0 ? "↓ " : "  "}${nuclideMarkup(nuclide)}`,
               nuclide.isStable ? common.card.stableStringProperty.value : nuclide.halfLifeText,
-              independent !== null && independent > 0 ? formatValue(100 * independent, 2) : "—",
+              independent !== null && independent > 0
+                ? formatValue(100 * independent, FISSION_PRODUCTS_NODE_SETTINGS.CHAIN_ROW_DIGITS)
+                : "—",
               hasMode(nuclide, "B-N", "B-2N") ? `<i>${strings.delayedNeutronStringProperty.value}</i>` : "",
             ],
             width,
@@ -143,7 +150,7 @@ export class FissionProductsNode extends Node {
       ];
       chainTitle.string = StringUtils.fillIn(strings.chainTitlePatternStringProperty.value, {
         a,
-        yield: formatValue(100 * (yields[a] ?? 0), 3),
+        yield: formatValue(100 * (yields[a] ?? 0), FISSION_PRODUCTS_NODE_SETTINGS.CHAIN_TITLE_DIGITS),
       });
       notes.string = shown
         .map((x) => noteKeys[x.label]?.value)
@@ -170,11 +177,19 @@ export class FissionProductsNode extends Node {
     selectedProperty: Property<Nuclide>,
   ): Node {
     const selected = nuclide !== null && selectedProperty.value === nuclide;
-    const background = new Rectangle(0, 0, width, ROW_HEIGHT, 3, 3, {
-      fill: selected ? NuclideChartColors.panelBackgroundColorProperty : null,
-      stroke: selected ? NuclideChartColors.selectionColorProperty : null,
-      cursor: nuclide ? "pointer" : null,
-    });
+    const background = new Rectangle(
+      0,
+      0,
+      width,
+      ROW_HEIGHT,
+      FISSION_PRODUCTS_NODE_SETTINGS.BACKGROUND_CORNER_X,
+      FISSION_PRODUCTS_NODE_SETTINGS.BACKGROUND_CORNER_Y,
+      {
+        fill: selected ? NuclideChartColors.panelBackgroundColorProperty : null,
+        stroke: selected ? NuclideChartColors.selectionColorProperty : null,
+        cursor: nuclide ? "pointer" : null,
+      },
+    );
     if (nuclide) {
       background.fill = selected ? NuclideChartColors.panelBackgroundColorProperty : "rgba(0,0,0,0)";
       background.addInputListener({
@@ -192,8 +207,11 @@ export class FissionProductsNode extends Node {
       return new RichText(cell, {
         font: FONTS.LABEL,
         fill,
-        maxWidth: width * (COLUMNS[i + 1] ?? 1) - width * (COLUMNS[i] ?? 0) - 8,
-        left: width * (COLUMNS[i] ?? 0) + 6,
+        maxWidth:
+          width * (COLUMNS[i + 1] ?? 1) -
+          width * (COLUMNS[i] ?? 0) -
+          FISSION_PRODUCTS_NODE_SETTINGS.TEXTS_MAX_WIDTH_OFFSET,
+        left: width * (COLUMNS[i] ?? 0) + FISSION_PRODUCTS_NODE_SETTINGS.TEXTS_LEFT_OFFSET,
         centerY: ROW_HEIGHT / 2,
         pickable: false,
       });

@@ -1,3 +1,4 @@
+import { NUCLIDE_MAP_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * NuclideMapNode.ts
  *
@@ -177,7 +178,10 @@ class MapCanvas extends CanvasNode {
       context.fillRect(x + gap / 2, y + gap / 2, s - gap, s - gap);
       if (this.estimatedMarked && nuclide.isSystematic && s > 3) {
         context.strokeStyle = contrastingText(color);
-        context.lineWidth = Math.max(0.6, s * 0.06);
+        context.lineWidth = Math.max(
+          NUCLIDE_MAP_NODE_SETTINGS.PAINT_CELLS_LINE_WIDTH,
+          s * NUCLIDE_MAP_NODE_SETTINGS.PAINT_CELLS_LINE_WIDTH_FACTOR,
+        );
         context.beginPath();
         context.moveTo(x + gap, y + s - gap);
         context.lineTo(x + s - gap, y + gap);
@@ -229,21 +233,29 @@ class MapCanvas extends CanvasNode {
     }
     if (this.nEqualsZVisible) {
       const end = NUCLIDE_TABLE.maxZ + 1;
-      polyline([new Vector2(-0.5, -0.5), new Vector2(end, end)], this.theme.reference, 1.2, [6, 4]);
+      polyline(
+        [
+          new Vector2(NUCLIDE_MAP_NODE_SETTINGS.PAINT_OVERLAYS_X, NUCLIDE_MAP_NODE_SETTINGS.PAINT_OVERLAYS_Y),
+          new Vector2(end, end),
+        ],
+        this.theme.reference,
+        NUCLIDE_MAP_NODE_SETTINGS.POLYLINE_WIDTH,
+        [6, 4],
+      );
     }
     if (this.valleyVisible) {
-      polyline(VALLEY_LINE, this.theme.valley, 2);
+      polyline(VALLEY_LINE, this.theme.valley, NUCLIDE_MAP_NODE_SETTINGS.POLYLINE_WIDTH_SEGMENT_2);
     }
     if (this.dripVisible) {
-      polyline(DRIP_LINES.neutron, this.theme.drip, 1.5);
-      polyline(DRIP_LINES.proton, this.theme.drip, 1.5);
+      polyline(DRIP_LINES.neutron, this.theme.drip, NUCLIDE_MAP_NODE_SETTINGS.POLYLINE_WIDTH_SEGMENT_3);
+      polyline(DRIP_LINES.proton, this.theme.drip, NUCLIDE_MAP_NODE_SETTINGS.POLYLINE_WIDTH_SEGMENT_3);
     }
   }
 
   private paintSelection(context: CanvasRenderingContext2D, g: MapGeometry): void {
     const size = Math.max(8, g.scale + 2);
     context.strokeStyle = this.theme.selection;
-    context.lineWidth = 2;
+    context.lineWidth = NUCLIDE_MAP_NODE_SETTINGS.LINE_WIDTH_LINE_WIDTH;
     context.strokeRect(g.x(this.selected.n) - size / 2, g.y(this.selected.z) - size / 2, size, size);
   }
 
@@ -290,7 +302,7 @@ class MapCanvas extends CanvasNode {
     }
     const v = g.visible();
     context.strokeStyle = this.theme.selection;
-    context.lineWidth = 1.5;
+    context.lineWidth = NUCLIDE_MAP_NODE_SETTINGS.PAINT_MINIMAP_LINE_WIDTH;
     context.strokeRect(box.minX + (v.minX + 1) * k, box.maxY - (v.maxY + 2) * k, v.width * k, v.height * k);
   }
 }

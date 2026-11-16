@@ -1,3 +1,4 @@
+import { BINDING_ENERGY_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingEnergyScreenView.ts
  *
@@ -72,12 +73,20 @@ export class BindingEnergyScreenView extends ScreenView {
       maxWidth = PANEL_CONTENT_WIDTH,
       font = FONTS.LABEL,
     ): RichText => new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
-    const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>, maxWidth = 220): Checkbox =>
+    const checkbox = (
+      property: Property<boolean>,
+      text: TReadOnlyProperty<string>,
+      maxWidth: number = BINDING_ENERGY_SCREEN_VIEW_SETTINGS.DEFAULT_MAX_WIDTH,
+    ): Checkbox =>
       new Checkbox(property, label(text, maxWidth), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
     const button = (text: TReadOnlyProperty<string>, listener: () => void): RectangularPushButton =>
       new RectangularPushButton({
         ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
-        content: new Text(text, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 130 }),
+        content: new Text(text, {
+          font: FONTS.LABEL,
+          fill: LIGHT_SURFACE_TEXT_FILL,
+          maxWidth: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.BUTTON_MAX_WIDTH,
+        }),
         listener,
         accessibleName: text,
       });
@@ -92,13 +101,25 @@ export class BindingEnergyScreenView extends ScreenView {
     const viewGroup = new AquaRadioButtonGroup(
       model.viewProperty,
       [
-        { value: BindingView.CURVE, createNode: () => label(strings.view.curveStringProperty, 220) },
-        { value: BindingView.RESIDUAL_N, createNode: () => label(strings.view.residualNStringProperty, 220) },
-        { value: BindingView.RESIDUAL_Z, createNode: () => label(strings.view.residualZStringProperty, 220) },
+        {
+          value: BindingView.CURVE,
+          createNode: () =>
+            label(strings.view.curveStringProperty, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.CURVE_LABEL_MAX_WIDTH),
+        },
+        {
+          value: BindingView.RESIDUAL_N,
+          createNode: () =>
+            label(strings.view.residualNStringProperty, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.RESIDUAL_N_LABEL_MAX_WIDTH),
+        },
+        {
+          value: BindingView.RESIDUAL_Z,
+          createNode: () =>
+            label(strings.view.residualZStringProperty, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.RESIDUAL_Z_LABEL_MAX_WIDTH),
+        },
       ],
       {
         orientation: "vertical",
-        spacing: 5,
+        spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.VIEW_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.viewTitleStringProperty,
       },
@@ -108,7 +129,11 @@ export class BindingEnergyScreenView extends ScreenView {
     const formulaCheckbox = checkbox(model.formulaVisibleProperty, strings.showFormulaStringProperty);
     const magicCheckbox = checkbox(model.shared.magicNumbersVisibleProperty, common.magicNumbersStringProperty);
     const viewPanel = new NuclideChartPanel(
-      new VBox({ spacing: 6, align: "left", children: [viewGroup, zoomCheckbox, formulaCheckbox, magicCheckbox] }),
+      new VBox({
+        spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.VIEW_PANEL_SPACING,
+        align: "left",
+        children: [viewGroup, zoomCheckbox, formulaCheckbox, magicCheckbox],
+      }),
       { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
     );
 
@@ -118,7 +143,10 @@ export class BindingEnergyScreenView extends ScreenView {
       const name = termNames[`${term}StringProperty`] as TReadOnlyProperty<string>;
       const enabled = model.termEnabledProperties[term];
       const coefficient = model.coefficientProperties[term];
-      const box = new Checkbox(enabled, label(name, 110), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: name });
+      const box = new Checkbox(enabled, label(name, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.BOX_MAX_WIDTH), {
+        ...NUCLIDE_CHART_CHECKBOX_OPTIONS,
+        accessibleName: name,
+      });
       const slider = new HSlider(coefficient, coefficient.range, {
         ...NUCLIDE_CHART_SLIDER_OPTIONS,
         trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(BINDING.COEFFICIENT_SLIDER_WIDTH),
@@ -133,13 +161,17 @@ export class BindingEnergyScreenView extends ScreenView {
       });
       const readout = new Text(
         new DerivedProperty([coefficient], (value) => formatFixed(value, term === "coulomb" ? 3 : 2)),
-        { font: FONTS.READOUT, fill: NuclideChartColors.textColorProperty, maxWidth: 50 },
+        {
+          font: FONTS.READOUT,
+          fill: NuclideChartColors.textColorProperty,
+          maxWidth: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.READOUT_MAX_WIDTH,
+        },
       );
       return { box, slider, readout };
     });
     const formulaGrid = new GridBox({
-      xSpacing: 8,
-      ySpacing: 4,
+      xSpacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FORMULA_GRID_X_SPACING,
+      ySpacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FORMULA_GRID_Y_SPACING,
       xAlign: "left",
       rows: termRows.map((row) => [row.box, row.slider, row.readout]),
     });
@@ -147,14 +179,17 @@ export class BindingEnergyScreenView extends ScreenView {
     const textbookButton = button(strings.formula.textbookStringProperty, () => model.useTextbookValues());
     const rmsText = label(
       new DerivedProperty([strings.formula.rmsPatternStringProperty, model.rmsProperty], (pattern, rms) =>
-        StringUtils.fillIn(pattern, { value: formatFixed(rms.rms, 2), count: rms.count }),
+        StringUtils.fillIn(pattern, {
+          value: formatFixed(rms.rms, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.RMS_TEXT_DECIMALS),
+          count: rms.count,
+        }),
       ),
       PANEL_CONTENT_WIDTH,
       FONTS.SMALL,
     );
     const formulaPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 6,
+        spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FORMULA_PANEL_SPACING,
         align: "left",
         children: [
           label(strings.formula.titleStringProperty, PANEL_CONTENT_WIDTH, FONTS.TITLE),
@@ -165,7 +200,10 @@ export class BindingEnergyScreenView extends ScreenView {
             visibleProperty: preferences.showEquationsProperty,
           }),
           formulaGrid,
-          new HBox({ spacing: 8, children: [fitButton, textbookButton] }),
+          new HBox({
+            spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FORMULA_PANEL_SPACING,
+            children: [fitButton, textbookButton],
+          }),
           rmsText,
         ],
       }),
@@ -176,12 +214,20 @@ export class BindingEnergyScreenView extends ScreenView {
     const modeGroup = new AquaRadioButtonGroup<string>(
       model.energyModeProperty,
       [
-        { value: "fission", createNode: () => label(strings.energy.fissionStringProperty, 100) },
-        { value: "fusion", createNode: () => label(strings.energy.fusionStringProperty, 100) },
+        {
+          value: "fission",
+          createNode: () =>
+            label(strings.energy.fissionStringProperty, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FISSION_LABEL_MAX_WIDTH),
+        },
+        {
+          value: "fusion",
+          createNode: () =>
+            label(strings.energy.fusionStringProperty, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FUSION_LABEL_MAX_WIDTH),
+        },
       ],
       {
         orientation: "horizontal",
-        spacing: 16,
+        spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.MODE_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.energy.titleStringProperty,
       },
@@ -190,11 +236,13 @@ export class BindingEnergyScreenView extends ScreenView {
     const fission = model.fissionProperty;
     const fragmentSlider = new HSlider(model.lightFragmentAProperty, model.lightFragmentAProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
-      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(130),
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
+        .copy()
+        .setWidth(BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FRAGMENT_SLIDER_WIDTH),
       constrainValue: (value: number) => Math.round(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
-      pageKeyboardStep: 5,
+      pageKeyboardStep: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FRAGMENT_SLIDER_PAGE_KEYBOARD_STEP,
       accessibleName: strings.energy.fragmentAStringProperty,
     });
     const fissionReaction = label(
@@ -206,7 +254,7 @@ export class BindingEnergyScreenView extends ScreenView {
       new DerivedProperty([strings.energy.estimatePatternStringProperty, fission], (pattern, f) =>
         f
           ? StringUtils.fillIn(pattern, {
-              gain: formatFixed(f.gainPerNucleon / 1000, 3),
+              gain: formatFixed(f.gainPerNucleon / 1000, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FISSION_ESTIMATE_DECIMALS),
               count: f.target.a,
               energy: formatFixed(f.estimate / 1000, 0),
             })
@@ -221,13 +269,17 @@ export class BindingEnergyScreenView extends ScreenView {
       ),
     );
     const fissionContent = new VBox({
-      spacing: 5,
+      spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FISSION_CONTENT_SPACING,
       align: "left",
       children: [
         new HBox({
-          spacing: 8,
+          spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FISSION_CONTENT_SPACING,
           children: [
-            label(strings.energy.fragmentAStringProperty, 90, FONTS.SMALL),
+            label(
+              strings.energy.fragmentAStringProperty,
+              BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FRAGMENT_A_LABEL_MAX_WIDTH,
+              FONTS.SMALL,
+            ),
             fragmentSlider,
             new Text(new DerivedProperty([model.lightFragmentAProperty], (a) => String(a)), {
               font: FONTS.READOUT,
@@ -246,7 +298,11 @@ export class BindingEnergyScreenView extends ScreenView {
       FUSION_REACTIONS.map((reaction, i) => ({
         value: i,
         createNode: () =>
-          new RichText(reaction.markup, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 230 }),
+          new RichText(reaction.markup, {
+            font: FONTS.LABEL,
+            fill: LIGHT_SURFACE_TEXT_FILL,
+            maxWidth: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.REACTION_BOX_MAX_WIDTH,
+          }),
         accessibleName: reaction.markup.replace(/<\/?sup>/g, ""),
       })),
       listParent,
@@ -255,22 +311,30 @@ export class BindingEnergyScreenView extends ScreenView {
     const fusion = model.fusionProperty;
     const fusionGain = label(
       new DerivedProperty([strings.energy.bindingGainPatternStringProperty, fusion], (pattern, f) =>
-        StringUtils.fillIn(pattern, { value: formatFixed(f.bindingGain / 1000, 2) }),
+        StringUtils.fillIn(pattern, {
+          value: formatFixed(f.bindingGain / 1000, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FUSION_GAIN_DECIMALS),
+        }),
       ),
     );
     const fusionQ = label(
       new DerivedProperty([strings.energy.qPatternStringProperty, fusion], (pattern, f) =>
-        StringUtils.fillIn(pattern, { value: formatFixed(f.q / 1000, 2) }),
+        StringUtils.fillIn(pattern, {
+          value: formatFixed(f.q / 1000, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FUSION_Q_DECIMALS),
+        }),
       ),
     );
-    const fusionContent = new VBox({ spacing: 5, align: "left", children: [reactionBox, fusionGain, fusionQ] });
+    const fusionContent = new VBox({
+      spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FUSION_CONTENT_SPACING,
+      align: "left",
+      children: [reactionBox, fusionGain, fusionQ],
+    });
     model.energyModeProperty.link((mode) => {
       fissionContent.visible = mode === "fission";
       fusionContent.visible = mode === "fusion";
     });
     const energyPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 6,
+        spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.ENERGY_PANEL_SPACING,
         align: "left",
         children: [
           label(strings.energy.titleStringProperty, PANEL_CONTENT_WIDTH, FONTS.TITLE),

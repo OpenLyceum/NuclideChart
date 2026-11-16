@@ -1,3 +1,4 @@
+import { BINDING_ENERGY_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingEnergyScreenSummaryContent.ts
  *
@@ -20,8 +21,14 @@ export class BindingEnergyScreenSummaryContent extends ScreenSummaryContent {
       (pattern, nuclide, rms) =>
         StringUtils.fillIn(pattern, {
           label: nuclide.label,
-          value: nuclide.bindingPerNucleon === null ? "—" : formatFixed(nuclide.bindingPerNucleon / 1000, 4),
-          rms: formatFixed(rms.rms, 2),
+          value:
+            nuclide.bindingPerNucleon === null
+              ? "—"
+              : formatFixed(
+                  nuclide.bindingPerNucleon / 1000,
+                  BINDING_ENERGY_SCREEN_SUMMARY_CONTENT_SETTINGS.DETAILS_DECIMALS,
+                ),
+          rms: formatFixed(rms.rms, BINDING_ENERGY_SCREEN_SUMMARY_CONTENT_SETTINGS.DETAILS_DECIMALS_SEGMENT_2),
         }),
     );
     super({

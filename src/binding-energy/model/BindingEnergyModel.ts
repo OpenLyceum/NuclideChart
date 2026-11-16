@@ -1,3 +1,4 @@
+import { BINDING_ENERGY_MODEL_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingEnergyModel.ts
  *
@@ -56,10 +57,13 @@ export class BindingView extends EnumerationValue {
 
 /** Slider range of each coefficient (MeV). */
 const COEFFICIENT_RANGES: Readonly<Record<MassFormulaTerm, Range>> = {
-  volume: new Range(10, 20),
-  surface: new Range(10, 25),
+  volume: new Range(
+    BINDING_ENERGY_MODEL_SETTINGS.COEFFICIENT_RANGES_RANGE_MIN,
+    BINDING_ENERGY_MODEL_SETTINGS.COEFFICIENT_RANGES_RANGE_MAX,
+  ),
+  surface: new Range(BINDING_ENERGY_MODEL_SETTINGS.COEFFICIENT_RANGES_RANGE_MIN, 25),
   coulomb: new Range(0.4, 1),
-  asymmetry: new Range(10, 35),
+  asymmetry: new Range(BINDING_ENERGY_MODEL_SETTINGS.COEFFICIENT_RANGES_RANGE_MIN, 35),
   pairing: new Range(0, 60),
 };
 
@@ -83,7 +87,7 @@ export class BindingEnergyModel implements TModel {
   public readonly rmsProperty: TReadOnlyProperty<{ rms: number; count: number }>;
 
   public readonly energyModeProperty = new StringProperty("fission", { validValues: ["fission", "fusion"] });
-  public readonly lightFragmentAProperty = new NumberProperty(95, {
+  public readonly lightFragmentAProperty = new NumberProperty(BINDING_ENERGY_MODEL_SETTINGS.LIGHT_FRAGMENT_A_DEFAULT, {
     range: new Range(LIGHT_FRAGMENT_RANGE.min, LIGHT_FRAGMENT_RANGE.max),
     numberType: "Integer",
   });

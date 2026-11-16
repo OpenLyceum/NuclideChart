@@ -1,3 +1,4 @@
+import { BATEMAN_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * bateman.ts
  *
@@ -22,7 +23,7 @@
 import type { DecayChain } from "./decayChains.js";
 
 /** Relative nudge applied to a λ that coincides with an ancestor's. */
-const DEGENERACY_NUDGE = 1e-6;
+const DEGENERACY_NUDGE: number = BATEMAN_SETTINGS.DEGENERACY_NUDGE;
 
 type Feed = { readonly from: number; readonly fraction: number };
 
@@ -47,7 +48,11 @@ function nudgedLambda(i: number, lambdas: readonly number[], feeds: readonly Fee
   for (const { from } of feeds) {
     for (let j = 0; j < lambdas.length; j++) {
       const lj = lambdas[j] ?? 0;
-      if (j !== i && (c[from]?.[j] ?? 0) !== 0 && Math.abs(lambdaI - lj) <= 1e-12 * lj) {
+      if (
+        j !== i &&
+        (c[from]?.[j] ?? 0) !== 0 &&
+        Math.abs(lambdaI - lj) <= BATEMAN_SETTINGS.RATE_RELATIVE_TOLERANCE * lj
+      ) {
         return lj * (1 + DEGENERACY_NUDGE);
       }
     }

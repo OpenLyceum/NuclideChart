@@ -1,3 +1,4 @@
+import { CHAIN_DIAGRAM_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * ChainDiagramNode.ts
  *
@@ -61,7 +62,7 @@ export class ChainDiagramNode extends Node {
     this.selectedProperty = selectedProperty;
     this.highlight = new Rectangle(0, 0, 1, 1, {
       stroke: NuclideChartColors.selectionColorProperty,
-      lineWidth: 2.5,
+      lineWidth: CHAIN_DIAGRAM_NODE_SETTINGS.HIGHLIGHT_LINE_WIDTH,
       pickable: false,
     });
     const background = new Rectangle(0, 0, width, height, {
@@ -200,15 +201,18 @@ export class ChainDiagramNode extends Node {
       new ArrowNode(p.x, p.y, q.x, q.y, {
         fill,
         stroke: null,
-        headHeight: 6,
-        headWidth: 7,
-        tailWidth: 2,
+        headHeight: CHAIN_DIAGRAM_NODE_SETTINGS.NODES_HEAD_HEIGHT,
+        headWidth: CHAIN_DIAGRAM_NODE_SETTINGS.NODES_HEAD_WIDTH,
+        tailWidth: CHAIN_DIAGRAM_NODE_SETTINGS.NODES_TAIL_WIDTH,
         pickable: false,
       }),
     ];
     if (fraction < 0.995) {
       const percent = fraction * 100;
-      const text = percent >= 1 ? `${percent.toFixed(percent >= 10 ? 0 : 1)}%` : `${Number(percent.toPrecision(2))}%`;
+      const text =
+        percent >= 1
+          ? `${percent.toFixed(percent >= 10 ? 0 : 1)}%`
+          : `${Number(percent.toPrecision(CHAIN_DIAGRAM_NODE_SETTINGS.TEXT_SIGNIFICANT_FIGURES))}%`;
       nodes.push(
         new Text(text, {
           font: FONTS.SMALL,

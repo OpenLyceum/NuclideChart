@@ -1,3 +1,4 @@
+import { ACTIVITY_CHART_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * ActivityChartNode.ts
  *
@@ -40,14 +41,32 @@ export class ActivityChartNode extends Node {
       { range: ACTIVITY_RANGE, log: true },
     );
     frame.setAxisLabels(axisLabels.time, axisLabels.activity);
-    const alphaPath = new Path(null, { stroke: NuclideChartColors.alphaColorProperty, lineWidth: 1, opacity: 0.75 });
-    const betaPath = new Path(null, { stroke: NuclideChartColors.betaMinusColorProperty, lineWidth: 1, opacity: 0.75 });
-    const otherPath = new Path(null, { stroke: NuclideChartColors.isomericColorProperty, lineWidth: 1, opacity: 0.75 });
-    const highlightPath = new Path(null, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 2.6 });
+    const alphaPath = new Path(null, {
+      stroke: NuclideChartColors.alphaColorProperty,
+      lineWidth: 1,
+      opacity: ACTIVITY_CHART_NODE_SETTINGS.ALPHA_PATH_OPACITY,
+    });
+    const betaPath = new Path(null, {
+      stroke: NuclideChartColors.betaMinusColorProperty,
+      lineWidth: 1,
+      opacity: ACTIVITY_CHART_NODE_SETTINGS.BETA_PATH_OPACITY,
+    });
+    const otherPath = new Path(null, {
+      stroke: NuclideChartColors.isomericColorProperty,
+      lineWidth: 1,
+      opacity: ACTIVITY_CHART_NODE_SETTINGS.OTHER_PATH_OPACITY,
+    });
+    const highlightPath = new Path(null, {
+      stroke: NuclideChartColors.highlightColorProperty,
+      lineWidth: ACTIVITY_CHART_NODE_SETTINGS.HIGHLIGHT_PATH_LINE_WIDTH,
+    });
     const timeLine = new Path(null, {
       stroke: NuclideChartColors.selectionColorProperty,
-      lineWidth: 1.2,
-      lineDash: [5, 3],
+      lineWidth: ACTIVITY_CHART_NODE_SETTINGS.TIME_LINE_LINE_WIDTH,
+      lineDash: [
+        ACTIVITY_CHART_NODE_SETTINGS.TIME_LINE_LINE_DASH_DASH,
+        ACTIVITY_CHART_NODE_SETTINGS.CONSTRUCTOR_TIME_LINE_LINE_DASH_DASH,
+      ],
     });
     const labels = new Node();
     frame.plotLayer.children = [alphaPath, betaPath, otherPath, highlightPath, timeLine, labels];
@@ -124,7 +143,7 @@ export class ActivityChartNode extends Node {
       return new RichText(`<sup>${a}${curve.node.isomer ? "m" : ""}</sup>${symbol}`, {
         font: FONTS.CHART_LABEL,
         fill: isSelected ? NuclideChartColors.highlightColorProperty : NuclideChartColors.textColorProperty,
-        left: anchor.x + 3,
+        left: anchor.x + ACTIVITY_CHART_NODE_SETTINGS.LABEL_FOR_LEFT_OFFSET,
         bottom: anchor.y - 2,
       });
     };

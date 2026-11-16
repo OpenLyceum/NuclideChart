@@ -1,3 +1,4 @@
+import { CHART_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * ChartScreenView.ts
  *
@@ -68,12 +69,20 @@ export class ChartScreenView extends ScreenView {
 
     const label = (text: TReadOnlyProperty<string>, maxWidth = PANEL_CONTENT_WIDTH): RichText =>
       new RichText(text, { font: FONTS.LABEL, fill: NuclideChartColors.textColorProperty, maxWidth });
-    const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>, maxWidth = 170): Checkbox =>
+    const checkbox = (
+      property: Property<boolean>,
+      text: TReadOnlyProperty<string>,
+      maxWidth: number = CHART_SCREEN_VIEW_SETTINGS.DEFAULT_MAX_WIDTH,
+    ): Checkbox =>
       new Checkbox(property, label(text, maxWidth), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
     const button = (text: TReadOnlyProperty<string>, listener: () => void): RectangularPushButton =>
       new RectangularPushButton({
         ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
-        content: new Text(text, { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 120 }),
+        content: new Text(text, {
+          font: FONTS.LABEL,
+          fill: LIGHT_SURFACE_TEXT_FILL,
+          maxWidth: CHART_SCREEN_VIEW_SETTINGS.BUTTON_MAX_WIDTH,
+        }),
         listener,
         accessibleName: text,
       });
@@ -88,14 +97,14 @@ export class ChartScreenView extends ScreenView {
       fill: NuclideChartColors.textColorProperty,
       maxWidth: CHART.MAP_WIDTH,
       centerX: CHART.MAP_WIDTH / 2,
-      top: CHART.MAP_HEIGHT + 4,
+      top: CHART.MAP_HEIGHT + CHART_SCREEN_VIEW_SETTINGS.X_TITLE_TOP_OFFSET,
     });
     const yTitle = new RichText(common.axes.protonNumberStringProperty, {
       font: FONTS.AXIS_LABEL,
       fill: NuclideChartColors.textColorProperty,
       maxWidth: CHART.MAP_HEIGHT,
       rotation: -Math.PI / 2,
-      right: -6,
+      right: CHART_SCREEN_VIEW_SETTINGS.Y_TITLE_RIGHT,
       centerY: CHART.MAP_HEIGHT / 2,
     });
     xTitle.localBoundsProperty.lazyLink(() => {
@@ -109,42 +118,75 @@ export class ChartScreenView extends ScreenView {
     // ── Strip under the map: zoom and overlays ────────────────────────────────
     const zoomOut = new RectangularPushButton({
       ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
-      content: new MinusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
+      content: new MinusNode({
+        size: new Dimension2(CHART_SCREEN_VIEW_SETTINGS.ZOOM_OUT_WIDTH, CHART_SCREEN_VIEW_SETTINGS.ZOOM_OUT_HEIGHT),
+        fill: LIGHT_SURFACE_TEXT_FILL,
+      }),
       listener: () => map.zoomBy(1 / MAP.ZOOM_STEP),
       accessibleName: strings.zoom.zoomOutStringProperty,
     });
     const zoomIn = new RectangularPushButton({
       ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
-      content: new PlusNode({ size: new Dimension2(10, 2), fill: LIGHT_SURFACE_TEXT_FILL }),
+      content: new PlusNode({
+        size: new Dimension2(CHART_SCREEN_VIEW_SETTINGS.ZOOM_IN_WIDTH, CHART_SCREEN_VIEW_SETTINGS.ZOOM_IN_HEIGHT),
+        fill: LIGHT_SURFACE_TEXT_FILL,
+      }),
       listener: () => map.zoomBy(MAP.ZOOM_STEP),
       accessibleName: strings.zoom.zoomInStringProperty,
     });
     const zoomSlider = new HSlider(model.zoomProperty, model.zoomProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
-      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(110),
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(CHART_SCREEN_VIEW_SETTINGS.ZOOM_SLIDER_WIDTH),
       accessibleName: a11y.controls.zoomStringProperty,
-      keyboardStep: 0.5,
-      pageKeyboardStep: 2,
+      keyboardStep: CHART_SCREEN_VIEW_SETTINGS.ZOOM_SLIDER_KEYBOARD_STEP,
+      pageKeyboardStep: CHART_SCREEN_VIEW_SETTINGS.ZOOM_SLIDER_PAGE_KEYBOARD_STEP,
     });
     model.zoomProperty.lazyLink(() => map.reclamp());
     const showAll = button(strings.zoom.showAllStringProperty, () => model.showWholeChart());
-    const zoomControls = new HBox({ spacing: 6, children: [zoomOut, zoomSlider, zoomIn, showAll] });
+    const zoomControls = new HBox({
+      spacing: CHART_SCREEN_VIEW_SETTINGS.ZOOM_CONTROLS_SPACING,
+      children: [zoomOut, zoomSlider, zoomIn, showAll],
+    });
 
     const overlayChecks = [
-      checkbox(shared.magicNumbersVisibleProperty, common.magicNumbersStringProperty, 140),
-      checkbox(model.nEqualsZVisibleProperty, strings.overlays.nEqualsZStringProperty, 140),
-      checkbox(model.valleyVisibleProperty, strings.overlays.valleyStringProperty, 160),
-      checkbox(model.dripLinesVisibleProperty, strings.overlays.dripLinesStringProperty, 140),
-      checkbox(model.estimatedMassesMarkedProperty, strings.overlays.markEstimatedStringProperty, 160),
+      checkbox(
+        shared.magicNumbersVisibleProperty,
+        common.magicNumbersStringProperty,
+        CHART_SCREEN_VIEW_SETTINGS.MAGIC_NUMBERS_VISIBLE_CHECKBOX_MAX_WIDTH,
+      ),
+      checkbox(
+        model.nEqualsZVisibleProperty,
+        strings.overlays.nEqualsZStringProperty,
+        CHART_SCREEN_VIEW_SETTINGS.N_EQUALS_Z_VISIBLE_CHECKBOX_MAX_WIDTH,
+      ),
+      checkbox(
+        model.valleyVisibleProperty,
+        strings.overlays.valleyStringProperty,
+        CHART_SCREEN_VIEW_SETTINGS.VALLEY_VISIBLE_CHECKBOX_MAX_WIDTH,
+      ),
+      checkbox(
+        model.dripLinesVisibleProperty,
+        strings.overlays.dripLinesStringProperty,
+        CHART_SCREEN_VIEW_SETTINGS.DRIP_LINES_VISIBLE_CHECKBOX_MAX_WIDTH,
+      ),
+      checkbox(
+        model.estimatedMassesMarkedProperty,
+        strings.overlays.markEstimatedStringProperty,
+        CHART_SCREEN_VIEW_SETTINGS.ESTIMATED_MASSES_MARKED_CHECKBOX_MAX_WIDTH,
+      ),
     ];
     const overlays = new GridBox({
       autoColumns: 3,
-      xSpacing: 12,
-      ySpacing: 6,
+      xSpacing: CHART_SCREEN_VIEW_SETTINGS.OVERLAYS_X_SPACING,
+      ySpacing: CHART_SCREEN_VIEW_SETTINGS.OVERLAYS_Y_SPACING,
       xAlign: "left",
       children: overlayChecks,
     });
-    const strip = new HBox({ spacing: 20, align: "center", children: [zoomControls, overlays] });
+    const strip = new HBox({
+      spacing: CHART_SCREEN_VIEW_SETTINGS.STRIP_SPACING,
+      align: "center",
+      children: [zoomControls, overlays],
+    });
 
     // ── Colouring and legend ──────────────────────────────────────────────────
     const colorings = strings.colorings as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
@@ -155,7 +197,11 @@ export class ChartScreenView extends ScreenView {
       MapColoring.enumeration.values.map((coloring) => ({
         value: coloring,
         createNode: () =>
-          new Text(coloringName(coloring), { font: FONTS.LABEL, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: 190 }),
+          new Text(coloringName(coloring), {
+            font: FONTS.LABEL,
+            fill: LIGHT_SURFACE_TEXT_FILL,
+            maxWidth: CHART_SCREEN_VIEW_SETTINGS.COLORING_BOX_MAX_WIDTH,
+          }),
         accessibleName: coloringName(coloring),
       })),
       listParent,
@@ -163,10 +209,16 @@ export class ChartScreenView extends ScreenView {
     );
     const coloringPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 8,
+        spacing: CHART_SCREEN_VIEW_SETTINGS.COLORING_PANEL_SPACING,
         align: "left",
         children: [
-          new HBox({ spacing: 8, children: [label(strings.colorByStringProperty, 70), coloringBox] }),
+          new HBox({
+            spacing: CHART_SCREEN_VIEW_SETTINGS.COLORING_PANEL_SPACING,
+            children: [
+              label(strings.colorByStringProperty, CHART_SCREEN_VIEW_SETTINGS.COLOR_BY_LABEL_MAX_WIDTH),
+              coloringBox,
+            ],
+          }),
           new MapLegendNode(model.coloringProperty, PANEL_CONTENT_WIDTH),
         ],
       }),
@@ -180,26 +232,32 @@ export class ChartScreenView extends ScreenView {
     const censusButton = button(strings.buttons.censusStringProperty, () => censusDialog.show());
     const cardPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 8,
+        spacing: CHART_SCREEN_VIEW_SETTINGS.CARD_PANEL_SPACING,
         align: "left",
         children: [
           new NuclideCardNode(shared.selectedNuclideProperty, { contentWidth: PANEL_CONTENT_WIDTH }),
-          new HBox({ spacing: 8, children: [qButton, censusButton] }),
+          new HBox({ spacing: CHART_SCREEN_VIEW_SETTINGS.CARD_PANEL_SPACING, children: [qButton, censusButton] }),
         ],
       }),
       { minWidth: PANEL_COLUMN_WIDTH, maxWidth: PANEL_COLUMN_WIDTH },
     );
 
     // ── Half-life filter ──────────────────────────────────────────────────────
-    const filterCheckbox = checkbox(model.halfLifeFilterEnabledProperty, strings.filter.enabledStringProperty, 230);
+    const filterCheckbox = checkbox(
+      model.halfLifeFilterEnabledProperty,
+      strings.filter.enabledStringProperty,
+      CHART_SCREEN_VIEW_SETTINGS.HALF_LIFE_FILTER_ENABLED_CHECKBOX_MAX_WIDTH,
+    );
     const thresholdText = new DerivedProperty([model.halfLifeThresholdProperty], (log) => formatDuration(10 ** log));
     const thresholdSlider = new HSlider(model.halfLifeThresholdProperty, model.halfLifeThresholdProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
-      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(170),
+      trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
+        .copy()
+        .setWidth(CHART_SCREEN_VIEW_SETTINGS.THRESHOLD_SLIDER_WIDTH),
       enabledProperty: model.halfLifeFilterEnabledProperty,
-      keyboardStep: 0.5,
-      shiftKeyboardStep: 0.1,
-      pageKeyboardStep: 2,
+      keyboardStep: CHART_SCREEN_VIEW_SETTINGS.THRESHOLD_SLIDER_KEYBOARD_STEP,
+      shiftKeyboardStep: CHART_SCREEN_VIEW_SETTINGS.THRESHOLD_SLIDER_SHIFT_KEYBOARD_STEP,
+      pageKeyboardStep: CHART_SCREEN_VIEW_SETTINGS.THRESHOLD_SLIDER_PAGE_KEYBOARD_STEP,
       accessibleName: a11y.controls.halfLifeThresholdStringProperty,
       pdomCreateAriaValueText: (value: number | null) => (value === null ? "" : formatDuration(10 ** value)),
     });
@@ -208,23 +266,23 @@ export class ChartScreenView extends ScreenView {
       new Text(strings.filter.ageOfEarthStringProperty, {
         font: FONTS.SMALL,
         fill: NuclideChartColors.textColorProperty,
-        maxWidth: 110,
+        maxWidth: CHART_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_MAX_WIDTH,
       }),
     );
     const filterPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 4,
+        spacing: CHART_SCREEN_VIEW_SETTINGS.FILTER_PANEL_SPACING,
         align: "left",
         children: [
           filterCheckbox,
           new HBox({
-            spacing: 10,
+            spacing: CHART_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FILTER_PANEL_SPACING,
             children: [
               thresholdSlider,
               new Text(thresholdText, {
                 font: FONTS.READOUT,
                 fill: NuclideChartColors.textColorProperty,
-                maxWidth: 80,
+                maxWidth: CHART_SCREEN_VIEW_SETTINGS.FILTER_PANEL_MAX_WIDTH,
               }),
             ],
           }),

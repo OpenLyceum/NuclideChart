@@ -1,3 +1,4 @@
+import { NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS } from "../NuclideChartConstants.js";
 /**
  * NuclideChartControlOptions.ts
  *
@@ -14,10 +15,19 @@ import type { CheckboxOptions, HSliderOptions } from "scenerystack/sun";
 import NuclideChartColors from "../NuclideChartColors.js";
 import { FLAT_RECTANGULAR_BUTTON_OPTIONS } from "./NuclideChartButtonOptions.js";
 
-const SLIDER_THUMB_SIZE = new Dimension2(12, 22);
-const STANDALONE_SLIDER_TRACK_SIZE = new Dimension2(150, 3);
-const NUMBER_CONTROL_SLIDER_TRACK_SIZE = new Dimension2(110, 3);
-const CHECKBOX_BOX_WIDTH = 16;
+const SLIDER_THUMB_SIZE = new Dimension2(
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.SLIDER_THUMB_SIZE_WIDTH,
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.SLIDER_THUMB_SIZE_HEIGHT,
+);
+const STANDALONE_SLIDER_TRACK_SIZE = new Dimension2(
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.STANDALONE_SLIDER_TRACK_SIZE_WIDTH,
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.STANDALONE_SLIDER_TRACK_SIZE_HEIGHT,
+);
+const NUMBER_CONTROL_SLIDER_TRACK_SIZE = new Dimension2(
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUMBER_CONTROL_SLIDER_TRACK_SIZE_WIDTH,
+  NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUMBER_CONTROL_SLIDER_TRACK_SIZE_HEIGHT,
+);
+const CHECKBOX_BOX_WIDTH: number = NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.CHECKBOX_BOX_WIDTH;
 
 /** Options for standalone HSlider instances in control panels. @public */
 export const NUCLIDE_CHART_SLIDER_OPTIONS = {
@@ -28,11 +38,15 @@ export const NUCLIDE_CHART_SLIDER_OPTIONS = {
 
 /** Base NumberControl options; spread into each instance and add titleNodeOptions as needed. @public */
 export const NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS = {
-  arrowButtonOptions: { ...FLAT_RECTANGULAR_BUTTON_OPTIONS, scale: 0.75 },
+  arrowButtonOptions: {
+    ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+    scale: NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS_SCALE,
+  },
   layoutFunction: NumberControl.createLayoutFunction4({
-    sliderPadding: 4,
-    arrowButtonSpacing: 3,
-    verticalSpacing: 4,
+    sliderPadding: NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS_SLIDER_PADDING,
+    arrowButtonSpacing:
+      NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS_ARROW_BUTTON_SPACING,
+    verticalSpacing: NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS_VERTICAL_SPACING,
   }),
   sliderOptions: {
     trackSize: NUMBER_CONTROL_SLIDER_TRACK_SIZE,
@@ -53,7 +67,7 @@ export const NUCLIDE_CHART_NUMBER_CONTROL_OPTIONS = {
  */
 export const NUCLIDE_CHART_CHECKBOX_OPTIONS = {
   boxWidth: CHECKBOX_BOX_WIDTH,
-  spacing: 4,
+  spacing: NUCLIDE_CHART_CONTROL_OPTIONS_SETTINGS.NUCLIDE_CHART_CHECKBOX_OPTIONS_SPACING,
   checkboxColor: NuclideChartColors.textColorProperty,
   checkboxColorBackground: NuclideChartColors.panelBackgroundColorProperty,
 } satisfies CheckboxOptions;

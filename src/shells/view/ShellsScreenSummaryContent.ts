@@ -1,3 +1,4 @@
+import { SHELLS_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * ShellsScreenSummaryContent.ts
  *
@@ -22,7 +23,8 @@ export class ShellsScreenSummaryContent extends ScreenSummaryContent {
         const value = separationEnergy(nuclide, kind as SeparationKind);
         return StringUtils.fillIn(pattern, {
           label: nuclide.label,
-          value: value === null ? "—" : formatFixed(value / 1000, 2),
+          value:
+            value === null ? "—" : formatFixed(value / 1000, SHELLS_SCREEN_SUMMARY_CONTENT_SETTINGS.DETAILS_DECIMALS),
         });
       },
     );

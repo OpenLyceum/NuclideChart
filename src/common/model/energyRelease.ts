@@ -1,3 +1,4 @@
+import { ENERGY_RELEASE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * energyRelease.ts
  *
@@ -12,7 +13,7 @@
 import { NUCLIDE_TABLE, type Nuclide, type NuclideTable } from "./NuclideTable.js";
 
 /** Prompt neutrons per fission in the simplified reaction. */
-const FISSION_NEUTRONS = 2;
+const FISSION_NEUTRONS: number = ENERGY_RELEASE_SETTINGS.FISSION_NEUTRONS;
 
 /** The fissioning nucleus (U-235, hit by one neutron). */
 const FISSION_TARGET = "U-235";

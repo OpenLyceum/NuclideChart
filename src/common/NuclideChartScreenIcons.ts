@@ -1,3 +1,4 @@
+import { NUCLIDE_CHART_SCREEN_ICONS_SETTINGS } from "../NuclideChartConstants.js";
 /**
  * NuclideChartScreenIcons.ts
  *
@@ -51,7 +52,7 @@ export function createBindingEnergyIcon(): ScreenIcon {
     if (x.isStable && x.bindingPerNucleon !== null) {
       const px = 30 + (x.a / 215) * (W - 60);
       const py = H - 30 - ((x.bindingPerNucleon / 1000 - 1) / 8) * (H - 60);
-      shape.circle(px, py, 7);
+      shape.circle(px, py, NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_BINDING_ENERGY_ICON_RADIUS);
     }
   }
   return iconFrom(new Path(shape, { fill: NuclideChartColors.stablePointColorProperty }));
@@ -73,20 +74,33 @@ export function createShellsIcon(): ScreenIcon {
   }
   const magicX = 30 + ((82.5 - 60) / 32) * (W - 60);
   return iconFrom(
-    new Path(new Shape().moveTo(magicX, 20).lineTo(magicX, H - 20), {
-      stroke: NuclideChartColors.magicLineColorProperty,
-      lineWidth: 5,
-      lineDash: [14, 10],
+    new Path(
+      new Shape().moveTo(magicX, NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_SHELLS_ICON_Y).lineTo(magicX, H - 20),
+      {
+        stroke: NuclideChartColors.magicLineColorProperty,
+        lineWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_SHELLS_ICON_LINE_WIDTH,
+        lineDash: [NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_SHELLS_ICON_LINE_DASH_DASH, 10],
+      },
+    ),
+    new Path(lines, {
+      stroke: NuclideChartColors.highlightColorProperty,
+      lineWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_SHELLS_ICON_LINE_WIDTH_VARIANT_2,
+      lineJoin: "round",
     }),
-    new Path(lines, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 7, lineJoin: "round" }),
   );
 }
 
 export function createIsobarsIcon(): ScreenIcon {
   // Two mass parabolas (even–even below odd–odd), lowest isobar at the bottom of the valley.
   const at = (x: number, lift: number): { x: number; y: number } => ({
-    x: 50 + x * (W - 100),
-    y: H - 50 - lift - 1150 * (x - 0.5) ** 2,
+    x:
+      NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.AT_X_OFFSET +
+      x * (W - NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_ISOBARS_ICON_AT_X_OFFSET),
+    y:
+      H -
+      NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.AT_Y_OFFSET -
+      lift -
+      NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.AT_Y_FACTOR * (x - 0.5) ** 2,
   });
   const parabola = (lift: number): Shape => {
     const shape = new Shape();
@@ -102,7 +116,7 @@ export function createIsobarsIcon(): ScreenIcon {
   };
   const dot = (x: number, lift: number, fill: typeof NuclideChartColors.pointColorProperty): Path => {
     const p = at(x, lift);
-    return new Path(Shape.circle(p.x, p.y, 17), { fill });
+    return new Path(Shape.circle(p.x, p.y, NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.X_CIRCLE_RADIUS), { fill });
   };
   const arrow = (
     from: { x: number; y: number },
@@ -115,16 +129,24 @@ export function createIsobarsIcon(): ScreenIcon {
     return new ArrowNode(from.x + dx * k, from.y + dy * k, to.x - dx * k, to.y - dy * k, {
       fill,
       stroke: null,
-      tailWidth: 8,
-      headWidth: 26,
-      headHeight: 20,
+      tailWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.ARROW_TAIL_WIDTH,
+      headWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.ARROW_HEAD_WIDTH,
+      headHeight: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.ARROW_HEAD_HEIGHT,
     });
   };
   const xs = [0.2, 0.35, 0.5, 0.65, 0.8];
   const lifts = [0, 45, 0, 45, 0];
   return iconFrom(
-    new Path(parabola(0), { stroke: NuclideChartColors.referenceLineColorProperty, lineWidth: 4, opacity: 0.7 }),
-    new Path(parabola(45), { stroke: NuclideChartColors.referenceLineColorProperty, lineWidth: 4, opacity: 0.7 }),
+    new Path(parabola(0), {
+      stroke: NuclideChartColors.referenceLineColorProperty,
+      lineWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_ISOBARS_ICON_LINE_WIDTH,
+      opacity: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_ISOBARS_ICON_OPACITY,
+    }),
+    new Path(parabola(45), {
+      stroke: NuclideChartColors.referenceLineColorProperty,
+      lineWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_ISOBARS_ICON_LINE_WIDTH,
+      opacity: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_ISOBARS_ICON_OPACITY,
+    }),
     arrow(at(0.2, 0), at(0.35, 45), NuclideChartColors.betaMinusColorProperty),
     arrow(at(0.35, 45), at(0.5, 0), NuclideChartColors.betaMinusColorProperty),
     arrow(at(0.8, 0), at(0.65, 45), NuclideChartColors.betaPlusColorProperty),
@@ -144,14 +166,22 @@ export function createHalfLivesIcon(): ScreenIcon {
   const dots = new Shape();
   for (let k = 0; k < 5; k++) {
     const x0 = 70 + k * 55;
-    lines.moveTo(x0, H - 40).lineTo(x0 + 230, 40);
+    lines.moveTo(x0, H - 40).lineTo(x0 + 230, NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_HALF_LIVES_ICON_Y);
     for (let j = 0; j < 5; j++) {
       const t = 0.12 + j * 0.18;
-      dots.circle(x0 + t * 230, H - 40 - t * (H - 80), 9);
+      dots.circle(
+        x0 + t * 230,
+        H - 40 - t * (H - 80),
+        NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_HALF_LIVES_ICON_RADIUS,
+      );
     }
   }
   return iconFrom(
-    new Path(lines, { stroke: NuclideChartColors.pointColorProperty, lineWidth: 4, opacity: 0.7 }),
+    new Path(lines, {
+      stroke: NuclideChartColors.pointColorProperty,
+      lineWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_HALF_LIVES_ICON_LINE_WIDTH,
+      opacity: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_HALF_LIVES_ICON_OPACITY,
+    }),
     new Path(dots, { fill: NuclideChartColors.alphaColorProperty }),
   );
 }
@@ -198,9 +228,9 @@ export function createDecayChainsIcon(): ScreenIcon {
         new ArrowNode(a.x, a.y, b.x, b.y, {
           fill: fills[p.kind === "stable" ? "beta" : p.kind],
           stroke: null,
-          tailWidth: 6,
-          headWidth: 18,
-          headHeight: 14,
+          tailWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_DECAY_CHAINS_ICON_TAIL_WIDTH,
+          headWidth: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_DECAY_CHAINS_ICON_HEAD_WIDTH,
+          headHeight: NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_DECAY_CHAINS_ICON_HEAD_HEIGHT,
         }),
       );
     }
@@ -208,7 +238,15 @@ export function createDecayChainsIcon(): ScreenIcon {
   for (const p of positions) {
     const c = center(p);
     nodes.push(
-      new Rectangle(c.x - cell * 0.38, c.y - cell * 0.38, cell * 0.76, cell * 0.76, 5, 5, { fill: fills[p.kind] }),
+      new Rectangle(
+        c.x - cell * 0.38,
+        c.y - cell * 0.38,
+        cell * 0.76,
+        cell * 0.76,
+        NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_DECAY_CHAINS_ICON_CORNER_X,
+        NUCLIDE_CHART_SCREEN_ICONS_SETTINGS.CREATE_DECAY_CHAINS_ICON_CORNER_Y,
+        { fill: fills[p.kind] },
+      ),
     );
   }
   return iconFrom(...nodes);

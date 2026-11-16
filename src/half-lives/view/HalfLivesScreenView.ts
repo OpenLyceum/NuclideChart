@@ -1,3 +1,4 @@
+import { HALF_LIVES_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * HalfLivesScreenView.ts
  *
@@ -77,13 +78,21 @@ const css =
 
 const CATEGORY_STYLES: readonly PointStyle[] = CATEGORIES.map((category) => ({
   css: css(DECAY_CATEGORY_COLORS.get(category) ?? NuclideChartColors.pointColorProperty),
-  radius: 1.8,
-  alpha: 0.85,
+  radius: HALF_LIVES_SCREEN_VIEW_SETTINGS.CATEGORY_STYLES_RADIUS,
+  alpha: HALF_LIVES_SCREEN_VIEW_SETTINGS.CATEGORY_STYLES_ALPHA,
 }));
 
 const TWO_STYLES: readonly PointStyle[] = [
-  { css: css(NuclideChartColors.pointColorProperty), radius: 2.2, alpha: 0.8 },
-  { css: css(NuclideChartColors.highlightColorProperty), radius: 3.2, alpha: 1 },
+  {
+    css: css(NuclideChartColors.pointColorProperty),
+    radius: HALF_LIVES_SCREEN_VIEW_SETTINGS.TWO_STYLES_RADIUS,
+    alpha: HALF_LIVES_SCREEN_VIEW_SETTINGS.TWO_STYLES_ITEM_1_ALPHA,
+  },
+  {
+    css: css(NuclideChartColors.highlightColorProperty),
+    radius: HALF_LIVES_SCREEN_VIEW_SETTINGS.TWO_STYLES_ITEM_2_RADIUS,
+    alpha: 1,
+  },
 ];
 
 /** Measured half-lives (no limits) of radioactive ground states. */
@@ -118,16 +127,36 @@ export class HalfLivesScreenView extends ScreenView {
       font = FONTS.LABEL,
     ): RichText => new RichText(text, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
     const checkbox = (property: Property<boolean>, text: TReadOnlyProperty<string>): Checkbox =>
-      new Checkbox(property, label(text, 230), { ...NUCLIDE_CHART_CHECKBOX_OPTIONS, accessibleName: text });
+      new Checkbox(property, label(text, HALF_LIVES_SCREEN_VIEW_SETTINGS.CHECKBOX_MAX_WIDTH), {
+        ...NUCLIDE_CHART_CHECKBOX_OPTIONS,
+        accessibleName: text,
+      });
 
     const chart = new NuclideScatterNode(selected, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT, {
       accessibleName: a11y.controls.chartStringProperty,
       accessibleHelpText: a11y.controls.chartHelpStringProperty,
     });
-    const guidePath = new Path(null, { stroke: NuclideChartColors.axisColorProperty, lineWidth: 1, lineDash: [4, 4] });
-    const earthPath = new Path(null, { stroke: NuclideChartColors.valleyLineColorProperty, lineWidth: 2 });
-    const fitsPath = new Path(null, { stroke: NuclideChartColors.pointColorProperty, lineWidth: 0.8, opacity: 0.6 });
-    const highlightFitPath = new Path(null, { stroke: NuclideChartColors.highlightColorProperty, lineWidth: 2.2 });
+    const guidePath = new Path(null, {
+      stroke: NuclideChartColors.axisColorProperty,
+      lineWidth: 1,
+      lineDash: [
+        HALF_LIVES_SCREEN_VIEW_SETTINGS.GUIDE_PATH_LINE_DASH_DASH,
+        HALF_LIVES_SCREEN_VIEW_SETTINGS.GUIDE_PATH_LINE_DASH_DASH,
+      ],
+    });
+    const earthPath = new Path(null, {
+      stroke: NuclideChartColors.valleyLineColorProperty,
+      lineWidth: HALF_LIVES_SCREEN_VIEW_SETTINGS.EARTH_PATH_LINE_WIDTH,
+    });
+    const fitsPath = new Path(null, {
+      stroke: NuclideChartColors.pointColorProperty,
+      lineWidth: HALF_LIVES_SCREEN_VIEW_SETTINGS.FITS_PATH_LINE_WIDTH,
+      opacity: HALF_LIVES_SCREEN_VIEW_SETTINGS.FITS_PATH_OPACITY,
+    });
+    const highlightFitPath = new Path(null, {
+      stroke: NuclideChartColors.highlightColorProperty,
+      lineWidth: HALF_LIVES_SCREEN_VIEW_SETTINGS.HIGHLIGHT_FIT_PATH_LINE_WIDTH,
+    });
     const guideLabels = new Node();
     const callouts = new Node();
     chart.underLayer.children = [guidePath, fitsPath, highlightFitPath, earthPath];
@@ -161,9 +190,9 @@ export class HalfLivesScreenView extends ScreenView {
       shape.moveTo(0, view.y).lineTo(SCATTER_CHART.WIDTH, view.y);
       const guideLabel = smallLabel(text);
       if (alignLeft) {
-        guideLabel.left = 4;
+        guideLabel.left = HALF_LIVES_SCREEN_VIEW_SETTINGS.LEFT_LEFT;
       } else {
-        guideLabel.right = SCATTER_CHART.WIDTH - 4;
+        guideLabel.right = SCATTER_CHART.WIDTH - HALF_LIVES_SCREEN_VIEW_SETTINGS.HORIZONTAL_GUIDE_RIGHT_OFFSET;
       }
       if (below) {
         guideLabel.top = view.y + 2;
@@ -205,9 +234,15 @@ export class HalfLivesScreenView extends ScreenView {
         return [];
       }
       return [
-        new Rectangle(view.x - 3, view.y - 3, 6, 6, { stroke: NuclideChartColors.highlightColorProperty }),
+        new Rectangle(
+          view.x - 3,
+          view.y - 3,
+          HALF_LIVES_SCREEN_VIEW_SETTINGS.ISOMER_CALLOUT_WIDTH,
+          HALF_LIVES_SCREEN_VIEW_SETTINGS.ISOMER_CALLOUT_HEIGHT,
+          { stroke: NuclideChartColors.highlightColorProperty },
+        ),
         Object.assign(smallLabel("<sup>99m</sup>Tc", NuclideChartColors.highlightColorProperty), {
-          left: view.x + 5,
+          left: view.x + HALF_LIVES_SCREEN_VIEW_SETTINGS.ISOMER_CALLOUT_LEFT_OFFSET,
           top: view.y + 1,
         }),
       ];
@@ -235,7 +270,7 @@ export class HalfLivesScreenView extends ScreenView {
           calloutNodes.push(
             new Line(view.x, view.y, text.left - 1, text.centerY, {
               stroke: NuclideChartColors.highlightColorProperty,
-              lineWidth: 0.5,
+              lineWidth: HALF_LIVES_SCREEN_VIEW_SETTINGS.NOTABLE_CALLOUTS_LINE_WIDTH,
             }),
           );
         }
@@ -262,7 +297,9 @@ export class HalfLivesScreenView extends ScreenView {
       const points: ScatterPoint[] = MEASURED.map((x) => ({
         nuclide: x,
         x: explorerX(x),
-        y: logScale ? (x.halfLife as number) : (x.halfLife as number) / SECONDS_PER_YEAR / 1e9,
+        y: logScale
+          ? (x.halfLife as number)
+          : (x.halfLife as number) / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.POINTS_Y_FACTOR,
         group: Math.max(0, CATEGORIES.indexOf(decayCategoryOf(x, definition))),
       }));
       chart.setPoints(points, CATEGORY_STYLES);
@@ -286,9 +323,12 @@ export class HalfLivesScreenView extends ScreenView {
             new RichText(strings.linearNoteStringProperty, {
               font: FONTS.LABEL,
               fill: NuclideChartColors.textColorProperty,
-              lineWrap: SCATTER_CHART.WIDTH - 40,
+              lineWrap: SCATTER_CHART.WIDTH - HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_EXPLORER_LINE_WRAP_OFFSET,
             }),
-            { left: 20, top: 30 },
+            {
+              left: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_EXPLORER_LEFT,
+              top: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_EXPLORER_TOP,
+            },
           ),
         );
       }
@@ -309,7 +349,7 @@ export class HalfLivesScreenView extends ScreenView {
 
     const fitLineShape = (slope: number, intercept: number, xRange: Range, log: boolean): Shape => {
       const shape = new Shape();
-      const steps = 40;
+      const steps: number = HALF_LIVES_SCREEN_VIEW_SETTINGS.STEPS;
       for (let i = 0; i <= steps; i++) {
         const x = xRange.min + (xRange.getLength() * i) / steps;
         const yLog = slope * (log ? Math.log10(x) : x) + intercept;
@@ -333,7 +373,7 @@ export class HalfLivesScreenView extends ScreenView {
       const points = GEIGER_NUTTALL.map((p: GeigerNuttallPoint) => ({
         nuclide: p.nuclide,
         x: p.x,
-        y: 10 ** p.logHalfLife,
+        y: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_GEIGER_NUTTALL_POINTS_Y_FACTOR ** p.logHalfLife,
         group: p.nuclide.z === z ? 1 : 0,
       }));
       points.sort((p, q) => p.group - q.group);
@@ -372,14 +412,20 @@ export class HalfLivesScreenView extends ScreenView {
             const view = p ? chart.viewPosition(p.x, p.y) : null;
             return view
               ? [
-                  new Rectangle(view.x - 5, view.y - 5, 10, 10, {
-                    stroke: NuclideChartColors.alphaColorProperty,
-                    lineWidth: 2,
-                  }),
+                  new Rectangle(
+                    view.x - 5,
+                    view.y - 5,
+                    HALF_LIVES_SCREEN_VIEW_SETTINGS.CHILDREN_WIDTH,
+                    HALF_LIVES_SCREEN_VIEW_SETTINGS.CHILDREN_HEIGHT,
+                    {
+                      stroke: NuclideChartColors.alphaColorProperty,
+                      lineWidth: HALF_LIVES_SCREEN_VIEW_SETTINGS.CHILDREN_LINE_WIDTH,
+                    },
+                  ),
                   Object.assign(
                     smallLabel(nuclideMarkup(NUCLIDE_TABLE.require(labelText)), NuclideChartColors.alphaColorProperty),
                     {
-                      left: view.x + 7,
+                      left: view.x + HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_GEIGER_NUTTALL_LEFT_OFFSET,
                       centerY: view.y,
                     },
                   ),
@@ -394,7 +440,12 @@ export class HalfLivesScreenView extends ScreenView {
       chart.setAxes({ range: xRange, log: true }, { range: HALF_LIVES.SARGENT_Y, log: true });
       chart.frame.setAxisLabels(strings.axes.qBetaStringProperty, strings.axes.betaHalfLifeStringProperty);
       chart.setPoints(
-        SARGENT.map((p) => ({ nuclide: p.nuclide, x: p.qBeta, y: 10 ** p.logHalfLife, group: 0 })),
+        SARGENT.map((p) => ({
+          nuclide: p.nuclide,
+          x: p.qBeta,
+          y: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_SARGENT_Y_FACTOR ** p.logHalfLife,
+          group: 0,
+        })),
         TWO_STYLES,
       );
       highlightFitPath.shape = SARGENT_FIT
@@ -452,11 +503,15 @@ export class HalfLivesScreenView extends ScreenView {
       model.viewProperty,
       HalfLifeView.enumeration.values.map((view) => ({
         value: view,
-        createNode: () => label(views[`${view.key}StringProperty`] as TReadOnlyProperty<string>, 240),
+        createNode: () =>
+          label(
+            views[`${view.key}StringProperty`] as TReadOnlyProperty<string>,
+            HALF_LIVES_SCREEN_VIEW_SETTINGS.VIEW_GROUP_MAX_WIDTH,
+          ),
       })),
       {
         orientation: "vertical",
-        spacing: 5,
+        spacing: HALF_LIVES_SCREEN_VIEW_SETTINGS.VIEW_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: strings.viewTitleStringProperty,
       },
@@ -464,12 +519,23 @@ export class HalfLivesScreenView extends ScreenView {
     const axisGroup = new AquaRadioButtonGroup<string>(
       model.explorerAxisProperty,
       [
-        { value: "massNumber", createNode: () => label(strings.xAxes.massNumberStringProperty, 200) },
-        { value: "valleyDistance", createNode: () => label(strings.xAxes.valleyDistanceStringProperty, 200) },
+        {
+          value: "massNumber",
+          createNode: () =>
+            label(strings.xAxes.massNumberStringProperty, HALF_LIVES_SCREEN_VIEW_SETTINGS.MASS_NUMBER_LABEL_MAX_WIDTH),
+        },
+        {
+          value: "valleyDistance",
+          createNode: () =>
+            label(
+              strings.xAxes.valleyDistanceStringProperty,
+              HALF_LIVES_SCREEN_VIEW_SETTINGS.VALLEY_DISTANCE_LABEL_MAX_WIDTH,
+            ),
+        },
       ],
       {
         orientation: "vertical",
-        spacing: 4,
+        spacing: HALF_LIVES_SCREEN_VIEW_SETTINGS.AXIS_GROUP_SPACING,
         radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS_SMALL },
         accessibleName: strings.xAxisTitleStringProperty,
       },
@@ -485,10 +551,14 @@ export class HalfLivesScreenView extends ScreenView {
       { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, lineWrap: PANEL_CONTENT_WIDTH },
     );
     const explorerControls = new VBox({
-      spacing: 5,
+      spacing: HALF_LIVES_SCREEN_VIEW_SETTINGS.EXPLORER_CONTROLS_SPACING,
       align: "left",
       children: [
-        label(strings.xAxisTitleStringProperty, 200, FONTS.SMALL),
+        label(
+          strings.xAxisTitleStringProperty,
+          HALF_LIVES_SCREEN_VIEW_SETTINGS.X_AXIS_TITLE_LABEL_MAX_WIDTH,
+          FONTS.SMALL,
+        ),
         axisGroup,
         logCheckbox,
         earthCheckbox,
@@ -507,7 +577,7 @@ export class HalfLivesScreenView extends ScreenView {
           ? StringUtils.fillIn(pattern, {
               element: nuclide.symbol,
               slope: formatFixed(fit.slope, 0),
-              r2: formatFixed(fit.rSquared, 3),
+              r2: formatFixed(fit.rSquared, HALF_LIVES_SCREEN_VIEW_SETTINGS.R_SQUARED_FORMAT_FIXED_DECIMALS),
               count: fit.count,
             })
           : none;
@@ -518,15 +588,15 @@ export class HalfLivesScreenView extends ScreenView {
     const comparisonText = new DerivedProperty([strings.comparisonPatternStringProperty], (pattern) =>
       po && th
         ? StringUtils.fillIn(pattern, {
-            qRatio: formatFixed(po.qAlpha / th.qAlpha, 2),
-            qLow: formatFixed(th.qAlpha, 2),
-            qHigh: formatFixed(po.qAlpha, 2),
+            qRatio: formatFixed(po.qAlpha / th.qAlpha, HALF_LIVES_SCREEN_VIEW_SETTINGS.COMPARISON_TEXT_DECIMALS),
+            qLow: formatFixed(th.qAlpha, HALF_LIVES_SCREEN_VIEW_SETTINGS.COMPARISON_TEXT_DECIMALS),
+            qHigh: formatFixed(po.qAlpha, HALF_LIVES_SCREEN_VIEW_SETTINGS.COMPARISON_TEXT_DECIMALS),
             orders: formatFixed(th.logHalfLife - po.logHalfLife, 1),
           })
         : "",
     );
     const geigerControls = new VBox({
-      spacing: 5,
+      spacing: HALF_LIVES_SCREEN_VIEW_SETTINGS.GEIGER_CONTROLS_SPACING,
       align: "left",
       children: [
         fitsCheckbox,
@@ -546,7 +616,10 @@ export class HalfLivesScreenView extends ScreenView {
     });
     const sargentText = new RichText(
       new DerivedProperty([strings.sargentPatternStringProperty], (pattern) =>
-        StringUtils.fillIn(pattern, { slope: formatFixed(SARGENT_FIT?.slope ?? 0, 2), count: SARGENT.length }),
+        StringUtils.fillIn(pattern, {
+          slope: formatFixed(SARGENT_FIT?.slope ?? 0, HALF_LIVES_SCREEN_VIEW_SETTINGS.SARGENT_TEXT_DECIMALS),
+          count: SARGENT.length,
+        }),
       ),
       { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, lineWrap: PANEL_CONTENT_WIDTH },
     );
@@ -557,7 +630,7 @@ export class HalfLivesScreenView extends ScreenView {
     });
     const controlsPanel = new NuclideChartPanel(
       new VBox({
-        spacing: 8,
+        spacing: HALF_LIVES_SCREEN_VIEW_SETTINGS.CONTROLS_PANEL_SPACING,
         align: "left",
         children: [viewGroup, new Node({ children: [explorerControls, geigerControls, sargentText] })],
       }),
