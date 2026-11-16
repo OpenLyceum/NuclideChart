@@ -1,3 +1,4 @@
+import { toFixed } from "scenerystack/dot";
 import { BINDING_ENERGY_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingEnergyScreenView.ts
@@ -151,7 +152,7 @@ export class BindingEnergyScreenView extends ScreenView {
         ...NUCLIDE_CHART_SLIDER_OPTIONS,
         trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(BINDING.COEFFICIENT_SLIDER_WIDTH),
         enabledProperty: enabled,
-        constrainValue: (value: number) => Number(value.toFixed(term === "coulomb" ? 3 : 2)),
+        constrainValue: (value: number) => Number(toFixed(value, term === "coulomb" ? 3 : 2)),
         keyboardStep: coefficient.range.getLength() / 50,
         shiftKeyboardStep: coefficient.range.getLength() / 500,
         pageKeyboardStep: coefficient.range.getLength() / 10,

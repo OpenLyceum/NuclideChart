@@ -10,7 +10,7 @@ import { CHAIN_DIAGRAM_NODE_SETTINGS } from "../../NuclideChartConstants.js";
  */
 
 import type { Property, TReadOnlyProperty } from "scenerystack/axon";
-import { Vector2 } from "scenerystack/dot";
+import { toFixed, Vector2 } from "scenerystack/dot";
 import { KeyboardListener, Node, type NodeOptions, Rectangle, RichText, type TColor, Text } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import { categoryOfMode, DecayCategory } from "../../common/model/DecayCategory.js";
@@ -211,7 +211,7 @@ export class ChainDiagramNode extends Node {
       const percent = fraction * 100;
       const text =
         percent >= 1
-          ? `${percent.toFixed(percent >= 10 ? 0 : 1)}%`
+          ? `${toFixed(percent, percent >= 10 ? 0 : 1)}%`
           : `${Number(percent.toPrecision(CHAIN_DIAGRAM_NODE_SETTINGS.TEXT_SIGNIFICANT_FIGURES))}%`;
       nodes.push(
         new Text(text, {

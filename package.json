@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Trends across the whole chart of nuclides from IAEA data: binding energies and the mass formula, magic numbers in separation energies, isobar mass parabolas, half-lives from Geiger\u2013Nuttall to the age of the Earth, and decay chains in secular equilibrium.",
+  "description": "Trends across the whole chart of nuclides from IAEA data: binding energies and the mass formula, magic numbers in separation energies, isobar mass parabolas, half-lives from Geiger–Nuttall to the age of the Earth, and decay chains in secular equilibrium.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "build": "tsc && vite build",
     "build:single": "tsc && vite build --mode single",
     "preview": "vite preview",
-    "lint": "biome check .",
+    "lint": "biome check --error-on-warnings .",
     "format": "biome format --write .",
     "fix": "biome check --write .",
     "check": "tsc --noEmit && tsc -p tsconfig.scripts.json --noEmit && tsc -p tsconfig.test.json --noEmit",
@@ -44,7 +44,7 @@
     "clean": "rm -rf dist",
     "prepare": "test \"$(git rev-parse --show-toplevel 2>/dev/null)\" = \"$PWD\" && git config core.hooksPath .githooks || true",
     "knip": "knip",
-    "test:architecture": "node --test tests/architecture.test.mjs",
+    "test:architecture": "node --test tests/architecture.node-test.ts",
     "fetch-data": "node scripts/data/fetch-nuclides.ts"
   },
   "dependencies": {

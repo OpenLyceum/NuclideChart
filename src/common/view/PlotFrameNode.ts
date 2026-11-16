@@ -10,7 +10,7 @@ import { PLOT_FRAME_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 
 import type { TReadOnlyProperty } from "scenerystack/axon";
 import { ChartRectangle, ChartTransform, GridLineSet, TickLabelSet, TickMarkSet } from "scenerystack/bamboo";
-import { Range } from "scenerystack/dot";
+import { Range, toFixed } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Orientation } from "scenerystack/phet-core";
 import { Node, Path, RichText, Text } from "scenerystack/scenery";
@@ -228,6 +228,6 @@ export class PlotFrameNode extends Node {
       return formatDecade(value);
     }
     const decimals = step >= 1 ? 0 : Math.min(4, -Math.floor(Math.log10(step)));
-    return String(Number(value.toFixed(decimals))).replace("-", "−");
+    return String(Number(toFixed(value, decimals))).replace("-", "−");
   }
 }
