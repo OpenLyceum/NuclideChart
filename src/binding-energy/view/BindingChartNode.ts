@@ -25,7 +25,7 @@ import {
   type TColor,
 } from "scenerystack/scenery";
 import { semfBinding, semfResidual, valleyZ } from "../../common/model/massFormula.js";
-import { MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
+import { KEV_PER_MEV, MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
 import { NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
 import { formatFixed } from "../../common/view/format.js";
 import { nuclideMarkup } from "../../common/view/NuclideCardNode.js";
@@ -264,7 +264,7 @@ export class BindingChartNode extends Node {
     if (view === BindingView.CURVE) {
       return nuclide.bindingPerNucleon === null || nuclide.a < 2
         ? null
-        : { x: nuclide.a, y: nuclide.bindingPerNucleon / BINDING_CHART_NODE_SETTINGS.PLOT_VALUE_Y_FACTOR };
+        : { x: nuclide.a, y: nuclide.bindingPerNucleon / KEV_PER_MEV };
     }
     if (nuclide.a < 16) {
       return null;
@@ -438,7 +438,7 @@ export class BindingChartNode extends Node {
       value,
     });
     label.right = this.frame.viewWidth - BINDING_CHART_NODE_SETTINGS.UPDATE_SELECTION_RIGHT_OFFSET;
-    label.top = BINDING_CHART_NODE_SETTINGS.TOP_TOP;
+    label.top = BINDING_CHART_NODE_SETTINGS.SELECTION_LABEL_TOP;
     background.setRect(label.left - 4, label.top - 2, label.width + 8, label.height + 4);
   }
 

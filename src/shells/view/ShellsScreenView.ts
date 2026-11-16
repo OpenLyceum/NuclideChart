@@ -16,7 +16,7 @@ import { HBox, Node, Path, Rectangle, RichText, VBox } from "scenerystack/scener
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { AquaRadioButtonGroup, Checkbox } from "scenerystack/sun";
-import { MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
+import { KEV_PER_MEV, MAGIC_NUMBERS } from "../../common/model/NuclearConstants.js";
 import { NUCLIDE_TABLE, type Nuclide } from "../../common/model/NuclideTable.js";
 import {
   type SeparationKind,
@@ -134,7 +134,7 @@ export class ShellsScreenView extends ScreenView {
       const shape = new Shape();
       let previous: SeparationPoint | null = null;
       for (const p of points) {
-        const view = chart.viewPosition(p.x, p.energy / 1000);
+        const view = chart.viewPosition(p.x, p.energy / KEV_PER_MEV);
         if (!view) {
           continue;
         }
@@ -173,7 +173,7 @@ export class ShellsScreenView extends ScreenView {
           points.push({
             nuclide: p.nuclide,
             x: p.x,
-            y: p.energy / SHELLS_SCREEN_VIEW_SETTINGS.BUILD_LINES_Y_FACTOR,
+            y: p.energy / KEV_PER_MEV,
             group,
           });
         }
@@ -232,7 +232,7 @@ export class ShellsScreenView extends ScreenView {
       updateMagic(model.shared.magicNumbersVisibleProperty.value);
       const zeroY = transform.modelToViewY(0);
       unboundBand.setRect(0, zeroY, SCATTER_CHART.WIDTH, SCATTER_CHART.HEIGHT - zeroY);
-      unboundLabel.left = SHELLS_SCREEN_VIEW_SETTINGS.LEFT_LEFT;
+      unboundLabel.left = SHELLS_SCREEN_VIEW_SETTINGS.UNBOUND_LABEL_LEFT;
       unboundLabel.bottom = SCATTER_CHART.HEIGHT - SHELLS_SCREEN_VIEW_SETTINGS.UPDATE_BOTTOM_OFFSET;
     };
     Multilink.multilink(
@@ -292,7 +292,8 @@ export class ShellsScreenView extends ScreenView {
         const value = separationEnergy(nuclide, kind as SeparationKind);
         return StringUtils.fillIn(pattern, {
           label: nuclideMarkup(nuclide),
-          value: value === null ? none : formatFixed(value / 1000, SHELLS_SCREEN_VIEW_SETTINGS.VALUE_TEXT_DECIMALS),
+          value:
+            value === null ? none : formatFixed(value / KEV_PER_MEV, SHELLS_SCREEN_VIEW_SETTINGS.VALUE_TEXT_DECIMALS),
         });
       },
     );
@@ -312,7 +313,7 @@ export class ShellsScreenView extends ScreenView {
         }
         return StringUtils.fillIn(pattern, {
           next: nuclideMarkup(next),
-          change: formatSigned((there - here) / 1000, SHELLS_SCREEN_VIEW_SETTINGS.DROP_TEXT_DECIMALS),
+          change: formatSigned((there - here) / KEV_PER_MEV, SHELLS_SCREEN_VIEW_SETTINGS.DROP_TEXT_DECIMALS),
         });
       },
     );

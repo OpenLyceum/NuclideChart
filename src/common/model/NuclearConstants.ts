@@ -8,6 +8,9 @@
 /** Electron rest energy (keV), CODATA 2018. */
 export const ELECTRON_REST_ENERGY_KEV = 510.99895;
 
+/** keV per MeV — divide snapshot energies (keV) by this to plot or display in MeV. */
+export const KEV_PER_MEV = 1000;
+
 /** Seconds per year (Julian year), the unit ENSDF uses for "Y". */
 export const SECONDS_PER_YEAR = 365.25 * 86400;
 

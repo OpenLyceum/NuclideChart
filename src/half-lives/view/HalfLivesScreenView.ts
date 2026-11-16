@@ -182,7 +182,7 @@ export class HalfLivesScreenView extends ScreenView {
       alignLeft = false,
       below = false,
     ): void => {
-      const y = logScale ? seconds : seconds / SECONDS_PER_YEAR / 1e9;
+      const y = logScale ? seconds : seconds / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS;
       const view = chart.viewPosition(chart.frame.axes.x.range.min, y);
       if (!view || view.y < 0 || view.y > SCATTER_CHART.HEIGHT) {
         return;
@@ -190,7 +190,7 @@ export class HalfLivesScreenView extends ScreenView {
       shape.moveTo(0, view.y).lineTo(SCATTER_CHART.WIDTH, view.y);
       const guideLabel = smallLabel(text);
       if (alignLeft) {
-        guideLabel.left = HALF_LIVES_SCREEN_VIEW_SETTINGS.LEFT_LEFT;
+        guideLabel.left = HALF_LIVES_SCREEN_VIEW_SETTINGS.GUIDE_LABEL_LEFT;
       } else {
         guideLabel.right = SCATTER_CHART.WIDTH - HALF_LIVES_SCREEN_VIEW_SETTINGS.HORIZONTAL_GUIDE_RIGHT_OFFSET;
       }
@@ -228,7 +228,7 @@ export class HalfLivesScreenView extends ScreenView {
       }
       const view = chart.viewPosition(
         explorerX(tcGround),
-        logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / 1e9,
+        logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS,
       );
       if (!view || view.y <= 8 || view.y >= SCATTER_CHART.HEIGHT - 4) {
         return [];
@@ -299,7 +299,7 @@ export class HalfLivesScreenView extends ScreenView {
         x: explorerX(x),
         y: logScale
           ? (x.halfLife as number)
-          : (x.halfLife as number) / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.POINTS_Y_FACTOR,
+          : (x.halfLife as number) / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS,
         group: Math.max(0, CATEGORIES.indexOf(decayCategoryOf(x, definition))),
       }));
       chart.setPoints(points, CATEGORY_STYLES);
@@ -373,7 +373,7 @@ export class HalfLivesScreenView extends ScreenView {
       const points = GEIGER_NUTTALL.map((p: GeigerNuttallPoint) => ({
         nuclide: p.nuclide,
         x: p.x,
-        y: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_GEIGER_NUTTALL_POINTS_Y_FACTOR ** p.logHalfLife,
+        y: HALF_LIVES_SCREEN_VIEW_SETTINGS.HALF_LIFE_LOG_BASE ** p.logHalfLife,
         group: p.nuclide.z === z ? 1 : 0,
       }));
       points.sort((p, q) => p.group - q.group);
@@ -443,7 +443,7 @@ export class HalfLivesScreenView extends ScreenView {
         SARGENT.map((p) => ({
           nuclide: p.nuclide,
           x: p.qBeta,
-          y: HALF_LIVES_SCREEN_VIEW_SETTINGS.UPDATE_SARGENT_Y_FACTOR ** p.logHalfLife,
+          y: HALF_LIVES_SCREEN_VIEW_SETTINGS.HALF_LIFE_LOG_BASE ** p.logHalfLife,
           group: 0,
         })),
         TWO_STYLES,

@@ -220,11 +220,22 @@ export const DECAY_CHAINS = {
 
 /** Settings for binding-energy/model/BindingEnergyModel.ts. */
 export const BINDING_ENERGY_MODEL_SETTINGS = {
-  /** Coefficient ranges range min (MeV). */
-  COEFFICIENT_RANGES_RANGE_MIN: 10,
-  /** Coefficient ranges range max (MeV). */
-  COEFFICIENT_RANGES_RANGE_MAX: 20,
-  /** Light fragment a default (nucleons). */
+  /** Volume coefficient slider range (MeV). */
+  VOLUME_COEFFICIENT_MIN: 10,
+  VOLUME_COEFFICIENT_MAX: 20,
+  /** Surface coefficient slider range (MeV). */
+  SURFACE_COEFFICIENT_MIN: 10,
+  SURFACE_COEFFICIENT_MAX: 25,
+  /** Coulomb coefficient slider range (MeV). */
+  COULOMB_COEFFICIENT_MIN: 0.4,
+  COULOMB_COEFFICIENT_MAX: 1,
+  /** Asymmetry coefficient slider range (MeV). */
+  ASYMMETRY_COEFFICIENT_MIN: 10,
+  ASYMMETRY_COEFFICIENT_MAX: 35,
+  /** Pairing coefficient slider range (MeV). */
+  PAIRING_COEFFICIENT_MIN: 0,
+  PAIRING_COEFFICIENT_MAX: 60,
+  /** Default light fission fragment mass number (nucleons). */
   LIGHT_FRAGMENT_A_DEFAULT: 95,
 } as const;
 
@@ -239,7 +250,6 @@ export const BINDING_CHART_NODE_SETTINGS = {
   GAP_LABEL_MAX_WIDTH_FACTOR: 0.4, // dimensionless
   UPDATE_MASS_GAP_LEFT: 10, // px
   UPDATE_MASS_GAP_CENTER_Y: 4.6, // px
-  PLOT_VALUE_Y_FACTOR: 1000, // dimensionless
   LEADER_LABEL_LEFT_OFFSET: 4, // px
   UPDATE_SELECTION_RIGHT_OFFSET: 8, // px
 
@@ -252,7 +262,8 @@ export const BINDING_CHART_NODE_SETTINGS = {
   UPDATE_REACTION_MARKERS_WIDTH: 8,
   UPDATE_REACTION_MARKERS_HEIGHT: 8,
   UPDATE_REACTION_MARKERS_LINE_WIDTH: 2,
-  TOP_TOP: 8,
+  /** Top inset for the selection readout label (px). */
+  SELECTION_LABEL_TOP: 8,
 } as const;
 
 /** Settings for binding-energy/view/BindingEnergyScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
@@ -598,11 +609,12 @@ export const HALF_LIVES_SCREEN_VIEW_SETTINGS = {
   GUIDE_PATH_LINE_DASH_DASH: 4, // px
   HORIZONTAL_GUIDE_RIGHT_OFFSET: 4, // px
   ISOMER_CALLOUT_LEFT_OFFSET: 5, // px
-  POINTS_Y_FACTOR: 1e9, // dimensionless
+  /** Linear explorer y-scale: years per billion years (Gyr). */
+  BILLION_YEARS: 1e9,
   UPDATE_EXPLORER_LINE_WRAP_OFFSET: 40, // px
-  UPDATE_GEIGER_NUTTALL_POINTS_Y_FACTOR: 10, // dimensionless
+  /** Base for 10^logHalfLife when reconstructing half-life from log₁₀. */
+  HALF_LIFE_LOG_BASE: 10,
   UPDATE_GEIGER_NUTTALL_LEFT_OFFSET: 7, // px
-  UPDATE_SARGENT_Y_FACTOR: 10, // dimensionless
 
   CATEGORY_STYLES_RADIUS: 1.8,
   TWO_STYLES_RADIUS: 2.2,
@@ -611,7 +623,8 @@ export const HALF_LIVES_SCREEN_VIEW_SETTINGS = {
   /** Fits path opacity (dimensionless). */
   FITS_PATH_OPACITY: 0.6,
   HIGHLIGHT_FIT_PATH_LINE_WIDTH: 2.2,
-  LEFT_LEFT: 4,
+  /** Left inset for horizontal-guide labels (px). */
+  GUIDE_LABEL_LEFT: 4,
   ISOMER_CALLOUT_WIDTH: 6,
   ISOMER_CALLOUT_HEIGHT: 6,
   NOTABLE_CALLOUTS_LINE_WIDTH: 0.5,
@@ -685,7 +698,6 @@ export const SHELLS_SCREEN_VIEW_SETTINGS = {
   DROP_TEXT_DECIMALS: 2, // digits
 
   UNBOUND_LABEL_MAX_WIDTH_OFFSET: 20, // px
-  BUILD_LINES_Y_FACTOR: 1000, // dimensionless
   UPDATE_BOTTOM_OFFSET: 4, // px
 
   STYLES_RADIUS: 1.6,
@@ -696,7 +708,8 @@ export const SHELLS_SCREEN_VIEW_SETTINGS = {
   LINES_PATH_OPACITY: 0.5,
   HIGHLIGHT_PATH_LINE_WIDTH: 2.5,
   UPDATE_MAGIC_TOP: 3,
-  LEFT_LEFT: 6,
+  /** Left inset for the unbound-region label (px). */
+  UNBOUND_LABEL_LEFT: 6,
   KIND_GROUP_SPACING: 5,
   CONTROLS_PANEL_SPACING: 6,
   READOUT_PANEL_SPACING: 5,
