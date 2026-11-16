@@ -74,7 +74,10 @@ export type LineFit = {
   readonly count: number;
 };
 
-/** Ordinary least-squares straight line y = slope·x + intercept. Null with fewer than three points. */
+/**
+ * Ordinary least-squares straight line y = slope·x + intercept. Null with fewer than three points.
+ * @internal Exported to test regression coefficients and undersized samples independently of the nuclide data.
+ */
 export function fitLine(xs: readonly number[], ys: readonly number[]): LineFit | null {
   const count = xs.length;
   if (count < 3) {
@@ -147,7 +150,7 @@ export function sargentPoints(table: NuclideTable = NUCLIDE_TABLE): SargentPoint
 }
 
 /** Z − Z_valley(A): positive on the proton-rich side of the valley, negative on the neutron-rich side. */
-export function distanceFromValley(nuclide: Nuclide, coefficients: MassFormulaCoefficients): number {
+function distanceFromValley(nuclide: Nuclide, coefficients: MassFormulaCoefficients): number {
   return nuclide.z - valleyZ(nuclide.a, coefficients);
 }
 
