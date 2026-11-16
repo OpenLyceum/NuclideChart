@@ -17,18 +17,10 @@ import { HBox, Line, Node, Path, Rectangle, RichText, VBox } from "scenerystack/
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { AquaRadioButtonGroup, Checkbox } from "scenerystack/sun";
-import { DecayCategory, decayCategoryOf } from "../../common/model/DecayCategory.js";
-import { FITTED_MASS_FORMULA } from "../../common/model/fittedMassFormula.js";
-import {
-  distanceFromValley,
-  fitLine,
-  type GeigerNuttallPoint,
-  geigerNuttallFits,
-  geigerNuttallPoints,
-  sargentPoints,
-} from "../../common/model/halfLifeTrends.js";
+import { DecayCategory } from "../../common/model/DecayCategory.js";
+import { explorerHalfLifeY, type GeigerNuttallFitSegment } from "../../common/model/halfLifeTrends.js";
 import { AGE_OF_EARTH_S, SECONDS_PER_YEAR } from "../../common/model/NuclearConstants.js";
-import { NUCLIDE_TABLE, type Nuclide, requireIsomer } from "../../common/model/NuclideTable.js";
+import { NUCLIDE_TABLE, requireIsomer } from "../../common/model/NuclideTable.js";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/NuclideChartButtonOptions.js";
 import { NUCLIDE_CHART_CHECKBOX_OPTIONS } from "../../common/NuclideChartControlOptions.js";
 import { NuclideChartPanel } from "../../common/NuclideChartPanel.js";
@@ -94,18 +86,6 @@ const TWO_STYLES: readonly PointStyle[] = [
     alpha: 1,
   },
 ];
-
-/** Measured half-lives (no limits) of radioactive ground states. */
-const MEASURED = NUCLIDE_TABLE.nuclides.filter(
-  (x) => !x.isStable && x.halfLife !== null && x.halfLife > 0 && x.halfLifeOperator === "",
-);
-const GEIGER_NUTTALL = geigerNuttallPoints();
-const GEIGER_NUTTALL_FITS = geigerNuttallFits(GEIGER_NUTTALL);
-const SARGENT = sargentPoints();
-const SARGENT_FIT = fitLine(
-  SARGENT.map((p) => Math.log10(p.qBeta)),
-  SARGENT.map((p) => p.logHalfLife),
-);
 
 export class HalfLivesScreenView extends ScreenView {
   public constructor(model: HalfLivesModel, providedOptions?: HalfLivesScreenViewOptions) {
@@ -182,7 +162,7 @@ export class HalfLivesScreenView extends ScreenView {
       alignLeft = false,
       below = false,
     ): void => {
-      const y = logScale ? seconds : seconds / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS;
+      const y = explorerHalfLifeY(seconds, logScale);
       const view = chart.viewPosition(chart.frame.axes.x.range.min, y);
       if (!view || view.y < 0 || view.y > SCATTER_CHART.HEIGHT) {
         return;
@@ -201,9 +181,6 @@ export class HalfLivesScreenView extends ScreenView {
       }
       labels.push(guideLabel);
     };
-
-    const explorerX = (x: Nuclide): number =>
-      model.explorerAxisProperty.value === "massNumber" ? x.a : distanceFromValley(x, FITTED_MASS_FORMULA.coefficients);
 
     /** Puts a label at (left, bottom), then stacks it below any already-placed label it would overlap. */
     const placeClear = (text: Node, left: number, bottom: number, placed: readonly Node[]): void => {
@@ -226,10 +203,7 @@ export class HalfLivesScreenView extends ScreenView {
       if (!tcGround || tc.halfLife === null) {
         return [];
       }
-      const view = chart.viewPosition(
-        explorerX(tcGround),
-        logScale ? tc.halfLife : tc.halfLife / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS,
-      );
+      const view = chart.viewPosition(model.explorerXOf(tcGround), explorerHalfLifeY(tc.halfLife, logScale));
       if (!view || view.y <= 8 || view.y >= SCATTER_CHART.HEIGHT - 4) {
         return [];
       }
@@ -282,7 +256,7 @@ export class HalfLivesScreenView extends ScreenView {
 
     const updateExplorer = (): void => {
       const logScale = model.logScaleProperty.value;
-      const byA = model.explorerAxisProperty.value === "massNumber";
+      const byA = model.explorerAxis === "massNumber";
       chart.setAxes(
         { range: byA ? new Range(0, HALF_LIVES.EXPLORER_A_MAX) : HALF_LIVES.EXPLORER_VALLEY_X, log: false },
         logScale
@@ -293,14 +267,11 @@ export class HalfLivesScreenView extends ScreenView {
         byA ? common.axes.massNumberStringProperty : strings.axes.valleyDistanceStringProperty,
         logScale ? strings.axes.halfLifeLogStringProperty : strings.axes.halfLifeLinearStringProperty,
       );
-      const definition = model.shared.stabilityDefinition;
-      const points: ScatterPoint[] = MEASURED.map((x) => ({
-        nuclide: x,
-        x: explorerX(x),
-        y: logScale
-          ? (x.halfLife as number)
-          : (x.halfLife as number) / SECONDS_PER_YEAR / HALF_LIVES_SCREEN_VIEW_SETTINGS.BILLION_YEARS,
-        group: Math.max(0, CATEGORIES.indexOf(decayCategoryOf(x, definition))),
+      const points: ScatterPoint[] = model.explorerPointsProperty.value.map((p) => ({
+        nuclide: p.nuclide,
+        x: p.x,
+        y: p.y,
+        group: Math.max(0, CATEGORIES.indexOf(p.category)),
       }));
       chart.setPoints(points, CATEGORY_STYLES);
 
@@ -347,9 +318,10 @@ export class HalfLivesScreenView extends ScreenView {
       callouts.children = model.notableVisibleProperty.value ? notableCallouts(logScale) : [];
     };
 
-    const fitLineShape = (slope: number, intercept: number, xRange: Range, log: boolean): Shape => {
+    const fitLineShape = (slope: number, intercept: number, xMin: number, xMax: number, log: boolean): Shape => {
       const shape = new Shape();
       const steps: number = HALF_LIVES_SCREEN_VIEW_SETTINGS.STEPS;
+      const xRange = new Range(xMin, xMax);
       for (let i = 0; i <= steps; i++) {
         const x = xRange.min + (xRange.getLength() * i) / steps;
         const yLog = slope * (log ? Math.log10(x) : x) + intercept;
@@ -365,42 +337,29 @@ export class HalfLivesScreenView extends ScreenView {
       return shape;
     };
 
+    const segmentShape = (segment: GeigerNuttallFitSegment, log: boolean): Shape =>
+      fitLineShape(segment.fit.slope, segment.fit.intercept, segment.xMin, segment.xMax, log);
+
     const updateGeigerNuttall = (): void => {
       const xRange = HALF_LIVES.GEIGER_X;
       chart.setAxes({ range: xRange, log: false }, { range: HALF_LIVES.GEIGER_Y, log: true });
       chart.frame.setAxisLabels(strings.axes.qAlphaInverseRootStringProperty, strings.axes.alphaHalfLifeStringProperty);
-      const z = selected.value.z;
-      const points = GEIGER_NUTTALL.map((p: GeigerNuttallPoint) => ({
-        nuclide: p.nuclide,
-        x: p.x,
-        y: HALF_LIVES_SCREEN_VIEW_SETTINGS.HALF_LIFE_LOG_BASE ** p.logHalfLife,
-        group: p.nuclide.z === z ? 1 : 0,
-      }));
-      points.sort((p, q) => p.group - q.group);
-      chart.setPoints(points, TWO_STYLES);
+      chart.setPoints(
+        model.geigerPointsProperty.value.map((p) => ({
+          nuclide: p.nuclide,
+          x: p.x,
+          y: p.y,
+          group: p.highlighted ? 1 : 0,
+        })),
+        TWO_STYLES,
+      );
+      const { background, highlight } = model.geigerFitsProperty.value;
       const all = new Shape();
-      if (model.fitsVisibleProperty.value) {
-        for (const [fz, fit] of GEIGER_NUTTALL_FITS) {
-          if (fit.count >= 5 && fz !== z) {
-            const xs = GEIGER_NUTTALL.filter((p) => p.nuclide.z === fz).map((p) => p.x);
-            all.subpaths.push(
-              ...fitLineShape(fit.slope, fit.intercept, new Range(Math.min(...xs), Math.max(...xs)), false).subpaths,
-            );
-          }
-        }
+      for (const segment of background) {
+        all.subpaths.push(...segmentShape(segment, false).subpaths);
       }
       fitsPath.shape = new Shape(all.subpaths);
-      const own = GEIGER_NUTTALL_FITS.get(z);
-      const ownXs = GEIGER_NUTTALL.filter((p) => p.nuclide.z === z).map((p) => p.x);
-      highlightFitPath.shape =
-        own && ownXs.length >= 3
-          ? fitLineShape(
-              own.slope,
-              own.intercept,
-              new Range(Math.min(...ownXs) - 0.01, Math.max(...ownXs) + 0.01),
-              false,
-            )
-          : null;
+      highlightFitPath.shape = highlight ? segmentShape(highlight, false) : null;
       guidePath.shape = null;
       earthPath.shape = null;
       disposeChildren(guideLabels);
@@ -440,17 +399,16 @@ export class HalfLivesScreenView extends ScreenView {
       chart.setAxes({ range: xRange, log: true }, { range: HALF_LIVES.SARGENT_Y, log: true });
       chart.frame.setAxisLabels(strings.axes.qBetaStringProperty, strings.axes.betaHalfLifeStringProperty);
       chart.setPoints(
-        SARGENT.map((p) => ({
+        model.sargentPlotPoints.map((p) => ({
           nuclide: p.nuclide,
-          x: p.qBeta,
-          y: HALF_LIVES_SCREEN_VIEW_SETTINGS.HALF_LIFE_LOG_BASE ** p.logHalfLife,
+          x: p.x,
+          y: p.y,
           group: 0,
         })),
         TWO_STYLES,
       );
-      highlightFitPath.shape = SARGENT_FIT
-        ? fitLineShape(SARGENT_FIT.slope, SARGENT_FIT.intercept, xRange, true)
-        : null;
+      const fit = model.sargentFit;
+      highlightFitPath.shape = fit ? fitLineShape(fit.slope, fit.intercept, xRange.min, xRange.max, true) : null;
       fitsPath.shape = null;
       guidePath.shape = null;
       earthPath.shape = null;
@@ -485,7 +443,7 @@ export class HalfLivesScreenView extends ScreenView {
     );
     // The Geiger–Nuttall view needs an α emitter selected to highlight a line; start from Po-212.
     model.viewProperty.lazyLink((view) => {
-      if (view === HalfLifeView.GEIGER_NUTTALL && !GEIGER_NUTTALL.some((p) => p.nuclide === selected.value)) {
+      if (view === HalfLifeView.GEIGER_NUTTALL && !model.isGeigerNuttallEmitter(selected.value)) {
         selected.value = NUCLIDE_TABLE.require("Po-212");
       }
     });
@@ -543,10 +501,9 @@ export class HalfLivesScreenView extends ScreenView {
     const logCheckbox = checkbox(model.logScaleProperty, strings.logScaleStringProperty);
     const earthCheckbox = checkbox(model.earthAgeVisibleProperty, strings.earthAgeStringProperty);
     const notableCheckbox = checkbox(model.notableVisibleProperty, strings.notableStringProperty);
-    const survivorsCount = MEASURED.filter((x) => (x.halfLife ?? 0) > AGE_OF_EARTH_S).length;
     const survivors = new RichText(
       new DerivedProperty([strings.survivorsPatternStringProperty], (pattern) =>
-        StringUtils.fillIn(pattern, { count: survivorsCount }),
+        StringUtils.fillIn(pattern, { count: model.earthAgeSurvivorsCount }),
       ),
       { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, lineWrap: PANEL_CONTENT_WIDTH },
     );
@@ -572,7 +529,7 @@ export class HalfLivesScreenView extends ScreenView {
     const fitText = new DerivedProperty(
       [strings.fitPatternStringProperty, strings.noFitStringProperty, selected],
       (pattern, none, nuclide) => {
-        const fit = GEIGER_NUTTALL_FITS.get(nuclide.z);
+        const fit = model.geigerNuttallFits.get(nuclide.z);
         return fit
           ? StringUtils.fillIn(pattern, {
               element: nuclide.symbol,
@@ -583,8 +540,8 @@ export class HalfLivesScreenView extends ScreenView {
           : none;
       },
     );
-    const po = GEIGER_NUTTALL.find((p) => p.nuclide.label === "Po-212");
-    const th = GEIGER_NUTTALL.find((p) => p.nuclide.label === "Th-232");
+    const po = model.geigerComparisonPo;
+    const th = model.geigerComparisonTh;
     const comparisonText = new DerivedProperty([strings.comparisonPatternStringProperty], (pattern) =>
       po && th
         ? StringUtils.fillIn(pattern, {
@@ -617,8 +574,8 @@ export class HalfLivesScreenView extends ScreenView {
     const sargentText = new RichText(
       new DerivedProperty([strings.sargentPatternStringProperty], (pattern) =>
         StringUtils.fillIn(pattern, {
-          slope: formatFixed(SARGENT_FIT?.slope ?? 0, HALF_LIVES_SCREEN_VIEW_SETTINGS.SARGENT_TEXT_DECIMALS),
-          count: SARGENT.length,
+          slope: formatFixed(model.sargentFit?.slope ?? 0, HALF_LIVES_SCREEN_VIEW_SETTINGS.SARGENT_TEXT_DECIMALS),
+          count: model.sargentPoints.length,
         }),
       ),
       { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, lineWrap: PANEL_CONTENT_WIDTH },
