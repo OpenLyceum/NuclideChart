@@ -44,7 +44,7 @@ export class NuclideChartPreferencesNode extends VBox {
 
     super({
       align: "left",
-      spacing: NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      spacing: NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS.SPACING,
       children: [header, showEquationsCheckbox],
     });
   }

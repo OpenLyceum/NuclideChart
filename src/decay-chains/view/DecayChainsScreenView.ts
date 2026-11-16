@@ -100,7 +100,7 @@ export class DecayChainsScreenView extends ScreenView {
       align: "right",
       children: [
         new VBox({
-          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_SERIES_CONTENT_SPACING,
+          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.SERIES_SECTION_SPACING,
           align: "left",
           children: [diagramTitle, diagram],
         }),
@@ -279,7 +279,7 @@ export class DecayChainsScreenView extends ScreenView {
           FONTS.SMALL,
         ),
         new HBox({
-          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FISSION_CONTROLS_SPACING,
+          spacing: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.FISSION_CONTROLS_SECTION_SPACING,
           children: [aSlider, aText],
         }),
         new HBox({

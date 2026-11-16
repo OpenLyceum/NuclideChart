@@ -73,7 +73,7 @@ export class FissionProductsNode extends Node {
       align: "left",
       children: [chainTitle, chainRow, notes],
     });
-    chainBox.top = plotHeight + FISSION_PRODUCTS_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+    chainBox.top = plotHeight + FISSION_PRODUCTS_NODE_SETTINGS.TOP_OFFSET;
     this.children = [frame, chainBox];
 
     const barShape = (yields: readonly number[], only?: number): Shape => {

@@ -215,7 +215,7 @@ export class IsobarsScreenView extends ScreenView {
         aSlider,
         aReadout,
         new HBox({
-          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_STRIP_SPACING,
+          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.STRIP_SECTION_SPACING,
           children: [
             label(strings.quickPicksStringProperty, ISOBARS_SCREEN_VIEW_SETTINGS.QUICK_PICKS_LABEL_MAX_WIDTH),
             ...quickButtons,
@@ -258,7 +258,7 @@ export class IsobarsScreenView extends ScreenView {
       align: "left",
       children: [
         new HBox({
-          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEGEND_SPACING,
+          spacing: ISOBARS_SCREEN_VIEW_SETTINGS.LEGEND_SECTION_SPACING,
           align: "top",
           children: [
             new VBox({

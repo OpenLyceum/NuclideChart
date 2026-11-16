@@ -201,7 +201,7 @@ export class BindingEnergyScreenView extends ScreenView {
           }),
           formulaGrid,
           new HBox({
-            spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FORMULA_PANEL_SPACING,
+            spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FORMULA_SECTION_SPACING,
             children: [fitButton, textbookButton],
           }),
           rmsText,
@@ -273,7 +273,7 @@ export class BindingEnergyScreenView extends ScreenView {
       align: "left",
       children: [
         new HBox({
-          spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FISSION_CONTENT_SPACING,
+          spacing: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FISSION_SECTION_SPACING,
           children: [
             label(
               strings.energy.fragmentAStringProperty,

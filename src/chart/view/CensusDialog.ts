@@ -101,7 +101,7 @@ export class CensusDialog extends Dialog {
     });
     super(
       new VBox({
-        spacing: CENSUS_DIALOG_SETTINGS.CONSTRUCTOR_SPACING,
+        spacing: CENSUS_DIALOG_SETTINGS.SPACING,
         align: "left",
         children: [
           new VBox({

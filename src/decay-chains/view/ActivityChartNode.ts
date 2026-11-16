@@ -65,7 +65,7 @@ export class ActivityChartNode extends Node {
       lineWidth: ACTIVITY_CHART_NODE_SETTINGS.TIME_LINE_LINE_WIDTH,
       lineDash: [
         ACTIVITY_CHART_NODE_SETTINGS.TIME_LINE_LINE_DASH_DASH,
-        ACTIVITY_CHART_NODE_SETTINGS.CONSTRUCTOR_TIME_LINE_LINE_DASH_DASH,
+        ACTIVITY_CHART_NODE_SETTINGS.TIME_LINE_LINE_DASH_GAP,
       ],
     });
     const labels = new Node();

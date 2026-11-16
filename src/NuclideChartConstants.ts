@@ -281,8 +281,8 @@ export const BINDING_ENERGY_SCREEN_VIEW_SETTINGS = {
   FUSION_GAIN_DECIMALS: 2, // digits
   FUSION_Q_DECIMALS: 2, // digits
 
-  CONSTRUCTOR_FORMULA_PANEL_SPACING: 8, // px
-  CONSTRUCTOR_FISSION_CONTENT_SPACING: 8, // px
+  FORMULA_SECTION_SPACING: 8, // px
+  FISSION_SECTION_SPACING: 8, // px
 
   DEFAULT_MAX_WIDTH: 220,
   BUTTON_MAX_WIDTH: 130,
@@ -314,7 +314,7 @@ export const CENSUS_DIALOG_SETTINGS = {
   TABLE_X_SPACING: 30,
   TABLE_Y_SPACING: 8,
   DEFINITION_GROUP_SPACING: 4,
-  CONSTRUCTOR_SPACING: 12,
+  SPACING: 12,
 } as const;
 
 /** Settings for chart/view/ChartScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
@@ -330,7 +330,7 @@ export const CHART_SCREEN_VIEW_SETTINGS = {
   THRESHOLD_SLIDER_WIDTH: 170, // px
 
   X_TITLE_TOP_OFFSET: 4, // px
-  CONSTRUCTOR_FILTER_PANEL_SPACING: 10, // px
+  FILTER_SECTION_SPACING: 10, // px
 
   DEFAULT_MAX_WIDTH: 170,
   BUTTON_MAX_WIDTH: 120,
@@ -356,7 +356,7 @@ export const CHART_SCREEN_VIEW_SETTINGS = {
   THRESHOLD_SLIDER_SHIFT_KEYBOARD_STEP: 0.1,
   /** Threshold slider page keyboard step (dimensionless). */
   THRESHOLD_SLIDER_PAGE_KEYBOARD_STEP: 2,
-  CONSTRUCTOR_MAX_WIDTH: 110,
+  MAX_WIDTH: 110,
   FILTER_PANEL_SPACING: 4,
   FILTER_PANEL_MAX_WIDTH: 80,
 } as const;
@@ -396,7 +396,7 @@ export const Q_VALUE_DIALOG_SETTINGS = {
   TABLE_X_SPACING: 18,
   TABLE_Y_SPACING: 5,
   REVEAL_BUTTON_MAX_WIDTH: 200,
-  CONSTRUCTOR_SPACING: 12,
+  SPACING: 12,
   TEXT_MAX_WIDTH: 170,
 } as const;
 
@@ -487,7 +487,7 @@ export const NUCLIDE_CARD_NODE_SETTINGS = {
 
   ROWS_X_SPACING: 10,
   ROWS_Y_SPACING: 3,
-  CONSTRUCTOR_SPACING: 6,
+  SPACING: 6,
 } as const;
 
 /** Settings for common/view/PlotFrameNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
@@ -523,7 +523,7 @@ export const DECAY_CHAINS_MODEL_SETTINGS = {
 /** Settings for decay-chains/view/ActivityChartNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
 export const ACTIVITY_CHART_NODE_SETTINGS = {
   TIME_LINE_LINE_DASH_DASH: 5, // px
-  CONSTRUCTOR_TIME_LINE_LINE_DASH_DASH: 3, // px
+  TIME_LINE_LINE_DASH_GAP: 3, // px
   LABEL_FOR_LEFT_OFFSET: 3, // px
 
   /** Alpha path opacity (dimensionless). */
@@ -560,8 +560,8 @@ export const DECAY_CHAINS_SCREEN_VIEW_SETTINGS = {
   FISSION_CONTROLS_ITEM_5_SPACING: 4, // px
   QUICK_PICKS_LABEL_MAX_WIDTH: 40, // px
 
-  CONSTRUCTOR_SERIES_CONTENT_SPACING: 3, // px
-  CONSTRUCTOR_FISSION_CONTROLS_SPACING: 8, // px
+  SERIES_SECTION_SPACING: 3, // px
+  FISSION_CONTROLS_SECTION_SPACING: 8, // px
 
   SERIES_CONTENT_SPACING: 6,
   MODE_GROUP_SPACING: 5,
@@ -583,7 +583,7 @@ export const FISSION_PRODUCTS_NODE_SETTINGS = {
   CHAIN_ROW_DIGITS: 2, // digits
   CHAIN_TITLE_DIGITS: 3, // digits
 
-  CONSTRUCTOR_TOP_OFFSET: 40, // px
+  TOP_OFFSET: 40, // px
   TEXTS_MAX_WIDTH_OFFSET: 8, // px
   TEXTS_LEFT_OFFSET: 6, // px
 
@@ -652,8 +652,8 @@ export const ISOBARS_SCREEN_VIEW_SETTINGS = {
   TEXT_DECIMALS: 3, // digits
 
   UPDATE_BOTTOM_OFFSET: 3, // px
-  CONSTRUCTOR_STRIP_SPACING: 6, // px
-  CONSTRUCTOR_LEGEND_SPACING: 14, // px
+  STRIP_SECTION_SPACING: 6, // px
+  LEGEND_SECTION_SPACING: 14, // px
   ARROW_FOR_TAIL_WIDTH: 1.5, // px
 
   PARABOLA_PATH_LINE_WIDTH: 1.2,
@@ -683,7 +683,7 @@ export const ISOBARS_SCREEN_VIEW_SETTINGS = {
 /** Settings for preferences/NuclideChartPreferencesNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
 export const NUCLIDE_CHART_PREFERENCES_NODE_SETTINGS = {
   SHOW_EQUATIONS_CHECKBOX_SPACING: 8,
-  CONSTRUCTOR_SPACING: 12,
+  SPACING: 12,
 } as const;
 
 /** Settings for shells/view/ShellsScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */

@@ -266,7 +266,7 @@ export class ChartScreenView extends ScreenView {
       new Text(strings.filter.ageOfEarthStringProperty, {
         font: FONTS.SMALL,
         fill: NuclideChartColors.textColorProperty,
-        maxWidth: CHART_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_MAX_WIDTH,
+        maxWidth: CHART_SCREEN_VIEW_SETTINGS.MAX_WIDTH,
       }),
     );
     const filterPanel = new NuclideChartPanel(
@@ -276,7 +276,7 @@ export class ChartScreenView extends ScreenView {
         children: [
           filterCheckbox,
           new HBox({
-            spacing: CHART_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_FILTER_PANEL_SPACING,
+            spacing: CHART_SCREEN_VIEW_SETTINGS.FILTER_SECTION_SPACING,
             children: [
               thresholdSlider,
               new Text(thresholdText, {

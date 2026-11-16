@@ -76,7 +76,7 @@ export class QValueDialog extends Dialog {
 
     super(
       new VBox({
-        spacing: Q_VALUE_DIALOG_SETTINGS.CONSTRUCTOR_SPACING,
+        spacing: Q_VALUE_DIALOG_SETTINGS.SPACING,
         align: "left",
         children: [intro, table, revealButton, note],
       }),

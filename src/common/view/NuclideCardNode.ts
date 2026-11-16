@@ -190,7 +190,7 @@ export class NuclideCardNode extends VBox {
     });
 
     super({
-      spacing: NUCLIDE_CARD_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      spacing: NUCLIDE_CARD_NODE_SETTINGS.SPACING,
       align: "left",
       children: [
         new VBox({ spacing: NUCLIDE_CARD_NODE_SETTINGS.ITEM_1_SPACING, align: "left", children: [title, zna] }),
