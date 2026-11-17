@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Trends across the whole chart of nuclides from IAEA data: binding energies and the mass formula, magic numbers in separation energies, isobar mass parabolas, half-lives from Geiger–Nuttall to the age of the Earth, and decay chains in secular equilibrium.",
+  "description": "Trends across the whole chart of nuclides from IAEA data: binding energies and the mass formula, magic numbers in separation energies, isobar mass parabolas, half-lives from Geiger\u2013Nuttall to the age of the Earth, and decay chains in secular equilibrium.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
@@ -45,7 +45,8 @@
     "prepare": "test \"$(git rev-parse --show-toplevel 2>/dev/null)\" = \"$PWD\" && git config core.hooksPath .githooks || true",
     "knip": "knip",
     "test:architecture": "node --test tests/*.node-test.ts",
-    "fetch-data": "node scripts/data/fetch-nuclides.ts"
+    "fetch-data": "node scripts/data/fetch-nuclides.ts",
+    "test:soak": "npx playwright test tests/browser/memory-soak.spec.ts"
   },
   "dependencies": {
     "scenerystack": "^3.0.0"
