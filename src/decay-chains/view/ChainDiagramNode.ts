@@ -33,7 +33,9 @@ const nodeCategory = (node: ChainNode): DecayCategory => {
 
 /** Text colour that reads on a decay-mode fill. */
 const textOn = (category: DecayCategory): string =>
-  category === DecayCategory.ALPHA || category === DecayCategory.STABLE ? "#000000" : "#ffffff";
+  category === DecayCategory.ALPHA || category === DecayCategory.STABLE
+    ? NuclideChartColors.contrastTextDark
+    : NuclideChartColors.contrastTextLight;
 
 export type ChainDiagramNodeOptions = NodeOptions & {
   readonly accessibleName: TReadOnlyProperty<string>;

@@ -88,7 +88,8 @@ Formulas, data and their sources are in [`doc/model.md`](doc/model.md). Architec
 - **Hardcoded colours.**
   - The viridis and blue–white–red scale stops in `src/common/view/mapColors.ts`. They are
     data-visualization palettes that are the same in both profiles.
-  - The black/white text-contrast picks in `NuclideMapNode.ts` and `ChainDiagramNode.ts`.
+  - `NuclideChartColors.contrastTextDark` / `contrastTextLight` — luminance-picked label text
+    on map/chain fills (used from `NuclideMapNode.ts` and `ChainDiagramNode.ts`). Not themeable.
 
 ## Commands
 

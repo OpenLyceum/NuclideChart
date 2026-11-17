@@ -215,6 +215,13 @@ const NuclideChartColors = {
     default: "#1a1a1a",
     projector: "#1a1a1a",
   }),
+
+  /**
+   * Luminance-picked label text on map/chain fills. Not themeable — same in both profiles so
+   * contrast stays readable on data colours.
+   */
+  contrastTextDark: "#000000",
+  contrastTextLight: "#ffffff",
 };
 
 export default NuclideChartColors;

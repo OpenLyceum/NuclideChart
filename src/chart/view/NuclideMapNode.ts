@@ -72,7 +72,9 @@ const contrastingText = (css: string): string => {
   } else if (css.startsWith("#") && css.length >= 7) {
     [r, g, b] = [1, 3, 5].map((i) => Number.parseInt(css.slice(i, i + 2), 16)) as [number, number, number];
   }
-  return 0.299 * r + 0.587 * g + 0.114 * b > 140 ? "#000000" : "#ffffff";
+  return 0.299 * r + 0.587 * g + 0.114 * b > 140
+    ? NuclideChartColors.contrastTextDark
+    : NuclideChartColors.contrastTextLight;
 };
 
 /** Maps (N, Z) to view coordinates and back for the current centre and zoom. */
