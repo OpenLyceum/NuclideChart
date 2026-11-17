@@ -86,7 +86,7 @@ Formulas, data and their sources are in [`doc/model.md`](doc/model.md). Architec
 ## Compliance carve-outs
 
 - **Hardcoded colours.**
-  - The viridis and blue–white–red scale stops in `src/chart/view/mapColors.ts`. They are
+  - The viridis and blue–white–red scale stops in `src/common/view/mapColors.ts`. They are
     data-visualization palettes that are the same in both profiles.
   - The black/white text-contrast picks in `NuclideMapNode.ts` and `ChainDiagramNode.ts`.
 
