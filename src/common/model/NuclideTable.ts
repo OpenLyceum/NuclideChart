@@ -279,7 +279,7 @@ export function hasMode(nuclide: Nuclide, ...modes: string[]): boolean {
 }
 
 /** The singleton table every screen shares. */
-export const NUCLIDE_TABLE = new NuclideTable(nuclidesJson as unknown as NuclidesJson);
+export const NUCLIDE_TABLE = new NuclideTable(nuclidesJson);
 
 type IsomerRow = {
   label: string;
