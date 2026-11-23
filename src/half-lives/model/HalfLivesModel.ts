@@ -44,15 +44,17 @@ import { AGE_OF_EARTH_S } from "../../common/model/NuclearConstants.js";
 import type { Nuclide, StabilityDefinition } from "../../common/model/NuclideTable.js";
 import type { SharedModel } from "../../common/model/SharedModel.js";
 
+type HalfLifeViewKey = "explorer" | "geigerNuttall" | "sargent";
+
 export class HalfLifeView extends EnumerationValue {
   public static readonly EXPLORER = new HalfLifeView("explorer");
   public static readonly GEIGER_NUTTALL = new HalfLifeView("geigerNuttall");
   public static readonly SARGENT = new HalfLifeView("sargent");
   public static readonly enumeration = new Enumeration(HalfLifeView);
 
-  public readonly key: string;
+  public readonly key: HalfLifeViewKey;
 
-  public constructor(key: string) {
+  public constructor(key: HalfLifeViewKey) {
     super();
     this.key = key;
   }

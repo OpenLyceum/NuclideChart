@@ -42,7 +42,7 @@ export class MapLegendNode extends Node {
     super();
     const common = StringManager.getInstance().getCommonStrings();
     const chart = StringManager.getInstance().getChartStrings();
-    const modes = common.decayModes as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const modes = common.decayModes;
     const small = (text: TReadOnlyProperty<string> | string, maxWidth: number): RichText =>
       new RichText(text, { font: FONTS.SMALL, fill: NuclideChartColors.textColorProperty, maxWidth });
     const swatch = (fill: TColor): Rectangle =>
@@ -62,7 +62,7 @@ export class MapLegendNode extends Node {
       children: LEGEND_CATEGORIES.map((category) =>
         entry(
           DECAY_CATEGORY_COLORS.get(category) ?? NuclideChartColors.noDataColorProperty,
-          modes[`${category.key}StringProperty`] as TReadOnlyProperty<string>,
+          modes[`${category.key}StringProperty`],
           width / 2 - 24,
         ),
       ),

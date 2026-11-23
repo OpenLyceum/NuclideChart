@@ -212,10 +212,10 @@ export class ShellsScreenView extends ScreenView {
         { range: new Range(0, neutron ? SHELLS.N_MAX : SHELLS.Z_MAX), log: false },
         { range: new Range(SHELLS.Y_MIN, two ? SHELLS.Y_MAX_TWO : SHELLS.Y_MAX_ONE), log: false },
       );
-      const axes = strings.axes as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+      const axes = strings.axes;
       chart.frame.setAxisLabels(
         neutron ? common.axes.neutronNumberStringProperty : common.axes.protonNumberStringProperty,
-        axes[`${kind}StringProperty`] as TReadOnlyProperty<string>,
+        axes[`${kind}StringProperty`],
       );
 
       const showEstimated = model.estimatedVisibleProperty.value;
@@ -253,16 +253,12 @@ export class ShellsScreenView extends ScreenView {
     });
 
     // ── Controls and readouts ─────────────────────────────────────────────────
-    const kinds = strings.kinds as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const kinds = strings.kinds;
     const kindGroup = new AquaRadioButtonGroup<string>(
       model.kindProperty,
       SEPARATION_KINDS.map((kind) => ({
         value: kind,
-        createNode: () =>
-          label(
-            kinds[`${kind}StringProperty`] as TReadOnlyProperty<string>,
-            SHELLS_SCREEN_VIEW_SETTINGS.KIND_GROUP_MAX_WIDTH,
-          ),
+        createNode: () => label(kinds[`${kind}StringProperty`], SHELLS_SCREEN_VIEW_SETTINGS.KIND_GROUP_MAX_WIDTH),
       })),
       {
         orientation: "vertical",

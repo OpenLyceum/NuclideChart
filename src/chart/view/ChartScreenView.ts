@@ -189,9 +189,9 @@ export class ChartScreenView extends ScreenView {
     });
 
     // ── Colouring and legend ──────────────────────────────────────────────────
-    const colorings = strings.colorings as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const colorings = strings.colorings;
     const coloringName = (coloring: MapColoring): TReadOnlyProperty<string> =>
-      colorings[`${coloring.key}StringProperty`] as TReadOnlyProperty<string>;
+      colorings[`${coloring.key}StringProperty`];
     const coloringBox = new ComboBox(
       model.coloringProperty,
       MapColoring.enumeration.values.map((coloring) => ({

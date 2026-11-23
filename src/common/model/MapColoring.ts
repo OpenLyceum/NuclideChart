@@ -13,6 +13,16 @@ import type { Nuclide } from "../../common/model/NuclideTable.js";
 /** How a colouring's values are spread over its colour scale. */
 export type ScaleKind = "categorical" | "sequential" | "diverging";
 
+type MapColoringKey =
+  | "decayMode"
+  | "halfLife"
+  | "bindingPerNucleon"
+  | "residual"
+  | "abundance"
+  | "measurement"
+  | "quadrupole"
+  | "spin";
+
 export class MapColoring extends EnumerationValue {
   public static readonly DECAY_MODE = new MapColoring("decayMode", "categorical", 0, 0, () => null);
 
@@ -48,7 +58,7 @@ export class MapColoring extends EnumerationValue {
   public static readonly enumeration = new Enumeration(MapColoring);
 
   /** Key into the `colorings` string group. */
-  public readonly key: string;
+  public readonly key: MapColoringKey;
   public readonly scale: ScaleKind;
   /** Value range of the colour scale. */
   public readonly min: number;
@@ -57,7 +67,7 @@ export class MapColoring extends EnumerationValue {
   public readonly valueFor: (nuclide: Nuclide) => number | null;
 
   public constructor(
-    key: string,
+    key: MapColoringKey,
     scale: ScaleKind,
     min: number,
     max: number,

@@ -456,16 +456,13 @@ export class HalfLivesScreenView extends ScreenView {
     });
 
     // ── Controls ──────────────────────────────────────────────────────────────
-    const views = strings.views as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const views = strings.views;
     const viewGroup = new AquaRadioButtonGroup(
       model.viewProperty,
       HalfLifeView.enumeration.values.map((view) => ({
         value: view,
         createNode: () =>
-          label(
-            views[`${view.key}StringProperty`] as TReadOnlyProperty<string>,
-            HALF_LIVES_SCREEN_VIEW_SETTINGS.VIEW_GROUP_MAX_WIDTH,
-          ),
+          label(views[`${view.key}StringProperty`], HALF_LIVES_SCREEN_VIEW_SETTINGS.VIEW_GROUP_MAX_WIDTH),
       })),
       {
         orientation: "vertical",

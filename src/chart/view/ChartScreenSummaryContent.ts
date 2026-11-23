@@ -16,9 +16,7 @@ export class ChartScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: ChartModel) {
     const a11y = StringManager.getInstance().getChartA11yStrings();
     const common = StringManager.getInstance().getCommonStrings();
-    const colorings = StringManager.getInstance().getChartStrings().colorings as unknown as Readonly<
-      Record<string, { value: string }>
-    >;
+    const colorings = StringManager.getInstance().getChartStrings().colorings;
     const details = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.coloringProperty, model.shared.selectedNuclideProperty],
       (pattern, coloring, nuclide) =>

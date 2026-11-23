@@ -9,6 +9,17 @@
 import { Enumeration, EnumerationValue } from "scenerystack/phet-core";
 import { type DecayBranch, isStableUnder, type Nuclide, type StabilityDefinition } from "./NuclideTable.js";
 
+type DecayCategoryKey =
+  | "stable"
+  | "betaMinus"
+  | "betaPlus"
+  | "alpha"
+  | "fission"
+  | "proton"
+  | "neutron"
+  | "isomeric"
+  | "unknown";
+
 export class DecayCategory extends EnumerationValue {
   public static readonly STABLE = new DecayCategory("stable");
   public static readonly BETA_MINUS = new DecayCategory("betaMinus");
@@ -23,9 +34,9 @@ export class DecayCategory extends EnumerationValue {
   public static readonly enumeration = new Enumeration(DecayCategory);
 
   /** Key into the `decayModes` string group and the colour map. */
-  public readonly key: string;
+  public readonly key: DecayCategoryKey;
 
-  public constructor(key: string) {
+  public constructor(key: DecayCategoryKey) {
     super();
     this.key = key;
   }
