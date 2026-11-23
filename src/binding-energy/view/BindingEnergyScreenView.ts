@@ -139,9 +139,9 @@ export class BindingEnergyScreenView extends ScreenView {
     );
 
     // ── Mass formula ──────────────────────────────────────────────────────────
-    const termNames = strings.formula as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const termNames = strings.formula;
     const termRows = MASS_FORMULA_TERMS.map((term: MassFormulaTerm) => {
-      const name = termNames[`${term}StringProperty`] as TReadOnlyProperty<string>;
+      const name = termNames[`${term}StringProperty`];
       const enabled = model.termEnabledProperties[term];
       const coefficient = model.coefficientProperties[term];
       const box = new Checkbox(enabled, label(name, BINDING_ENERGY_SCREEN_VIEW_SETTINGS.BOX_MAX_WIDTH), {

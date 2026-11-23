@@ -107,8 +107,7 @@ export class QValueDialog extends Dialog {
       return;
     }
     const strings = StringManager.getInstance().getChartStrings().qValues;
-    const channels = strings.channels as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
-    const verdicts = strings.verdicts as unknown as Readonly<Record<string, TReadOnlyProperty<string>>>;
+    const { channels, verdicts } = strings;
     const nuclide = this.nuclideProperty.value;
     const revealed = this.revealedProperty.value;
     const text = (
