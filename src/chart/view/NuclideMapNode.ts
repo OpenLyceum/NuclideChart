@@ -13,7 +13,7 @@ import { NUCLIDE_MAP_NODE_SETTINGS } from "../../NuclideChartConstants.js";
  */
 
 import { Multilink, type TReadOnlyProperty } from "scenerystack/axon";
-import { Bounds2, Vector2 } from "scenerystack/dot";
+import { Bounds2, roundSymmetric, Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { CanvasNode, DragListener, KeyboardListener, Node, type NodeOptions, Rectangle } from "scenerystack/scenery";
 import { decayCategoryOf } from "../../common/model/DecayCategory.js";
@@ -193,9 +193,9 @@ class MapCanvas extends CanvasNode {
         context.fillStyle = contrastingText(color);
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.font = `bold ${Math.round(Math.min(14, s * 0.32))}px sans-serif`;
+        context.font = `bold ${roundSymmetric(Math.min(14, s * 0.32))}px sans-serif`;
         context.fillText(nuclide.symbol, x + s / 2, y + s * 0.38);
-        context.font = `${Math.round(Math.min(12, s * 0.26))}px sans-serif`;
+        context.font = `${roundSymmetric(Math.min(12, s * 0.26))}px sans-serif`;
         context.fillText(String(nuclide.a), x + s / 2, y + s * 0.7);
       }
     }
@@ -511,7 +511,7 @@ export class NuclideMapNode extends Node {
       return;
     }
     const at = g.toModel(point);
-    const nuclide = NUCLIDE_TABLE.get(Math.round(at.y), Math.round(at.x));
+    const nuclide = NUCLIDE_TABLE.get(roundSymmetric(at.y), roundSymmetric(at.x));
     if (nuclide) {
       this.model.shared.selectedNuclideProperty.value = nuclide;
     }

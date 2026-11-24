@@ -248,7 +248,9 @@ export class ChartScreenView extends ScreenView {
       strings.filter.enabledStringProperty,
       CHART_SCREEN_VIEW_SETTINGS.HALF_LIFE_FILTER_ENABLED_CHECKBOX_MAX_WIDTH,
     );
-    const thresholdText = new DerivedProperty([model.halfLifeThresholdProperty], (log) => formatDuration(10 ** log));
+    const thresholdTextProperty = new DerivedProperty([model.halfLifeThresholdProperty], (log) =>
+      formatDuration(10 ** log),
+    );
     const thresholdSlider = new HSlider(model.halfLifeThresholdProperty, model.halfLifeThresholdProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
@@ -279,7 +281,7 @@ export class ChartScreenView extends ScreenView {
             spacing: CHART_SCREEN_VIEW_SETTINGS.FILTER_SECTION_SPACING,
             children: [
               thresholdSlider,
-              new Text(thresholdText, {
+              new Text(thresholdTextProperty, {
                 font: FONTS.READOUT,
                 fill: NuclideChartColors.textColorProperty,
                 maxWidth: CHART_SCREEN_VIEW_SETTINGS.FILTER_PANEL_MAX_WIDTH,
@@ -322,7 +324,7 @@ export class ChartScreenView extends ScreenView {
     ];
 
     // Short description of the selection, for screen readers.
-    const selectionDescription = new DerivedProperty(
+    const selectionDescriptionProperty = new DerivedProperty(
       [a11y.controls.selectionPatternStringProperty, shared.selectedNuclideProperty],
       (pattern, nuclide) =>
         StringUtils.fillIn(pattern, {
@@ -332,7 +334,7 @@ export class ChartScreenView extends ScreenView {
           decay: nuclide.isStable ? common.card.stableStringProperty.value : nuclide.halfLifeText,
         }),
     );
-    shared.selectedNuclideProperty.lazyLink(() => map.addAccessibleResponse(selectionDescription.value));
+    shared.selectedNuclideProperty.lazyLink(() => map.addAccessibleResponse(selectionDescriptionProperty.value));
 
     this.pdomPlayAreaNode.pdomOrder = [map, zoomOut, zoomSlider, zoomIn, showAll, ...overlayChecks];
     this.pdomControlAreaNode.pdomOrder = [

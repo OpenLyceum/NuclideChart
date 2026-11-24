@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { DECAY_CHAINS_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * DecayChainsScreenView.ts
@@ -159,7 +160,7 @@ export class DecayChainsScreenView extends ScreenView {
       },
     );
     const families = strings.families;
-    const familyText = new DerivedProperty(
+    const familyTextProperty = new DerivedProperty(
       [
         model.chainProperty,
         strings.familyPatternStringProperty,
@@ -182,11 +183,11 @@ export class DecayChainsScreenView extends ScreenView {
       accessibleName: a11y.controls.timeSliderStringProperty,
       pdomCreateAriaValueText: (value: number | null) => (value === null ? "" : formatDuration(10 ** value)),
     });
-    const timeText = new DerivedProperty(
+    const timeTextProperty = new DerivedProperty(
       [strings.timePatternStringProperty, model.logTimeProperty],
       (pattern, logTime) => StringUtils.fillIn(pattern, { time: formatDuration(10 ** logTime) }),
     );
-    const clockText = new DerivedProperty(
+    const clockTextProperty = new DerivedProperty(
       [strings.clockPatternStringProperty, model.solutionProperty, model.logTimeProperty],
       (pattern, solution, logTime) => {
         const chain = solution.chain;
@@ -210,11 +211,11 @@ export class DecayChainsScreenView extends ScreenView {
           FONTS.SMALL,
         ),
         seriesGroup,
-        paragraph(familyText),
+        paragraph(familyTextProperty),
         label(strings.timeStringProperty, PANEL_CONTENT_WIDTH, FONTS.SMALL),
         timeSlider,
-        label(timeText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
-        new RichText(clockText, {
+        label(timeTextProperty, PANEL_CONTENT_WIDTH, FONTS.READOUT),
+        new RichText(clockTextProperty, {
           font: FONTS.SMALL,
           fill: NuclideChartColors.textColorProperty,
           lineWrap: PANEL_CONTENT_WIDTH,
@@ -242,7 +243,7 @@ export class DecayChainsScreenView extends ScreenView {
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
         .copy()
         .setWidth(DECAY_CHAINS_SCREEN_VIEW_SETTINGS.A_SLIDER_WIDTH),
-      constrainValue: (value: number) => Math.round(value),
+      constrainValue: (value: number) => roundSymmetric(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
       pageKeyboardStep: DECAY_CHAINS_SCREEN_VIEW_SETTINGS.A_SLIDER_PAGE_KEYBOARD_STEP,

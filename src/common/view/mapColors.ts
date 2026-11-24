@@ -9,6 +9,7 @@
  * profiles and live here rather than in NuclideChartColors.
  */
 
+import { roundSymmetric } from "scenerystack/dot";
 import type { ProfileColorProperty } from "scenerystack/scenery";
 import NuclideChartColors from "../../NuclideChartColors.js";
 import { DecayCategory } from "../model/DecayCategory.js";
@@ -45,7 +46,7 @@ const interpolate = (stops: readonly (readonly [number, number, number])[], t: n
   const f = position - i;
   const a = stops[i] as readonly [number, number, number];
   const b = stops[i + 1] as readonly [number, number, number];
-  const channel = (k: 0 | 1 | 2): number => Math.round(a[k] + (b[k] - a[k]) * f);
+  const channel = (k: 0 | 1 | 2): number => roundSymmetric(a[k] + (b[k] - a[k]) * f);
   return `rgb(${channel(0)},${channel(1)},${channel(2)})`;
 };
 

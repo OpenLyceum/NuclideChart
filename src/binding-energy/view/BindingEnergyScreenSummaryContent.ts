@@ -16,7 +16,7 @@ import type { BindingEnergyModel } from "../model/BindingEnergyModel.js";
 export class BindingEnergyScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: BindingEnergyModel) {
     const a11y = StringManager.getInstance().getBindingEnergyA11yStrings();
-    const details = new DerivedProperty(
+    const detailsProperty = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.shared.selectedNuclideProperty, model.rmsProperty],
       (pattern, nuclide, rms) =>
         StringUtils.fillIn(pattern, {
@@ -34,7 +34,7 @@ export class BindingEnergyScreenSummaryContent extends ScreenSummaryContent {
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: details,
+      currentDetailsContent: detailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

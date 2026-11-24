@@ -270,7 +270,7 @@ export class ShellsScreenView extends ScreenView {
     const estimatedCheckbox = checkbox(model.estimatedVisibleProperty, strings.showEstimatedStringProperty);
     const magicCheckbox = checkbox(model.shared.magicNumbersVisibleProperty, common.magicNumbersStringProperty);
 
-    const lineText = new DerivedProperty(
+    const lineTextProperty = new DerivedProperty(
       [
         strings.linePatternIsotopesStringProperty,
         strings.linePatternIsotonesStringProperty,
@@ -282,7 +282,7 @@ export class ShellsScreenView extends ScreenView {
           ? StringUtils.fillIn(isotopes, { name: nuclide.symbol, z: nuclide.z })
           : StringUtils.fillIn(isotones, { n: nuclide.n }),
     );
-    const valueText = new DerivedProperty(
+    const valueTextProperty = new DerivedProperty(
       [strings.valuePatternStringProperty, common.card.noDataStringProperty, model.kindProperty, selected],
       (pattern, none, kind, nuclide) => {
         const value = separationEnergy(nuclide, kind as SeparationKind);
@@ -293,7 +293,7 @@ export class ShellsScreenView extends ScreenView {
         });
       },
     );
-    const dropText = new DerivedProperty(
+    const dropTextProperty = new DerivedProperty(
       [strings.dropPatternStringProperty, model.kindProperty, selected],
       (pattern, kind, nuclide) => {
         const k = kind as SeparationKind;
@@ -326,9 +326,9 @@ export class ShellsScreenView extends ScreenView {
         spacing: SHELLS_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
         align: "left",
         children: [
-          label(lineText),
-          label(valueText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
-          label(dropText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
+          label(lineTextProperty),
+          label(valueTextProperty, PANEL_CONTENT_WIDTH, FONTS.READOUT),
+          label(dropTextProperty, PANEL_CONTENT_WIDTH, FONTS.READOUT),
           new RichText(strings.hintStringProperty, {
             font: FONTS.SMALL,
             fill: NuclideChartColors.textColorProperty,

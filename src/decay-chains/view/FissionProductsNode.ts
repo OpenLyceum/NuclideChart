@@ -8,7 +8,7 @@ import { FISSION_PRODUCTS_NODE_SETTINGS } from "../../NuclideChartConstants.js";
  */
 
 import { Multilink, type NumberProperty, type Property, type TReadOnlyProperty } from "scenerystack/axon";
-import { Range } from "scenerystack/dot";
+import { Range, roundSymmetric } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { StringUtils } from "scenerystack/phetcommon";
 import { Node, Path, Rectangle, RichText, VBox } from "scenerystack/scenery";
@@ -53,7 +53,9 @@ export class FissionProductsNode extends Node {
     const transform = frame.chartTransform;
     const pickA = (globalPoint: { x: number; y: number }): void => {
       const local = frame.plotLayer.globalToLocalPoint(globalPoint as never);
-      massNumberProperty.value = massNumberProperty.range.constrainValue(Math.round(transform.viewToModelX(local.x)));
+      massNumberProperty.value = massNumberProperty.range.constrainValue(
+        roundSymmetric(transform.viewToModelX(local.x)),
+      );
     };
     hitArea.addInputListener({ down: (event) => pickA(event.pointer.point) });
     frame.plotLayer.children = [hitArea, bars, selectedBar];

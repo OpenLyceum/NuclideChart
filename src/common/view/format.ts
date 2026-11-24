@@ -6,7 +6,7 @@ import { FORMAT_SETTINGS } from "../../NuclideChartConstants.js";
  * with a true minus sign, grouped integers, powers of ten, and half-lives in the most readable unit.
  */
 
-import { toFixed } from "scenerystack/dot";
+import { roundSymmetric, toFixed } from "scenerystack/dot";
 
 /** Superscript digits for plain-text exponents. */
 const SUPERSCRIPTS: Record<string, string> = {
@@ -55,7 +55,7 @@ export const formatValue = (value: number, digits: number = FORMAT_SETTINGS.DEFA
 
 /** A decade tick label: 0.01, 0.1, 1, 10, 100, 1000, then 10⁴, 10⁵, … */
 export const formatDecade = (exponent: number): string => {
-  const n = Math.round(exponent);
+  const n = roundSymmetric(exponent);
   if (n >= -2 && n <= 3) {
     return String(Number((10 ** n).toPrecision(1)));
   }
