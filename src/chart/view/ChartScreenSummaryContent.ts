@@ -17,7 +17,7 @@ export class ChartScreenSummaryContent extends ScreenSummaryContent {
     const a11y = StringManager.getInstance().getChartA11yStrings();
     const common = StringManager.getInstance().getCommonStrings();
     const colorings = StringManager.getInstance().getChartStrings().colorings;
-    const details = new DerivedProperty(
+    const detailsProperty = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.coloringProperty, model.shared.selectedNuclideProperty],
       (pattern, coloring, nuclide) =>
         StringUtils.fillIn(pattern, {
@@ -31,7 +31,7 @@ export class ChartScreenSummaryContent extends ScreenSummaryContent {
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: details,
+      currentDetailsContent: detailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

@@ -17,7 +17,7 @@ import type { ShellsModel } from "../model/ShellsModel.js";
 export class ShellsScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: ShellsModel) {
     const a11y = StringManager.getInstance().getShellsA11yStrings();
-    const details = new DerivedProperty(
+    const detailsProperty = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.kindProperty, model.shared.selectedNuclideProperty],
       (pattern, kind, nuclide) => {
         const value = separationEnergy(nuclide, kind as SeparationKind);
@@ -31,7 +31,7 @@ export class ShellsScreenSummaryContent extends ScreenSummaryContent {
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: details,
+      currentDetailsContent: detailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

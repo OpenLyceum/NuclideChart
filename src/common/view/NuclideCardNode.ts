@@ -2,8 +2,8 @@ import { NUCLIDE_CARD_NODE_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * NuclideCardNode.ts
  *
- * The selected nuclide's data card: symbol and (Z, N, A), half-life, decay branches, binding energy per
- * nucleon, mass excess, spin and parity, natural abundance and separation energies. Masses estimated from
+ * The selected nuclide's data card: symbol and (Z, N, A), half-life, decayProperty branches, binding energy per
+ * nucleon, mass excess, spinProperty and parity, natural abundance and separation energies. Masses estimated from
  * systematics are flagged so they are not over-trusted. Shared by every screen.
  */
 
@@ -16,7 +16,7 @@ import { FONTS } from "../../NuclideChartConstants.js";
 import type { Nuclide } from "../model/NuclideTable.js";
 import { formatFixed } from "./format.js";
 
-/** ENSDF decay-mode codes → display symbols. */
+/** ENSDF decayProperty-mode codes → display symbols. */
 const MODE_SYMBOLS: Readonly<Record<string, string>> = {
   "B-": "β⁻",
   "B+": "β⁺",
@@ -40,7 +40,7 @@ const MODE_SYMBOLS: Readonly<Record<string, string>> = {
   ECSF: "ECSF",
 };
 
-/** Display symbol of an ENSDF decay mode. */
+/** Display symbol of an ENSDF decayProperty mode. */
 const formatMode = (mode: string): string => MODE_SYMBOLS[mode] ?? mode;
 
 /** "⁵⁶Fe" as rich text. */
@@ -102,11 +102,11 @@ export class NuclideCardNode extends VBox {
         maxWidth: width * NUCLIDE_CARD_NODE_SETTINGS.ZNA_MAX_WIDTH_FACTOR,
       },
     );
-    const halfLife = new DerivedProperty(
+    const halfLifeProperty = new DerivedProperty(
       [card.stableStringProperty, card.noDataStringProperty, nuclideProperty],
       (stable, none, nuclide) => (nuclide.isStable ? stable : nuclide.halfLifeText || none),
     );
-    const decay = new DerivedProperty(
+    const decayProperty = new DerivedProperty(
       [card.noDecayDataStringProperty, card.noDataStringProperty, nuclideProperty],
       (noDecay, none, nuclide) => {
         if (nuclide.branches.length === 0) {
@@ -117,7 +117,7 @@ export class NuclideCardNode extends VBox {
           .join(", ");
       },
     );
-    const spin = new DerivedProperty([card.noDataStringProperty, nuclideProperty], (none, nuclide) =>
+    const spinProperty = new DerivedProperty([card.noDataStringProperty, nuclideProperty], (none, nuclide) =>
       nuclide.spinParity === "" ? none : nuclide.spinParity.replace(/-/g, "−"),
     );
 
@@ -126,8 +126,8 @@ export class NuclideCardNode extends VBox {
       ySpacing: NUCLIDE_CARD_NODE_SETTINGS.ROWS_Y_SPACING,
       xAlign: "left",
       rows: [
-        [label(q.halfLifeStringProperty), value(halfLife)],
-        [label(q.decayStringProperty), value(decay)],
+        [label(q.halfLifeStringProperty), value(halfLifeProperty)],
+        [label(q.decayStringProperty), value(decayProperty)],
         [
           label(q.bindingPerNucleonStringProperty),
           value(
@@ -148,7 +148,7 @@ export class NuclideCardNode extends VBox {
             ),
           ),
         ],
-        [label(q.spinParityStringProperty), value(spin)],
+        [label(q.spinParityStringProperty), value(spinProperty)],
         [
           label(q.abundanceStringProperty),
           value(

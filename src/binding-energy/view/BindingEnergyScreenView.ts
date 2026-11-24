@@ -1,4 +1,4 @@
-import { toFixed } from "scenerystack/dot";
+import { roundSymmetric, toFixed } from "scenerystack/dot";
 import { BINDING_ENERGY_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
 /**
  * BindingEnergyScreenView.ts
@@ -240,7 +240,7 @@ export class BindingEnergyScreenView extends ScreenView {
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize
         .copy()
         .setWidth(BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FRAGMENT_SLIDER_WIDTH),
-      constrainValue: (value: number) => Math.round(value),
+      constrainValue: (value: number) => roundSymmetric(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
       pageKeyboardStep: BINDING_ENERGY_SCREEN_VIEW_SETTINGS.FRAGMENT_SLIDER_PAGE_KEYBOARD_STEP,

@@ -8,7 +8,7 @@ import { ISOBARS_SCREEN_VIEW_SETTINGS } from "../../NuclideChartConstants.js";
  */
 
 import { DerivedProperty, Multilink, type Property, type TReadOnlyProperty } from "scenerystack/axon";
-import { Range, Vector2 } from "scenerystack/dot";
+import { Range, roundSymmetric, Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
@@ -123,7 +123,7 @@ export class IsobarsScreenView extends ScreenView {
       if (members.length === 0) {
         return;
       }
-      const zCenter = Math.round(
+      const zCenter = roundSymmetric(
         analysis.betaStable[0]?.z ??
           members.reduce((best, x) => ((x.massExcess ?? 0) < (best.massExcess ?? 0) ? x : best)).z,
       );
@@ -187,7 +187,7 @@ export class IsobarsScreenView extends ScreenView {
     const aSlider = new HSlider(model.massNumberProperty, model.massNumberProperty.range, {
       ...NUCLIDE_CHART_SLIDER_OPTIONS,
       trackSize: NUCLIDE_CHART_SLIDER_OPTIONS.trackSize.copy().setWidth(ISOBARS_SCREEN_VIEW_SETTINGS.A_SLIDER_WIDTH),
-      constrainValue: (value: number) => Math.round(value),
+      constrainValue: (value: number) => roundSymmetric(value),
       keyboardStep: 1,
       shiftKeyboardStep: 1,
       pageKeyboardStep: ISOBARS_SCREEN_VIEW_SETTINGS.A_SLIDER_PAGE_KEYBOARD_STEP,
@@ -297,11 +297,11 @@ export class IsobarsScreenView extends ScreenView {
 
     const list = (nuclides: readonly Nuclide[], none: string): string =>
       nuclides.length === 0 ? none : nuclides.map((x) => nuclideMarkup(x)).join(", ");
-    const stableText = new DerivedProperty(
+    const stableTextProperty = new DerivedProperty(
       [strings.stablePatternStringProperty, strings.noneStringProperty, model.analysisProperty],
       (pattern, none, analysis) => StringUtils.fillIn(pattern, { list: list(analysis.betaStable, none) }),
     );
-    const doubleBetaText = new DerivedProperty(
+    const doubleBetaTextProperty = new DerivedProperty(
       [strings.doubleBetaPatternStringProperty, strings.noneStringProperty, model.analysisProperty],
       (pattern, none, analysis: IsobarAnalysis) => {
         const double = analysis.transitions.filter(
@@ -314,7 +314,7 @@ export class IsobarsScreenView extends ScreenView {
         return StringUtils.fillIn(pattern, { list: text.length > 0 ? text.join(", ") : none });
       },
     );
-    const hintText = new DerivedProperty(
+    const hintTextProperty = new DerivedProperty(
       [strings.oddAHintStringProperty, strings.evenAHintStringProperty, model.massNumberProperty],
       (odd, even, a) => (a % 2 === 1 ? odd : even),
     );
@@ -323,13 +323,13 @@ export class IsobarsScreenView extends ScreenView {
         spacing: ISOBARS_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
         align: "left",
         children: [
-          label(stableText, PANEL_CONTENT_WIDTH, FONTS.READOUT),
-          new RichText(doubleBetaText, {
+          label(stableTextProperty, PANEL_CONTENT_WIDTH, FONTS.READOUT),
+          new RichText(doubleBetaTextProperty, {
             font: FONTS.LABEL,
             fill: NuclideChartColors.textColorProperty,
             lineWrap: PANEL_CONTENT_WIDTH,
           }),
-          new RichText(hintText, {
+          new RichText(hintTextProperty, {
             font: FONTS.SMALL,
             fill: NuclideChartColors.textColorProperty,
             lineWrap: PANEL_CONTENT_WIDTH,

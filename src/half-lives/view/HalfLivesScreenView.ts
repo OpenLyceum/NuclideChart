@@ -523,7 +523,7 @@ export class HalfLivesScreenView extends ScreenView {
 
     const fitsCheckbox = checkbox(model.fitsVisibleProperty, strings.fitsStringProperty);
     const comparisonCheckbox = checkbox(model.comparisonVisibleProperty, strings.comparisonStringProperty);
-    const fitText = new DerivedProperty(
+    const fitTextProperty = new DerivedProperty(
       [strings.fitPatternStringProperty, strings.noFitStringProperty, selected],
       (pattern, none, nuclide) => {
         const fit = model.geigerNuttallFits.get(nuclide.z);
@@ -539,7 +539,7 @@ export class HalfLivesScreenView extends ScreenView {
     );
     const po = model.geigerComparisonPo;
     const th = model.geigerComparisonTh;
-    const comparisonText = new DerivedProperty([strings.comparisonPatternStringProperty], (pattern) =>
+    const comparisonTextProperty = new DerivedProperty([strings.comparisonPatternStringProperty], (pattern) =>
       po && th
         ? StringUtils.fillIn(pattern, {
             qRatio: formatFixed(po.qAlpha / th.qAlpha, HALF_LIVES_SCREEN_VIEW_SETTINGS.COMPARISON_TEXT_DECIMALS),
@@ -554,13 +554,13 @@ export class HalfLivesScreenView extends ScreenView {
       align: "left",
       children: [
         fitsCheckbox,
-        new RichText(fitText, {
+        new RichText(fitTextProperty, {
           font: FONTS.SMALL,
           fill: NuclideChartColors.textColorProperty,
           lineWrap: PANEL_CONTENT_WIDTH,
         }),
         comparisonCheckbox,
-        new RichText(comparisonText, {
+        new RichText(comparisonTextProperty, {
           font: FONTS.SMALL,
           fill: NuclideChartColors.textColorProperty,
           lineWrap: PANEL_CONTENT_WIDTH,

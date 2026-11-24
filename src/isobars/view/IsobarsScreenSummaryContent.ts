@@ -15,7 +15,7 @@ import type { IsobarsModel } from "../model/IsobarsModel.js";
 export class IsobarsScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: IsobarsModel) {
     const a11y = StringManager.getInstance().getIsobarsA11yStrings();
-    const details = new DerivedProperty(
+    const detailsProperty = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.analysisProperty],
       (pattern, analysis) =>
         StringUtils.fillIn(pattern, {
@@ -26,7 +26,7 @@ export class IsobarsScreenSummaryContent extends ScreenSummaryContent {
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: details,
+      currentDetailsContent: detailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

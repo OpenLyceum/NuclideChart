@@ -19,18 +19,18 @@ import { CONTROLS, DIALOG, FONTS } from "../../NuclideChartConstants.js";
 
 export class CensusDialog extends Dialog {
   public constructor(definitionProperty: Property<string>) {
-    const strings = StringManager.getInstance().getChartStrings().census;
+    const strings = StringManager.getInstance().getChartStrings().censusProperty;
     const text = (
       content: TReadOnlyProperty<string> | string,
       font = FONTS.LABEL,
       maxWidth: number = DIALOG.CENSUS_WIDTH,
     ): RichText => new RichText(content, { font, fill: NuclideChartColors.textColorProperty, maxWidth });
 
-    const census = new DerivedProperty([definitionProperty], (definition) =>
+    const censusProperty = new DerivedProperty([definitionProperty], (definition) =>
       pairingCensus(definition as StabilityDefinition),
     );
     const count = (pick: (c: ReturnType<typeof pairingCensus>) => number): Text =>
-      new Text(new DerivedProperty([census], (c) => String(pick(c))), {
+      new Text(new DerivedProperty([censusProperty], (c) => String(pick(c))), {
         font: FONTS.BIG_LABEL,
         fill: NuclideChartColors.textColorProperty,
       });
@@ -79,12 +79,12 @@ export class CensusDialog extends Dialog {
     );
 
     const total = text(
-      new DerivedProperty([strings.totalPatternStringProperty, census], (pattern, c) =>
+      new DerivedProperty([strings.totalPatternStringProperty, censusProperty], (pattern, c) =>
         StringUtils.fillIn(pattern, { total: c.total }),
       ),
     );
     const oddOdd = text(
-      new DerivedProperty([strings.oddOddPatternStringProperty, census], (pattern, c) =>
+      new DerivedProperty([strings.oddOddPatternStringProperty, censusProperty], (pattern, c) =>
         StringUtils.fillIn(pattern, { list: c.oddOdd.map((x) => `<sup>${x.a}</sup>${x.symbol}`).join(", ") }),
       ),
     );

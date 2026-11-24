@@ -16,7 +16,7 @@ export class HalfLivesScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: HalfLivesModel) {
     const a11y = StringManager.getInstance().getHalfLivesA11yStrings();
     const common = StringManager.getInstance().getCommonStrings();
-    const details = new DerivedProperty(
+    const detailsProperty = new DerivedProperty(
       [a11y.currentDetailsPatternStringProperty, model.shared.selectedNuclideProperty],
       (pattern, nuclide) =>
         StringUtils.fillIn(pattern, {
@@ -27,7 +27,7 @@ export class HalfLivesScreenSummaryContent extends ScreenSummaryContent {
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: details,
+      currentDetailsContent: detailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }
