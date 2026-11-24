@@ -19,7 +19,7 @@ import { CONTROLS, DIALOG, FONTS } from "../../NuclideChartConstants.js";
 
 export class CensusDialog extends Dialog {
   public constructor(definitionProperty: Property<string>) {
-    const strings = StringManager.getInstance().getChartStrings().censusProperty;
+    const strings = StringManager.getInstance().getChartStrings().census;
     const text = (
       content: TReadOnlyProperty<string> | string,
       font = FONTS.LABEL,
