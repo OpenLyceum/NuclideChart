@@ -24,8 +24,9 @@ const nuclideChartQueryParameters = QueryStringMachine.getAll({
    * On by default (the sim is pitched at intro college); `?showEquations=false` hides it.
    */
   showEquations: {
-    type: "boolean",
+    type: "custom",
     defaultValue: true,
+    parse: (value: string | null): boolean => value !== "false",
     public: true,
   },
 });
