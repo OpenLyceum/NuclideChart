@@ -100,3 +100,7 @@ npx playwright test tests/browser     # layout in every screen and locale (SCREE
 
 For screenshots, run the dev server with `npx vite --port <free port>`. Screen models are reachable
 from the console as `phet.joist.sim.screens[i].model` (with `?screens=n`, at index 0).
+
+## Testing
+
+See the shared Vitest setup (`vitest.config.ts`, `tests/setup.ts`) and `tests/memory-leak.test.ts` for disposal coverage. Add sim-specific unit tests under `tests/` as physics and UI logic land.
