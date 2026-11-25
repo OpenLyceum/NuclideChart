@@ -30,7 +30,6 @@
     "check:unused": "knip",
     "clean": "rm -rf dist",
     "dev": "vite",
-    "fetch-data": "node scripts/data/fetch-nuclides.ts",
     "fix": "biome check --write .",
     "format": "biome format --write .",
     "icons": "node scripts/generate-icons.ts",
@@ -49,7 +48,9 @@
     "test:soak:browser": "npx playwright test tests/soak/browser.spec.ts",
     "test:soak:headless": "vitest run --config vitest.soak.config.ts",
     "test:watch": "vitest",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "fetch-data": "node scripts/data/fetch-nuclides.ts",
+    "test:browser": "playwright test --project=chromium tests/browser"
   },
   "overrides": {
     "brace-expansion": "~5.0.12",
